@@ -1,10 +1,11 @@
 from loguru import logger
 import os
+import json
 from datetime import datetime
 from collections import defaultdict
 
 # Set up log file directory
-LOG_DIR = "logs/"
+LOG_DIR: str = "logs/"
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -18,7 +19,7 @@ logger.add(
 )
 
 
-def log_event(level, message):
+def log_event(level: str, message: any) -> None:
     """
     Log an event with a specific level and message.
     :param level: Log level (e.g., 'info', 'warning', 'error')
@@ -34,14 +35,14 @@ def log_event(level, message):
         logger.debug(message)
 
 
-def filter_logs(log_file, level="ERROR"):
+def filter_logs(log_file: any, level: str = "ERROR") -> list:
     """
     Filter logs based on their severity level.
     :param log_file: Path to the log file to analyze
     :param level: Minimum log level to filter (e.g., 'ERROR')
     :return: Filtered log entries as a list
     """
-    filtered_logs = []
+    filtered_logs: list = []
     with open(log_file, "r") as file:
         for line in file:
             if level in line:
@@ -49,15 +50,26 @@ def filter_logs(log_file, level="ERROR"):
     return filtered_logs
 
 
-def compress_logs():
+def compress_logs() -> None:
     """
     Compress logs that exceed a certain retention period.
     """
     logger.info("Compressing old logs...")
-    # Loguru's built-in compression handles this automatically.
+    # Loguru built-in compression handles this automatically.
 
 
-def detect_brute_force(logs, max_attempts=5, time_window=60):
+def parse_logs(log_file) -> list:
+    """
+    Parse log entries from a log file.
+    :param log_file: Path to the log file.
+    :return: List of log lines.
+    """
+    with open(log_file, "r") as file:
+        logs: list = json.load(file)
+    return logs
+
+
+def detect_brute_force(logs: list, max_attempts: int = 5, time_window: int = 60) -> list:
     """
     Detect brute force attacks from log entries.
     :param logs: List of log entries.
@@ -65,14 +77,13 @@ def detect_brute_force(logs, max_attempts=5, time_window=60):
     :param time_window: Time window (seconds) for attempts.
     :return: List of brute force attack alerts.
     """
-    failed_attempts = defaultdict(list)
-    alerts = []
+    failed_attempts: defaultdict = defaultdict(list)
+    alerts: list = []
 
     for log in logs:
-        if "Failed login" in log:  # Adjust this keyword for your system's logs
-            parts = log.split()  # Assume log format: "Timestamp IP Address Failed login"
-            timestamp = datetime.strptime(parts[0], "%Y-%m-%dT%H:%M:%S")
-            ip_address = parts[1]
+        if log.get("event_type") == "failed_login":
+            ip_address: any = log.get("ip_address")
+            timestamp: datetime = datetime.strptime(log.get("timestamp"), "%Y-%m-%dT%H:%M:%S")
 
             # Record the failed attempt
             failed_attempts[ip_address].append(timestamp)
@@ -85,15 +96,14 @@ def detect_brute_force(logs, max_attempts=5, time_window=60):
 
             # Trigger an alert if max attempts are exceeded
             if len(failed_attempts[ip_address]) > max_attempts:
-                alert_message = f"Brute force detected from {ip_address} ({len(failed_attempts[ip_address])} attempts)"
+                alert_message: str = f"Brute force detected from {ip_address} ({len(failed_attempts[ip_address])} attempts)"
                 alerts.append(alert_message)
                 logger.warning(alert_message)
-
     return alerts
 
 
 # Detect DDoS attacks
-def detect_ddos(logs, max_requests=100, time_window=10):
+def detect_ddos(logs: list, max_requests: int = 100, time_window: int = 10) -> list:
     """
     Detect potential DDoS attacks from log entries.
     :param logs: List of log entries.
@@ -101,14 +111,13 @@ def detect_ddos(logs, max_requests=100, time_window=10):
     :param time_window: Time window (seconds) for requests.
     :return: List of DDoS attack alerts.
     """
-    request_counts = defaultdict(list)
-    alerts = []
+    request_counts: defaultdict = defaultdict(list)
+    alerts: list = []
 
     for log in logs:
-        if "Request from" in log:  # Adjust this keyword for your system's logs
-            parts = log.split()  # Assume log format: "Timestamp IP Address Request from"
-            timestamp = datetime.strptime(parts[0], "%Y-%m-%dT%H:%M:%S")
-            ip_address = parts[1]
+        if log.get("event_type") == "http_request":
+            ip_address = log.get("ip_address")
+            timestamp = datetime.strptime(log.get("timestamp"), "%Y-%m-%dT%H:%M:%S")
 
             # Record the request
             request_counts[ip_address].append(timestamp)
@@ -121,8 +130,22 @@ def detect_ddos(logs, max_requests=100, time_window=10):
 
             # Trigger an alert if max requests are exceeded
             if len(request_counts[ip_address]) > max_requests:
-                alert_message = f"DDoS detected from {ip_address} ({len(request_counts[ip_address])} requests in {time_window}s)"
+                alert_message: str = f"DDoS detected from {ip_address} ({len(request_counts[ip_address])} requests in {time_window}s)"
                 alerts.append(alert_message)
                 logger.warning(alert_message)
 
     return alerts
+
+
+# Run log analysis
+
+def analyze_logs(log_file) -> list:
+    """
+    Analyze logs for brute force and DDoS attacks.
+    :param log_file: Path to the log file.
+    :return: Combined list of alerts.
+    """
+    logs = parse_logs(log_file)
+    brute_force_alerts: list = detect_brute_force(logs)
+    ddos_alerts: list = detect_ddos(logs)
+    return brute_force_alerts + ddos_alerts
