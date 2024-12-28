@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #ffffff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .user_card {
+            width: 500px;
+            margin: auto;
+            background: #ffffff;
+            padding: 40px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            position: relative;
+            text-align: center;
+        }
+
+        #form-title {
+            color: #1c3d5a;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .form_container {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login_btn {
+            background: #1c3d5a !important;
+            color: white !important;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            width: auto;
+            transition: all 0.3s ease;
+            border: 2px solid #1c3d5a;
+        }
+
+        .login_btn:hover {
+            background: white !important;
+            color: #1c3d5a !important;
+            border: 2px solid #1c3d5a !important;
+        }
+
+        .input-group-text {
+            background: #1c3d5a !important;
+            color: white !important;
+            border-radius: 5px 0 0 5px !important;
+        }
+
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 0 5px 5px 0 !important;
+            padding: 10px;
+            height: 45px;
+            max-width: 300px;
+        }
+
+        .form-control:focus {
+            border-color: #1c3d5a;
+            box-shadow: none;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .links a {
+            color: #1c3d5a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container h-100 d-flex align-items-center justify-content-center">
+        <div class="user_card">
+            <h3 id="form-title">Register</h3>
+            <div class="form_container">
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        {{ form.username }}
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        {{ form.email }}
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                        </div>
+                        {{ form.password1 }}
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                        </div>
+                        {{ form.password2 }}
+                    </div>
+                    <button type="submit" class="btn login_btn">Register</button>
+                </form>
+            </div>
+            {% if form.errors %}
+            <div class="error">
+                {{ form.errors }}
+            </div>
+            {% endif %}
+            <div class="mt-4">
+                <div class="links">
+                    Already have an account? <a href="{% url 'login' %}">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    // Set placeholder values dynamically
+    var formFields = document.getElementsByTagName('input');
+    formFields[1].placeholder = 'Username';
+    formFields[2].placeholder = 'Email';
+    formFields[3].placeholder = 'Enter password';
+    formFields[4].placeholder = 'Re-enter password';
+
+    for (var i = 1; i < formFields.length; i++) {
+        formFields[i].className += ' form-control';
+    }
+</script>
+
+</html>
