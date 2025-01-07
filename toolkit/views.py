@@ -15,6 +15,30 @@ def dashboard(request):
 
 
 @csrf_exempt
+@login_required(login_url='login')
+def log_analysis(request):
+    context = {}
+    template = '../templates/toolkit/log_analysis.html'
+    return render(request, template, context)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def network_analysis(request):
+    context ={}
+    template = '../templates/toolkit/network_analysis.html'
+    return render(request, template, context)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def malware_detection(request):
+    context = {}
+    template = '../templates/toolkit/malware_detection.html'
+    return render(request, template, context)
+
+
+@csrf_exempt
 def user_login(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -34,22 +58,19 @@ def user_login(request):
 
 
 @csrf_exempt
+@login_required(login_url='login')
 def registration(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    else:
+    form = RegisterForm()
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been created!')
+            return redirect('dashboard')
 
-        form = RegisterForm()
-        if request.method == 'POST':
-            form = RegisterForm(request.POST)
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'Your account has been created!')
-                return redirect('login')
-
-        context = {'form': form}
-        template = '../templates/toolkit/registration.html'
-        return render(request, template, context)
+    context = {'form': form}
+    template = '../templates/toolkit/registration.html'
+    return render(request, template, context)
 
 
 def user_logout(request):

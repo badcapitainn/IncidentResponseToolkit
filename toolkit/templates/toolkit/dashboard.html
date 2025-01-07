@@ -1,12 +1,206 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
+<!DOCTYPE html>
+<html>
 
+<head>
+    <title>Incident Response</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #ffffff !important;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .top-bar {
+            background: #1c3d5a;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-bar .buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .top-bar .buttons a {
+            background: white;
+            color: #1c3d5a;
+            border: 2px solid #1c3d5a;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .top-bar .buttons a:hover {
+            background: #1c3d5a;
+            color: white;
+        }
+
+        .dashboard-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .content-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-around;
+        }
+
+        .section {
+            flex: 1 1 calc(50% - 20px);
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h4 {
+            color: #1c3d5a;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .button-section {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .button-section a {
+            width: 30%;
+            padding: 40px;
+            background: #1c3d5a;
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .button-section a:hover {
+            background: white;
+            color: #1c3d5a;
+            border: 2px solid #1c3d5a;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Dashboard</h1>
-    <a href="{% url 'logout' %}">logout</a>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div>
+            <h3>Incident Response</h3>
+        </div>
+        <div class="buttons">
+            <a href="">Notifications</a>
+            <a href="{% url 'registration' %}">Register New User</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <!-- Button Section -->
+        <div class="button-section">
+            <a href="{% url 'log_analysis' %}">Log Analysis</a>
+            <a href="{% url 'network_analysis' %}">Network Analysis</a>
+            <a href="{% url 'malware_detection' %}">Malware Detection</a>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-section">
+            <div class="section">
+                <h4>All Alerts</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Column 1</th>
+                            <th>Column 2</th>
+                            <th>Column 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Data 1</td>
+                            <td>Data 2</td>
+                            <td>Data 3</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Data 4</td>
+                            <td>Data 5</td>
+                            <td>Data 6</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h4>Actions Taken</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Column 1</th>
+                            <th>Column 2</th>
+                            <th>Column 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Data 1</td>
+                            <td>Data 2</td>
+                            <td>Data 3</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Data 4</td>
+                            <td>Data 5</td>
+                            <td>Data 6</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h4>Memory</h4>
+                <p>Graph</p>
+            </div>
+
+            <div class="section">
+                <h4>Processor</h4>
+                <p>Graph</p>
+            </div>
+             <div class="section">
+                <h4>Storage</h4>
+                <p>Graph</p>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
