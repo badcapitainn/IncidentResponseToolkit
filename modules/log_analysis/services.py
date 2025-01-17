@@ -15,7 +15,7 @@ class LogAnalysis:
     # Configurations
     THRESHOLDS = {
         "brute_force": {"attempts": 5, "time_window": 300},  # 5 attempts in 5 minutes
-        "ddos": {"requests": 20, "time_window": 10},  # 50 requests in 10 seconds
+        "ddos": {"requests": 5, "time_window": 5},  # 50 requests in 10 seconds
         "resource_monitoring_interval": 5,  # Check every 5 seconds
     }
 
@@ -42,8 +42,10 @@ class LogAnalysis:
 
     def parse_timestamp(self, timestamp):
         try:
-            return datetime.strptime(timestamp, "%d/%b/%Y:%H:%M:%S %z")
+            # Try with timezone
+            return datetime.strptime(timestamp.strip(), "%d/%b/%Y:%H:%M:%S %z")
         except ValueError:
+            # Fallback without timezone
             return datetime.strptime(timestamp.strip(), "%d/%b/%Y:%H:%M:%S")
 
     def detect_brute_force(self, logs):
@@ -57,7 +59,8 @@ class LogAnalysis:
 
         for ip, timestamps in failed_logins.items():
             recent_attempts = [
-                t for t in timestamps if (datetime.now() - t).total_seconds() <= self.THRESHOLDS['brute_force']['time_window']
+                t for t in timestamps if
+                (datetime.now() - t).total_seconds() <= self.THRESHOLDS['brute_force']['time_window']
             ]
             if len(recent_attempts) >= self.THRESHOLDS['brute_force']['attempts']:
                 alert = f"Brute-force attack detected from IP: {ip}"
@@ -69,17 +72,25 @@ class LogAnalysis:
     def detect_ddos(self, logs):
         ip_requests = defaultdict(list)
         alerts = []
+
+        # Organize logs by IP
         for log in logs:
             ip = log['ip']
             timestamp = self.parse_timestamp(log['timestamp'])
             ip_requests[ip].append(timestamp)
 
         for ip, timestamps in ip_requests.items():
-            timestamps.sort()  # Ensure timestamps are sorted
+            # Sort timestamps for accurate windowing
+            timestamps.sort()
             recent_requests = [
-                t for t in timestamps if (datetime.now() - t).total_seconds() <= self.THRESHOLDS['ddos']['time_window']
+                t for t in timestamps
+                if (datetime.now() - t).total_seconds() <= self.THRESHOLDS['ddos']['time_window']
             ]
-            logger.debug(f"IP: {ip}, Requests in window: {len(recent_requests)}")
+
+            # Log debug info for troubleshooting
+            logger.debug(f"DDoS Check for IP {ip}: Requests={len(recent_requests)}")
+
+            # Check if the number of requests exceeds the threshold
             if len(recent_requests) >= self.THRESHOLDS['ddos']['requests']:
                 alert = f"DDoS attack detected from IP: {ip} with {len(recent_requests)} requests."
                 alerts.append(alert)

@@ -55,7 +55,7 @@ def generate_logs(log_file):
         elif log_type == "ddos":
             # Simulate high request rates from the same IP
             ip = fake.ipv4()
-            for _ in range(random.randint(50, 60)):
+            for _ in range(random.randint(50, 60)):  # Simulate 50–60 requests
                 log_entry = (
                     f"{ip} - - "
                     f"[{datetime.now().strftime('%d/%b/%Y:%H:%M:%S %z')}] "
@@ -64,10 +64,8 @@ def generate_logs(log_file):
                 )
                 with open(log_file, "a") as file:
                     file.write(log_entry + "\n")
-
-                # Add some randomness to log generation speed
-                time.sleep(random.uniform(0.1, 0.5))
-
+                # Ensure rapid log generation to simulate DDos
+                time.sleep(random.uniform(0.01, 0.05))  # Reduced delay
 
         elif log_type == "sql_injection":
             # Simulate SQL injection attempts
@@ -93,6 +91,4 @@ def generate_logs(log_file):
         time.sleep(random.uniform(0.1, 1.0))
 
 
-# Run the log generator
-if __name__ == "__main__":
-    pass
+
