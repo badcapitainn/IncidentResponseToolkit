@@ -24,7 +24,7 @@ def generate_logs(log_file):
         # Randomly decide whether to generate a normal log or simulate an attack
         log_type = random.choices(
             ["normal", "brute_force", "ddos", "sql_injection", "xss"],
-            weights=[40, 15, 15, 15, 15],  # Adjust weights to control frequency of each type
+            weights=[60, 10, 10, 10, 10],  # Adjust weights to control frequency of each type
             k=1
         )[0]
 
@@ -66,7 +66,7 @@ def generate_logs(log_file):
                     file.write(log_entry + "\n")
 
                 # Add some randomness to log generation speed
-                time.sleep(random.uniform(0.1, 1.0))
+                time.sleep(random.uniform(0.1, 0.5))
 
 
         elif log_type == "sql_injection":

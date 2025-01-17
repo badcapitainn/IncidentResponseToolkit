@@ -9,13 +9,13 @@ import psutil
 
 class LogAnalysis:
     LOG_PATTERN = re.compile(
-        r'(?P<ip>[\d.]+) - - \[(?P<timestamp>[^]]+)] "(?P<method>[A-Z]+) (?P<url>[^\s]+) (?P<protocol>[^\"]+)" (?P<status>\d{3}) (?P<bytes>\d+) "(?P<user_agent>[^"]+)"'
+        r'(?P<ip>[\d.]+) - - \[(?P<timestamp>[^\]]+)\s*\] "(?P<method>[A-Z]+) (?P<url>[^"]+) (?P<protocol>[^"]+)" (?P<status>\d{3}) (?P<bytes>\d+)( "(?P<user_agent>[^"]+)")?'
     )
 
     # Configurations
     THRESHOLDS = {
         "brute_force": {"attempts": 5, "time_window": 300},  # 5 attempts in 5 minutes
-        "ddos": {"requests": 50, "time_window": 10},  # 50 requests in 10 seconds
+        "ddos": {"requests": 20, "time_window": 10},  # 50 requests in 10 seconds
         "resource_monitoring_interval": 5,  # Check every 5 seconds
     }
 
@@ -75,21 +75,28 @@ class LogAnalysis:
             ip_requests[ip].append(timestamp)
 
         for ip, timestamps in ip_requests.items():
+            timestamps.sort()  # Ensure timestamps are sorted
             recent_requests = [
                 t for t in timestamps if (datetime.now() - t).total_seconds() <= self.THRESHOLDS['ddos']['time_window']
             ]
+            logger.debug(f"IP: {ip}, Requests in window: {len(recent_requests)}")
             if len(recent_requests) >= self.THRESHOLDS['ddos']['requests']:
-                alert = f"DDoS attack detected from IP: {ip}"
+                alert = f"DDoS attack detected from IP: {ip} with {len(recent_requests)} requests."
                 alerts.append(alert)
                 logger.warning(alert)
 
         return alerts
 
     def detect_sql_injection(self, logs):
-        sql_patterns = [r"(?i)(UNION|SELECT|DROP|INSERT|DELETE|--|;|%27|%22|%3D)"]
+        sql_patterns = [
+            r"(?i)(' OR '1'='1|--|;|DROP|SELECT|INSERT|DELETE|UNION|%27|%22|%3D|%20OR%20|%20AND%20)",
+            r"(?i)(\bOR\b.*=|\bAND\b.*=)"
+        ]
+
         alerts = []
         for log in logs:
             if any(re.search(pattern, log['url']) for pattern in sql_patterns):
+                logger.debug(f"SQL Injection detected: {log['url']}")
                 alert = f"SQL Injection attempt detected in URL: {log['url']}"
                 alerts.append(alert)
                 logger.warning(alert)
