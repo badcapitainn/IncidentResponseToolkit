@@ -162,3 +162,8 @@ class LogAnalysis:
             disk_usage = psutil.disk_usage('/').percent
             logger.info(f"Resource Usage: CPU={cpu_usage}%, Memory={memory_usage}%, Disk={disk_usage}%")
             time.sleep(self.THRESHOLDS['resource_monitoring_interval'])
+
+
+class LogReport:
+    def __init__(self):
+        pass
