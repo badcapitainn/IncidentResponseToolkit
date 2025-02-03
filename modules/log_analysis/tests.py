@@ -13,16 +13,15 @@ if __name__ == "__main__":
     log_analyzer = LogAnalysis(log_dir=LOG_DIR, log_file=LOG_FILE)
     try:
         generate_thread = threading.Thread(target=generate_logs, args=(LOG_FILE,))
-        log_thread = threading.Thread(target=log_analyzer.start_analysis, daemon=True)
-        resource_monitor_thread = threading.Thread(target=log_analyzer.monitor_resources, daemon=True)
+        log_thread = threading.Thread(target=log_analyzer.run, daemon=True)
+
 
         generate_thread.start()
         log_thread.start()
-        resource_monitor_thread.start()
 
         generate_thread.join()
         log_thread.join()
-        resource_monitor_thread.join()
+
     except KeyboardInterrupt:
         print("\nExiting...")
 
