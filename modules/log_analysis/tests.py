@@ -1,4 +1,4 @@
-from services import LogAnalysis
+from LogAnalysis import LogAnalysis
 import threading
 from logs.log_generator import generate_logs
 import os

@@ -2,9 +2,206 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Log Analysis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Viewer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body {
+            background: #ffffff;
+            font-family: 'Arial', sans-serif;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1c3d5a;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            background: #f8f9fa;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #1c3d5a;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #d3d3d3;
+        }
+
+        .empty-row {
+            color: #888;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 25px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 17px;
+            width: 17px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #1c3d5a;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(25px);
+        }
+
+        .status {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>log analysis</h1>
+
+    <div class="toggle-container">
+        <label class="switch">
+            <input id="logToggle" type="checkbox">
+            <span class="slider"></span>
+        </label>
+        <span id="logStatus" class="status">Log Analysis: Off</span>
+    </div>
+
+    <h1>Alert Logs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in alert_logs %}
+                <tr>
+                    <td>{{ log.timeStamp }}</td>
+                    <td>{{ log.message }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2" class="empty-row">No alert logs available</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>Suspicious Logs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in suspicious_logs %}
+                <tr>
+                    <td>{{ log.timeStamp }}</td>
+                    <td>{{ log.message }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2" class="empty-row">No suspicious logs available</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>Watchlist Logs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in watchlist_logs %}
+                <tr>
+                    <td>{{ log.timeStamp }}</td>
+                    <td>{{ log.message }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2" class="empty-row">No watchlist logs available</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        const toggle = document.getElementById('logToggle');
+        const status = document.getElementById('logStatus');
+
+        toggle.addEventListener('change', function () {
+            if (this.checked) {
+                status.textContent = "Log Analysis: On";
+                status.style.color = '#1c3d5a';
+                // Add logic here to turn on the log analysis module
+            } else {
+                status.textContent = "Log Analysis: Off";
+                status.style.color = 'red';
+                // Add logic here to turn off the log analysis module
+            }
+        });
+    </script>
+
 </body>
 </html>

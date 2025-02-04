@@ -5,11 +5,17 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
+from .models import AlertLogs, SuspiciousLogs, WatchlistLogs
+
+
 
 @csrf_exempt
 @login_required(login_url='login')
 def dashboard(request):
-    context = {}
+    alert_logs = AlertLogs.objects.all()
+    context = {
+        "alert_logs": alert_logs
+    }
     template = '../templates/toolkit/dashboard.html'
     return render(request, template, context)
 
@@ -17,15 +23,24 @@ def dashboard(request):
 @csrf_exempt
 @login_required(login_url='login')
 def log_analysis(request):
-    context = {}
+    alert_logs = AlertLogs.objects.all()
+    suspicious_logs = SuspiciousLogs.objects.all()
+    watchlist_logs = WatchlistLogs.objects.all()
+
+    context = {
+        "alert_logs": alert_logs,
+        "suspicious_logs": suspicious_logs,
+        "watchlist_logs": watchlist_logs,
+    }
     template = '../templates/toolkit/log_analysis.html'
+
     return render(request, template, context)
 
 
 @csrf_exempt
 @login_required(login_url='login')
 def network_analysis(request):
-    context ={}
+    context = {}
     template = '../templates/toolkit/network_analysis.html'
     return render(request, template, context)
 
@@ -76,3 +91,5 @@ def registration(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
+
+

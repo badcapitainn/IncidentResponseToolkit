@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -130,32 +129,31 @@
         <!-- Content Section -->
         <div class="content-section">
             <div class="section">
-                <h4>All Alerts</h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Column 1</th>
-                            <th>Column 2</th>
-                            <th>Column 3</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Data 1</td>
-                            <td>Data 2</td>
-                            <td>Data 3</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Data 4</td>
-                            <td>Data 5</td>
-                            <td>Data 6</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <h4>All Alerts</h4>
+    <div style="max-height: 220px; overflow-y: auto;">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in alert_logs %}
+                    <tr>
+                        <td>{{ log.timeStamp }}</td>
+                        <td>{{ log.message }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2" class="empty-row">No alert logs available</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
             <div class="section">
                 <h4>Actions Taken</h4>

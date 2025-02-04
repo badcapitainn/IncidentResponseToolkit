@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'incidentResponsedb',
+        'NAME': 'IncidentResponceToolkit',
         'USER': 'postgres',
         'PASSWORD': 'S@dz@101',
         'HOST': 'localhost',
