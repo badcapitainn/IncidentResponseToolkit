@@ -4,3 +4,7 @@ NB also alert user of threat when it happens through text
 3: be able to export report as well as send to email periodically
 4: create dynamic graphs to show on ui dashboard
 
+remove absolute path for relative path
+auto add the logs to tables in real time
+find a way not to get long strands of tables
+start thinking of graphs

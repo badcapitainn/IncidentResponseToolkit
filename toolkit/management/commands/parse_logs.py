@@ -1,3 +1,4 @@
+# logs_app/management/commands/parse_logs.py
 import os
 import re
 import json
@@ -5,27 +6,15 @@ from datetime import datetime
 from django.core.management.base import BaseCommand
 from toolkit.models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
 
-# Absolute path to the logs directory
-import os
-import re
-import json
-from datetime import datetime
-from django.core.management.base import BaseCommand
-from toolkit.models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
-
-# Correctly formatted log directory path
 log_dir = r"C:\Users\madza\PycharmProjects\IncidentResponseToolkit\modules\logs"
 log_prefix = "log_analysis_"
 log_extension = ".log"
 
 
 def get_latest_log_file(log_directory, log_prefix_name, log_suffix):
-    if not os.path.exists(log_directory):
-        raise FileNotFoundError(f"The log directory '{log_directory}' does not exist.")
-
     log_files = [
-        f for f in os.listdir(log_directory)
-        if f.startswith(log_prefix_name) and f.endswith(log_suffix)
+        f for f in os.listdir(log_dir)
+        if f.startswith(log_prefix) and f.endswith(log_extension)
     ]
 
     if not log_files:
@@ -34,10 +23,10 @@ def get_latest_log_file(log_directory, log_prefix_name, log_suffix):
     # Sort by date extracted from filename (assuming filename format is correct)
     latest_file = max(
         log_files,
-        key=lambda f: datetime.strptime(f[len(log_prefix_name):-len(log_suffix)], "%Y%m%d")
+        key=lambda f: datetime.strptime(f[len(log_prefix):-len(log_extension)], "%Y%m%d")
     )
 
-    return os.path.join(log_directory, latest_file)
+    return os.path.join(log_dir, latest_file)
 
 
 def parse_loguru_logs():
@@ -75,6 +64,7 @@ class Command(BaseCommand):
     help = 'Parse log files and insert them into the database'
 
     def handle(self, *args, **kwargs):
+
         logs = parse_loguru_logs()
         for log in logs:
             timestamp = datetime.strptime(log['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
@@ -82,13 +72,16 @@ class Command(BaseCommand):
             level = log['level']
             module = log['module']
 
-            if level == 'ERROR':
+            # Check if the log entry already exists in the database
+            if level == 'ERROR' and not AlertLogs.objects.filter(timeStamp=timestamp, message=message).exists():
                 AlertLogs.objects.create(timeStamp=timestamp, message=message)
-            elif level == 'WARNING' and module == 'LogAnalysis:log_analysis':
+            elif level == 'WARNING' and module == 'LogAnalysis:log_analysis' and not SuspiciousLogs.objects.filter(
+                    timeStamp=timestamp, message=message).exists():
                 SuspiciousLogs.objects.create(timeStamp=timestamp, message=message)
-            elif level == 'WARNING' and module == 'LogAnalysis:monitor_watchlist':
+            elif level == 'WARNING' and module == 'LogAnalysis:monitor_watchlist' and not WatchlistLogs.objects.filter(
+                    timeStamp=timestamp, message=message).exists():
                 WatchlistLogs.objects.create(timeStamp=timestamp, message=message)
-            else:
+            elif not ResourceUsageLogs.objects.filter(timeStamp=timestamp, message=message).exists():
                 ResourceUsageLogs.objects.create(timeStamp=timestamp, message=message)
 
         self.stdout.write(self.style.SUCCESS('Successfully parsed and inserted logs into the database'))
