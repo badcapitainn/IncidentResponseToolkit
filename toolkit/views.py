@@ -12,9 +12,11 @@ from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
 @csrf_exempt
 @login_required(login_url='login')
 def dashboard(request):
+    watch_list_logs = WatchlistLogs.objects.all()
     alert_logs = AlertLogs.objects.all()
     context = {
-        "alert_logs": alert_logs
+        "alert_logs": alert_logs,
+        "watch_list_logs": watch_list_logs
     }
     template = '../templates/toolkit/dashboard.html'
     return render(request, template, context)
