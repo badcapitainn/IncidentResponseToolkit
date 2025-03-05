@@ -1,10 +1,10 @@
-# logs_app/management/commands/parse_logs.py
 import os
 import re
-import json
 from datetime import datetime
 from django.core.management.base import BaseCommand
 from toolkit.models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
+
+from django.utils import timezone
 
 log_dir = r"C:\Users\madza\PycharmProjects\IncidentResponseToolkit\modules\logs"
 log_prefix = "log_analysis_"
@@ -20,7 +20,6 @@ def get_latest_log_file(log_directory, log_prefix_name, log_suffix):
     if not log_files:
         raise FileNotFoundError("No log files found in the directory.")
 
-    # Sort by date extracted from filename (assuming filename format is correct)
     latest_file = max(
         log_files,
         key=lambda f: datetime.strptime(f[len(log_prefix):-len(log_extension)], "%Y%m%d")
@@ -45,17 +44,6 @@ def parse_loguru_logs():
             match = re.match(log_pattern, line)
             if match:
                 log_entry = match.groupdict()
-
-                # Check if the message contains structured data
-                message = log_entry["message"]
-                if "{" in message and "}" in message:
-                    json_str = message[message.index("{"): message.rindex("}") + 1]
-                    try:
-                        structured_data = json.loads(json_str)
-                        log_entry["structured_data"] = structured_data
-                    except json.JSONDecodeError:
-                        log_entry["structured_data"] = None
-
                 logs.append(log_entry)
     return logs
 
@@ -64,24 +52,30 @@ class Command(BaseCommand):
     help = 'Parse log files and insert them into the database'
 
     def handle(self, *args, **kwargs):
-
         logs = parse_loguru_logs()
         for log in logs:
-            timestamp = datetime.strptime(log['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
+            timestamp = timezone.make_aware(datetime.strptime(log['timestamp'], "%Y-%m-%d %H:%M:%S.%f"))
             message = log['message']
             level = log['level']
             module = log['module']
 
-            # Check if the log entry already exists in the database
-            if level == 'ERROR' and not AlertLogs.objects.filter(timeStamp=timestamp, message=message).exists():
-                AlertLogs.objects.create(timeStamp=timestamp, message=message)
-            elif level == 'WARNING' and module == 'LogAnalysis:log_analysis' and not SuspiciousLogs.objects.filter(
-                    timeStamp=timestamp, message=message).exists():
-                SuspiciousLogs.objects.create(timeStamp=timestamp, message=message)
-            elif level == 'WARNING' and module == 'LogAnalysis:monitor_watchlist' and not WatchlistLogs.objects.filter(
-                    timeStamp=timestamp, message=message).exists():
-                WatchlistLogs.objects.create(timeStamp=timestamp, message=message)
-            elif not ResourceUsageLogs.objects.filter(timeStamp=timestamp, message=message).exists():
-                ResourceUsageLogs.objects.create(timeStamp=timestamp, message=message)
+            # Check if the log already exists in the database
+            try:
+                if level == 'CRITICAL' and not AlertLogs.objects.filter(timeStamp=timestamp, message=message).exists():
+                    AlertLogs.objects.create(timeStamp=timestamp, message=message)
+
+                elif level == 'WARNING' and not SuspiciousLogs.objects.filter(
+                        timeStamp=timestamp, message=message).exists():
+                    SuspiciousLogs.objects.create(timeStamp=timestamp, message=message)
+
+                elif level == 'ERROR' and not WatchlistLogs.objects.filter(
+                        timeStamp=timestamp, message=message).exists():
+                    WatchlistLogs.objects.create(timeStamp=timestamp, message=message)
+
+                elif level == 'INFO' and not ResourceUsageLogs.objects.filter(timeStamp=timestamp, message=message).exists():
+                    ResourceUsageLogs.objects.create(timeStamp=timestamp, message=message)
+
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'Error processing log entry: {e}'))
 
         self.stdout.write(self.style.SUCCESS('Successfully parsed and inserted logs into the database'))

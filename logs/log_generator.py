@@ -42,7 +42,7 @@ def generate_logs(log_file):
         # Randomly decide whether to generate a normal log or simulate an attack
         log_type = random.choices(
             ["normal", "brute_force", "ddos", "sql_injection", "xss", "dir_traversal", "cmd_injection"],
-            weights=[97, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+            weights=[99.4, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
             k=1
         )[0]
 

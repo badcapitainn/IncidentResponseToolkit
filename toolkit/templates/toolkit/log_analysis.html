@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,8 @@
         body {
             background: #ffffff;
             font-family: 'Arial', sans-serif;
-            padding: 30px;
+            padding: 20px;
+            color: #333;
         }
 
         h1 {
@@ -17,6 +19,7 @@
             color: #1c3d5a;
             font-weight: bold;
             margin: 30px 0;
+            font-size: 28px;
         }
 
         table {
@@ -25,9 +28,12 @@
             border-collapse: collapse;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        th, td {
+        th,
+        td {
             padding: 15px;
             text-align: left;
             border: 1px solid #ddd;
@@ -36,6 +42,7 @@
         th {
             background-color: #1c3d5a;
             color: white;
+            font-weight: bold;
         }
 
         tr:nth-child(even) {
@@ -43,7 +50,8 @@
         }
 
         tr:hover {
-            background-color: #d3d3d3;
+            background-color: #e0e0e0;
+            transition: background-color 0.3s ease;
         }
 
         .empty-row {
@@ -56,7 +64,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 20px 0;
+            margin: 30px 0;
         }
 
         .switch {
@@ -80,7 +88,7 @@
             right: 0;
             bottom: 0;
             background-color: #ccc;
-            transition: .4s;
+            transition: 0.4s;
             border-radius: 25px;
         }
 
@@ -92,24 +100,53 @@
             left: 4px;
             bottom: 4px;
             background-color: white;
-            transition: .4s;
+            transition: 0.4s;
             border-radius: 50%;
         }
 
-        input:checked + .slider {
+        input:checked+.slider {
             background-color: #1c3d5a;
         }
 
-        input:checked + .slider:before {
+        input:checked+.slider:before {
             transform: translateX(25px);
         }
 
         .status {
             margin-left: 10px;
             font-weight: bold;
+            font-size: 16px;
+        }
+
+        footer {
+            background: #1c3d5a;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #296c83;
+        }
+
+        .log-section {
+            margin-bottom: 40px;
+        }
+
+        .log-section h1 {
+            margin-bottom: 20px;
         }
     </style>
 </head>
+
 <body>
 
     <div class="toggle-container">
@@ -120,71 +157,101 @@
         <span id="logStatus" class="status">Log Analysis: Off</span>
     </div>
 
-    <h1>Alert Logs</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Timestamp</th>
-                <th>Message</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in alert_logs %}
+    <div class="log-section">
+        <h1>Alert Logs</h1>
+        <table id="alert-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in alert_logs %}
                 <tr>
                     <td>{{ log.timeStamp }}</td>
                     <td>{{ log.message }}</td>
                 </tr>
-            {% empty %}
-                <tr>
+                {% empty %}
+                <tr id="alert-empty-row">
                     <td colspan="2" class="empty-row">No alert logs available</td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <h1>Suspicious Logs</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Timestamp</th>
-                <th>Message</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in suspicious_logs %}
+    <div class="log-section">
+        <h1>Suspicious Logs</h1>
+        <table id="suspicious-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in suspicious_logs %}
                 <tr>
                     <td>{{ log.timeStamp }}</td>
                     <td>{{ log.message }}</td>
                 </tr>
-            {% empty %}
-                <tr>
+                {% empty %}
+                <tr id="suspicious-empty-row">
                     <td colspan="2" class="empty-row">No suspicious logs available</td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <h1>Watchlist Logs</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Timestamp</th>
-                <th>Message</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in watchlist_logs %}
+    <div class="log-section">
+        <h1>Watchlist Logs</h1>
+        <table id="watchlist-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in watchlist_logs %}
                 <tr>
                     <td>{{ log.timeStamp }}</td>
                     <td>{{ log.message }}</td>
                 </tr>
-            {% empty %}
-                <tr>
+                {% empty %}
+                <tr id="watchlist-empty-row">
                     <td colspan="2" class="empty-row">No watchlist logs available</td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+<!--    <div class="log-section">-->
+<!--        <h1>Resource Usage Logs</h1>-->
+<!--        <table id="resource-logs-table">-->
+<!--            <thead>-->
+<!--                <tr>-->
+<!--                    <th>Timestamp</th>-->
+<!--                    <th>Message</th>-->
+<!--                </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--                {% for log in resource_logs %}-->
+<!--                <tr>-->
+<!--                    <td>{{ log.timeStamp }}</td>-->
+<!--                    <td>{{ log.message }}</td>-->
+<!--                </tr>-->
+<!--                {% empty %}-->
+<!--                <tr id="resource-empty-row">-->
+<!--                    <td colspan="2" class="empty-row">No resource logs available</td>-->
+<!--                </tr>-->
+<!--                {% endfor %}-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--    </div>-->
 
     <script>
         const toggle = document.getElementById('logToggle');
@@ -194,14 +261,17 @@
             if (this.checked) {
                 status.textContent = "Log Analysis: On";
                 status.style.color = '#1c3d5a';
-                // Add logic here to turn on the log analysis module
+                // Implement AJAX/fetch to send toggle on command to backend
             } else {
                 status.textContent = "Log Analysis: Off";
                 status.style.color = 'red';
-                // Add logic here to turn off the log analysis module
+                // Implement AJAX/fetch to send toggle off command to backend
             }
         });
     </script>
-
+    <footer>
+        <p>&copy; 2023 Log Viewer. All rights reserved. | <a href="#">Privacy Policy</a></p>
+    </footer>
 </body>
+
 </html>

@@ -15,6 +15,7 @@
             height: 100%;
             background: #ffffff !important;
             font-family: 'Arial', sans-serif;
+            color: #333;
         }
 
         .top-bar {
@@ -25,6 +26,12 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-bar h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
         }
 
         .top-bar .buttons {
@@ -46,6 +53,7 @@
         .top-bar .buttons a:hover {
             background: #296c83;
             color: white;
+            transform: translateY(-2px);
         }
 
         .dashboard-container {
@@ -69,12 +77,19 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
         }
 
         .section h4 {
             color: #1c3d5a;
             font-weight: bold;
             margin-bottom: 15px;
+            font-size: 20px;
         }
 
         .button-section {
@@ -101,6 +116,65 @@
             background: white;
             color: #1c3d5a;
             border: 2px solid #1c3d5a;
+            transform: translateY(-5px);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #1c3d5a;
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .empty-row {
+            text-align: center;
+            color: #888;
+        }
+
+        .graph-placeholder {
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer {
+            background: #1c3d5a;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #296c83;
         }
     </style>
 </head>
@@ -129,73 +203,84 @@
         <!-- Content Section -->
         <div class="content-section">
             <div class="section">
-    <h4>All Alerts</h4>
-    <div style="max-height: 220px; overflow-y: auto;">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Message</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in alert_logs %}
-                    <tr>
-                        <td>{{ log.timeStamp }}</td>
-                        <td>{{ log.message }}</td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="2" class="empty-row">No alert logs available</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
+                <h4>All Alerts</h4>
+                <div style="max-height: 220px; overflow-y: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in alert_logs %}
+                                <tr>
+                                    <td>{{ log.timeStamp }}</td>
+                                    <td>{{ log.message }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="2" class="empty-row">No alert logs available</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <div class="section">
-    <h4>Watch List</h4>
-    <div style="max-height: 220px; overflow-y: auto;">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Message</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in watch_list_logs %}
-                    <tr>
-                        <td>{{ log.timeStamp }}</td>
-                        <td>{{ log.message }}</td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="2" class="empty-row">No logs available in watch list</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+                <h4>Watch List</h4>
+                <div style="max-height: 220px; overflow-y: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in watch_list_logs %}
+                                <tr>
+                                    <td>{{ log.timeStamp }}</td>
+                                    <td>{{ log.message }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="2" class="empty-row">No logs available in watch list</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <div class="section">
                 <h4>Memory</h4>
-                <p>Graph</p>
+                <div class="graph-placeholder">
+                    Memory Usage Graph (Placeholder)
+                </div>
             </div>
 
             <div class="section">
                 <h4>Processor</h4>
-                <p>Graph</p>
+                <div class="graph-placeholder">
+                    CPU Usage Graph (Placeholder)
+                </div>
             </div>
-             <div class="section">
+
+            <div class="section">
                 <h4>Storage</h4>
-                <p>Graph</p>
+                <div class="graph-placeholder">
+                    Disk Usage Graph (Placeholder)
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 Incident Response. All rights reserved. | <a href="#">Privacy Policy</a></p>
+    </footer>
 </body>
 
 </html>

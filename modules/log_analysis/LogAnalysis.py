@@ -168,7 +168,7 @@ class LogAnalysis:
         while True:
             for ip, count in list(self.watchlist.items()):
                 if count >= self.THRESHOLDS['watchlist_threshold']:
-                    logger.warning(f"IP {ip} is under close watch due to {count} anomalies.")
+                    logger.error(f"IP {ip} is under close watch due to {count} anomalies.")
 
                     # Additional monitoring logic
                     self.monitor_suspicious_ip(ip)
@@ -205,7 +205,7 @@ class LogAnalysis:
         Temporarily block an IP address for a specified duration (default: 5 minutes).
         """
         if ip not in self.blocked_ips:
-            logger.warning(f"Blocking IP {ip} for {block_duration} seconds.")
+            logger.debug(f"Blocking IP {ip} for {block_duration} seconds.")
             self.blocked_ips[ip] = time.time() + block_duration
 
     def is_ip_blocked(self, ip):
@@ -248,7 +248,7 @@ class LogAnalysis:
                             self.detect_anomalies(new_logs)
                         )
                         for alert in alerts:
-                            logger.error(alert)
+                            logger.critical(alert)
                         for warning in warnings:
                             logger.warning(warning)
 
