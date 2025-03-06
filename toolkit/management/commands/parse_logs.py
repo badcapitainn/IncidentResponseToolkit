@@ -3,7 +3,8 @@ import re
 from datetime import datetime
 from django.core.management.base import BaseCommand
 from toolkit.models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
-
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from django.utils import timezone
 
 log_dir = r"C:\Users\madza\PycharmProjects\IncidentResponseToolkit\modules\logs"
@@ -53,27 +54,60 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         logs = parse_loguru_logs()
+        channel_layer = get_channel_layer()  # Get the channel layer
+
         for log in logs:
             timestamp = timezone.make_aware(datetime.strptime(log['timestamp'], "%Y-%m-%d %H:%M:%S.%f"))
             message = log['message']
             level = log['level']
             module = log['module']
 
-            # Check if the log already exists in the database
             try:
                 if level == 'CRITICAL' and not AlertLogs.objects.filter(timeStamp=timestamp, message=message).exists():
                     AlertLogs.objects.create(timeStamp=timestamp, message=message)
+                    # Trigger WebSocket update for alert logs
+                    async_to_sync(channel_layer.group_send)(
+                        "logs",
+                        {
+                            'type': 'log_message',
+                            'log_type': 'alert',  # Include the log_type key
+                        }
+                    )
 
                 elif level == 'WARNING' and not SuspiciousLogs.objects.filter(
                         timeStamp=timestamp, message=message).exists():
                     SuspiciousLogs.objects.create(timeStamp=timestamp, message=message)
+                    # Trigger WebSocket update for suspicious logs
+                    async_to_sync(channel_layer.group_send)(
+                        "logs",
+                        {
+                            'type': 'log_message',
+                            'log_type': 'suspicious',  # Include the log_type key
+                        }
+                    )
 
                 elif level == 'ERROR' and not WatchlistLogs.objects.filter(
                         timeStamp=timestamp, message=message).exists():
                     WatchlistLogs.objects.create(timeStamp=timestamp, message=message)
+                    # Trigger WebSocket update for watchlist logs
+                    async_to_sync(channel_layer.group_send)(
+                        "logs",
+                        {
+                            'type': 'log_message',
+                            'log_type': 'watchlist',  # Include the log_type key
+                        }
+                    )
 
                 elif level == 'INFO' and not ResourceUsageLogs.objects.filter(timeStamp=timestamp, message=message).exists():
                     ResourceUsageLogs.objects.create(timeStamp=timestamp, message=message)
+                    # Trigger WebSocket update for resource usage logs
+                    async_to_sync(channel_layer.group_send)(
+                        "logs",
+                        {
+                            'type': 'log_message',
+                            'log_type': 'resource',  # Include the log_type key
+                        }
+                    )
 
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'Error processing log entry: {e}'))

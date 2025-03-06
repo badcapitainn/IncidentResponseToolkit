@@ -257,6 +257,48 @@
         const toggle = document.getElementById('logToggle');
         const status = document.getElementById('logStatus');
 
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/logs/');
+
+        socket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const logType = data.log_type;
+            const logs = data.logs;
+
+            // Update the table based on the log type
+            if (logType === 'alert') {
+                updateTable('alert-logs-table', logs);
+            } else if (logType === 'suspicious') {
+                updateTable('suspicious-logs-table', logs);
+            } else if (logType === 'watchlist') {
+                updateTable('watchlist-logs-table', logs);
+            } else if (logType === 'resource') {
+                updateTable('resource-logs-table', logs);
+            }
+        };
+
+        function updateTable(tableId, logs) {
+            const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            table.innerHTML = ''; // Clear existing rows
+
+            if (logs.length === 0) {
+                // Add a row for "No logs available"
+                const row = table.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 2;
+                cell.className = 'empty-row';
+                cell.textContent = 'No logs available';
+            } else {
+                // Add rows for each log
+                logs.forEach(log => {
+                    const row = table.insertRow();
+                    const timestampCell = row.insertCell();
+                    const messageCell = row.insertCell();
+                    timestampCell.textContent = log.timeStamp;  // Display the ISO format datetime string
+                    messageCell.textContent = log.message;
+                });
+            }
+        }
+
         toggle.addEventListener('change', function () {
             if (this.checked) {
                 status.textContent = "Log Analysis: On";

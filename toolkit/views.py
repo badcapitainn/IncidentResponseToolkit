@@ -5,7 +5,8 @@ from .forms import RegisterForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
 
 
@@ -35,6 +36,16 @@ def log_analysis(request):
         "watchlist_logs": watchlist_logs,
     }
     template = '../templates/toolkit/log_analysis.html'
+
+    # Send WebSocket message
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "logs",
+        {
+            'type': 'log_message',
+            'message': 'Logs updated'
+        }
+    )
 
     return render(request, template, context)
 
