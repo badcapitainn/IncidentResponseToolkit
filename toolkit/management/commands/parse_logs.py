@@ -82,7 +82,7 @@ class Command(BaseCommand):
                         "logs",
                         {
                             'type': 'log_message',
-                            'log_type': 'suspicious',  # Include the log_type key
+                            'log_type': 'suspicious',
                         }
                     )
 
@@ -94,7 +94,7 @@ class Command(BaseCommand):
                         "logs",
                         {
                             'type': 'log_message',
-                            'log_type': 'watchlist',  # Include the log_type key
+                            'log_type': 'watchlist',
                         }
                     )
 
@@ -105,7 +105,7 @@ class Command(BaseCommand):
                         "logs",
                         {
                             'type': 'log_message',
-                            'log_type': 'resource',  # Include the log_type key
+                            'log_type': 'resource',
                         }
                     )
 
