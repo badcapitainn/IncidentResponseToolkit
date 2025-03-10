@@ -70,7 +70,7 @@ class Command(BaseCommand):
                         "logs",
                         {
                             'type': 'log_message',
-                            'log_type': 'alert',  # Include the log_type key
+                            'log_type': 'alert',
                         }
                     )
 
@@ -86,8 +86,7 @@ class Command(BaseCommand):
                         }
                     )
 
-                elif level == 'ERROR' and not WatchlistLogs.objects.filter(
-                        timeStamp=timestamp, message=message).exists():
+                elif level == 'ERROR' and not WatchlistLogs.objects.filter(message=message).exists():
                     WatchlistLogs.objects.create(timeStamp=timestamp, message=message)
                     # Trigger WebSocket update for watchlist logs
                     async_to_sync(channel_layer.group_send)(

@@ -229,29 +229,29 @@
         </table>
     </div>
 
-<!--    <div class="log-section">-->
-<!--        <h1>Resource Usage Logs</h1>-->
-<!--        <table id="resource-logs-table">-->
-<!--            <thead>-->
-<!--                <tr>-->
-<!--                    <th>Timestamp</th>-->
-<!--                    <th>Message</th>-->
-<!--                </tr>-->
-<!--            </thead>-->
-<!--            <tbody>-->
-<!--                {% for log in resource_logs %}-->
-<!--                <tr>-->
-<!--                    <td>{{ log.timeStamp }}</td>-->
-<!--                    <td>{{ log.message }}</td>-->
-<!--                </tr>-->
-<!--                {% empty %}-->
-<!--                <tr id="resource-empty-row">-->
-<!--                    <td colspan="2" class="empty-row">No resource logs available</td>-->
-<!--                </tr>-->
-<!--                {% endfor %}-->
-<!--            </tbody>-->
-<!--        </table>-->
-<!--    </div>-->
+    <div class="log-section">
+        <h1>Resource Usage Logs</h1>
+        <table id="resource-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in resource_logs %}
+                <tr>
+                    <td>{{ log.timeStamp }}</td>
+                    <td>{{ log.message }}</td>
+                </tr>
+                {% empty %}
+                <tr id="resource-empty-row">
+                    <td colspan="2" class="empty-row">No resource logs available</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <script>
         const toggle = document.getElementById('logToggle');

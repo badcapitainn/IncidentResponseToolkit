@@ -182,9 +182,9 @@ class LogAnalysis:
         # Log detailed activity for the suspicious IP
         recent_activity = [log for log in self.log_buffer if log['ip'] == ip]
         if recent_activity:
-            logger.info(f"Recent activity from suspicious IP {ip}:")
+            logger.warning(f"Recent activity from suspicious IP {ip}:")
             for log in recent_activity:
-                logger.info(f"- {log['timestamp']}: {log['method']} {log['url']} ({log['status']})")
+                logger.warning(f"- {log['timestamp']}: {log['method']} {log['url']} ({log['status']})")
 
         # Rate limiting: Check if the IP is making too many requests
         request_count = len(recent_activity)
@@ -249,8 +249,8 @@ class LogAnalysis:
                         )
                         for alert in alerts:
                             logger.critical(alert)
-                        for warning in warnings:
-                            logger.warning(warning)
+                        # for warning in warnings:
+                        #     logger.warning(warning)
 
                     time.sleep(5)
         except Exception as e:
