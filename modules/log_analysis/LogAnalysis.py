@@ -7,11 +7,50 @@ from loguru import logger
 import psutil
 import numpy as np
 from sklearn.ensemble import IsolationForest
-from services import parse_log_entry, parse_timestamp, monitor_resources
+
+
+
+class Services:
+    def __init__(self):
+
+        self.thresholds = {
+            "resource_monitoring_interval": 5,  # Check every 5 seconds
+        }
+
+        self.log_dir = "../logs"
+        self.log_prefix = "log_analysis_"
+        self.log_extension = ".log"
+
+    def parse_log_entry(self, log_entry):
+        apache_log = re.compile(
+            r'(?P<ip>[\d.]+) - - \[(?P<timestamp>[^\]]+)\s*\] "(?P<method>[A-Z]+) (?P<url>[^"]+) (?P<protocol>[^"]+)" ('
+            r'?P<status>\d{3}) (?P<bytes>\d+)( "(?P<user_agent>[^"]+)")?'
+        )
+        match = apache_log.match(log_entry)
+        if match:
+            return match.groupdict()
+        logger.debug(f"Failed to parse log entry: {log_entry}")
+        return None
+
+    def parse_timestamp(self, timestamp):
+        try:
+            # Try with timezone
+            return datetime.strptime(timestamp.strip(), "%d/%b/%Y:%H:%M:%S %z")
+        except ValueError:
+            # Fallback without timezone
+            return datetime.strptime(timestamp.strip(), "%d/%b/%Y:%H:%M:%S")
+
+    def monitor_resources(self):
+        while True:
+            cpu_usage = psutil.cpu_percent(interval=self.thresholds['resource_monitoring_interval'])
+            memory_info = psutil.virtual_memory()
+            memory_usage = memory_info.percent
+            disk_usage = psutil.disk_usage('/').percent
+            logger.info(f"Resource Usage: CPU={cpu_usage}%, Memory={memory_usage}%, Disk={disk_usage}%")
+            time.sleep(self.thresholds['resource_monitoring_interval'])
 
 
 class LogAnalysis:
-
     # Configurations
     THRESHOLDS = {
         "brute_force": {"attempts": 5, "time_window": 300},  # 5 attempts in 5 minutes
@@ -38,6 +77,7 @@ class LogAnalysis:
         self.log_buffer = deque(maxlen=1000)  # Buffer to store recent logs
         self.watchlist = defaultdict(int)  # Tracks suspicious IPs and their anomaly counts
         self.blocked_ips = {}  # Tracks blocked IPs and their unblock times
+        self.services = Services()
 
     def detect_brute_force(self, logs):
         failed_logins = defaultdict(list)
@@ -47,7 +87,7 @@ class LogAnalysis:
         for log in logs:
             if log['url'] == '/login' and log['status'] == '401':
                 ip = log['ip']
-                timestamp = parse_timestamp(log['timestamp'])
+                timestamp = self.services.parse_timestamp(log['timestamp'])
                 failed_logins[ip].append(timestamp)
 
         for ip, timestamps in failed_logins.items():
@@ -70,7 +110,7 @@ class LogAnalysis:
 
         for log in logs:
             ip = log['ip']
-            timestamp = parse_timestamp(log['timestamp'])
+            timestamp = self.services.parse_timestamp(log['timestamp'])
             ip_requests[ip].append(timestamp)
 
         for ip, timestamps in ip_requests.items():
@@ -230,7 +270,7 @@ class LogAnalysis:
                         unique_id = hash(line)
                         if unique_id not in self.processed_logs:
                             self.processed_logs.add(unique_id)
-                            log_entry = parse_log_entry(line)
+                            log_entry = self.services.parse_log_entry(line)
                             if log_entry:
                                 new_logs.append(log_entry)
                                 self.log_buffer.append(log_entry)
@@ -265,7 +305,7 @@ class LogAnalysis:
         analysis_thread.start()
 
         # Start resource monitoring in a separate thread
-        resource_thread = threading.Thread(target= monitor_resources)
+        resource_thread = threading.Thread(target=self.services.monitor_resources)
         resource_thread.daemon = True
         resource_thread.start()
 
