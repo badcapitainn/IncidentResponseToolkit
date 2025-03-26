@@ -6,15 +6,18 @@ from deep_packet_inspection import start_inspection
 from traffic_simulator import send_traffic
 from log_handler import log_event
 
+
 def run_sniffer():
     """ Start packet sniffing in a separate thread. """
     log_event("[+] Starting packet sniffer...")
     start_sniffing(interface="Wi-Fi", count=50)
 
+
 def run_inspector():
     """ Start deep packet inspection in a separate thread. """
     log_event("[+] Starting deep packet inspection...")
     start_inspection(interface="Wi-Fi", count=50)
+
 
 if __name__ == "__main__":
     print("[+] Running network analysis module...")

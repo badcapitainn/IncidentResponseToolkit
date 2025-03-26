@@ -1,5 +1,6 @@
 import unittest
-from deep_packet_inspection import start_inspection
+from modules.network_analysis.deep_packet_inspection import start_inspection
+
 
 class TestDPI(unittest.TestCase):
     def test_dpi(self):
@@ -9,6 +10,7 @@ class TestDPI(unittest.TestCase):
             self.assertTrue(True)
         except Exception:
             self.assertTrue(False)
+
 
 if __name__ == "__main__":
     unittest.main()

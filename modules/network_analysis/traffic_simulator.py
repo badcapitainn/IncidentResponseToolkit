@@ -19,6 +19,7 @@ MALICIOUS_PAYLOADS = [
     "DDoS flood incoming!"
 ]
 
+
 def send_traffic(interface="Wi-Fi", num_packets=50, malicious_chance=0.2):
     """ Generates normal and malicious network traffic and logs it. """
     log_event("[+] Starting network traffic simulation...", "info")
@@ -41,6 +42,7 @@ def send_traffic(interface="Wi-Fi", num_packets=50, malicious_chance=0.2):
             log_event(f"[NORMAL] Sent packet: {payload}", "info")
 
         time.sleep(random.uniform(0.5, 2))  # Random delay to mimic real traffic
+
 
 if __name__ == "__main__":
     send_traffic()

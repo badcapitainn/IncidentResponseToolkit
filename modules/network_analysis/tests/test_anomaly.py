@@ -1,5 +1,6 @@
 import unittest
-from network_analysis.anomaly_detector import detect_anomalies
+from modules.network_analysis.anomaly_detector import detect_anomalies
+
 
 class TestAnomalyDetection(unittest.TestCase):
     def test_anomaly_detection(self):
@@ -9,6 +10,7 @@ class TestAnomalyDetection(unittest.TestCase):
             self.assertTrue(True)
         except Exception:
             self.assertTrue(False)
+
 
 if __name__ == "__main__":
     unittest.main()

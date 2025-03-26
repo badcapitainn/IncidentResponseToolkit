@@ -1,5 +1,6 @@
 import unittest
-from packet_sniffer import start_sniffing
+from modules.network_analysis.packet_sniffer import start_sniffing
+
 
 class TestPacketSniffer(unittest.TestCase):
     def test_sniffing(self):
@@ -9,6 +10,7 @@ class TestPacketSniffer(unittest.TestCase):
             self.assertTrue(True)
         except Exception:
             self.assertTrue(False)
+
 
 if __name__ == "__main__":
     unittest.main()

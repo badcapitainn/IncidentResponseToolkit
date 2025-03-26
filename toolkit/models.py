@@ -37,4 +37,3 @@ class ResourceUsageLogs(models.Model):
     class Meta:
         unique_together = ('timeStamp', 'message')
 
-
