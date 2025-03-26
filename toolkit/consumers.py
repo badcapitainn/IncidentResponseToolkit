@@ -3,7 +3,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
+from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs, SystemMetrics
 
 
 class LogConsumer(AsyncWebsocketConsumer):
@@ -50,3 +50,33 @@ class LogConsumer(AsyncWebsocketConsumer):
         for log in logs_list:
             log['timeStamp'] = log['timeStamp'].isoformat()  # Convert datetime to ISO format string
         return logs_list
+
+
+class ResourceConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+        # Send initial data
+        await self.send_initial_data()
+
+    async def disconnect(self, close_code):
+        pass
+
+    @database_sync_to_async
+    def get_latest_resource_data(self):
+        latest = SystemMetrics.objects.last()
+        if latest:
+            return {
+                'timestamp': latest.timestamp.isoformat(),
+                'cpu_usage': latest.cpu_usage,
+                'ram_usage': latest.ram_usage,
+                'ram_total': latest.ram_total,
+                'ram_used': latest.ram_used,
+                'disk_total': latest.disk_total,
+                'disk_used': latest.disk_used,
+            }
+        return None
+
+    async def send_initial_data(self):
+        data = await self.get_latest_resource_data()
+        if data:
+            await self.send(text_data=json.dumps(data))

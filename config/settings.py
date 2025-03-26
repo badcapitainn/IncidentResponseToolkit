@@ -1,9 +1,9 @@
 from pathlib import Path
 from celery.schedules import crontab
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-sucza1fjk#&-$&$4gu+=wqdk$v=k$c-3gj2ix+91z_=h__gett'
@@ -79,10 +79,15 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'parse-logs-every-minute': {
         'task': 'toolkit.tasks.parse_logs_task',
-        'schedule': crontab(minute='*/1'),  # Run every minute
+        'schedule': crontab(minute='*/1'),
+    },
+    'collect-resource-metrics': {
+        'task': 'toolkit.tasks.collect_resource_metrics',
+        'schedule': crontab(minute='*/1'),  # Collect every minute
     },
 }
-
+# Add this to suppress the warning
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -132,7 +137,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

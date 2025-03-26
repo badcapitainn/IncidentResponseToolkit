@@ -74,8 +74,7 @@ class Command(BaseCommand):
                         }
                     )
 
-                elif level == 'WARNING' and not SuspiciousLogs.objects.filter(
-                        timeStamp=timestamp, message=message).exists():
+                elif level == 'WARNING' and not SuspiciousLogs.objects.filter(message=message).exists():
                     SuspiciousLogs.objects.create(timeStamp=timestamp, message=message)
                     # Trigger WebSocket update for suspicious logs
                     async_to_sync(channel_layer.group_send)(

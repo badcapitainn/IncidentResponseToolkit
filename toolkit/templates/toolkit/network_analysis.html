@@ -1,10 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Analysis</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body {
+            background: #ffffff;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1c3d5a;
+            font-weight: bold;
+            margin: 30px 0;
+            font-size: 28px;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #1c3d5a;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e0e0e0;
+            transition: background-color 0.3s ease;
+        }
+
+        .empty-row {
+            color: #888;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 25px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 17px;
+            width: 17px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #1c3d5a;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(25px);
+        }
+
+        .status {
+            margin-left: 10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        footer {
+            background: #1c3d5a;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #296c83;
+        }
+
+        .log-section {
+            margin-bottom: 40px;
+        }
+
+        .log-section h1 {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>network analysis</h1>
+
+    <div class="toggle-container">
+        <label class="switch">
+            <input id="logToggle" type="checkbox">
+            <span class="slider"></span>
+        </label>
+        <span id="logStatus" class="status">Network Analysis: Off</span>
+    </div>
+
+    <div class="log-section">
+        <h1>Malicious Packets</h1>
+        <table id="alert-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for packet in malicious_packets%}
+                <tr>
+                    <td>{{packet.timestamp}}</td>
+                    <td>{{packet.message}}</td>
+                </tr>
+                    {%empty%}
+                <tr id="alert-empty-row">
+                    <td colspan="2" class="empty-row">No alert logs available</td>
+                </tr>
+                {%endfor%}
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="log-section">
+        <h1>Suspicious Packets</h1>
+        <table id="suspicious-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for packet in suspicious_packets%}
+                <tr>
+                    <td>{{packet.timestamp}}</td>
+                    <td>{{packet.message}}</td>
+                </tr>
+                {%empty%}
+                <tr id="suspicious-empty-row">
+                    <td colspan="2" class="empty-row">No suspicious logs available</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <script>
+        const toggle = document.getElementById('logToggle');
+        const status = document.getElementById('logStatus');
+
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/logs/');
+
+        socket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const logType = data.log_type;
+            const logs = data.logs;
+
+            // Update the table based on the log type
+            if (logType === 'alert') {
+                updateTable('alert-logs-table', logs);
+            } else if (logType === 'suspicious') {
+                updateTable('suspicious-logs-table', logs);
+            } else if (logType === 'watchlist') {
+                updateTable('watchlist-logs-table', logs);
+            } else if (logType === 'resource') {
+                updateTable('resource-logs-table', logs);
+            }
+        };
+
+        function updateTable(tableId, logs) {
+            const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            table.innerHTML = ''; // Clear existing rows
+
+            if (logs.length === 0) {
+                // Add a row for "No logs available"
+                const row = table.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 2;
+                cell.className = 'empty-row';
+                cell.textContent = 'No logs available';
+            } else {
+                // Add rows for each log
+                logs.forEach(log => {
+                    const row = table.insertRow();
+                    const timestampCell = row.insertCell();
+                    const messageCell = row.insertCell();
+                    timestampCell.textContent = log.timeStamp;  // Display the ISO format datetime string
+                    messageCell.textContent = log.message;
+                });
+            }
+        }
+
+    toggle.addEventListener('change', function () {
+            if (this.checked) {
+                status.textContent = "Network Analysis: On";
+                status.style.color = '#1c3d5a';
+                // Implement AJAX/fetch to send toggle on command to backend
+            } else {
+                status.textContent = "Network Analysis: Off";
+                status.style.color = 'red';
+                // Implement AJAX/fetch to send toggle off command to backend
+            }
+        });
+    </script>
+    <footer>
+        <p>&copy; 2023 Network Analysis. All rights reserved. | <a href="#">Privacy Policy</a></p>
+    </footer>
 </body>
-</html>
+
+</html></html>

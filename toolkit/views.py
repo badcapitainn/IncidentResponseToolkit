@@ -1,5 +1,4 @@
 import json
-
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -9,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
+from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs, MaliciousPackets, SuspiciousPackets, SystemMetrics
 
 
 @csrf_exempt
@@ -17,9 +16,27 @@ from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs
 def dashboard(request):
     watch_list_logs = WatchlistLogs.objects.all()
     alert_logs = AlertLogs.objects.all()
+
+    # Get the latest resource usage data
+    resource_data = SystemMetrics.objects.all().order_by('-timestamp')[:30]  # Last 30 readings
+
+    # Prepare data for the template
+    timestamps = [data.timestamp.strftime('%H:%M:%S') for data in resource_data]
+    cpu_data = [data.cpu_usage for data in resource_data]
+    ram_data = [data.ram_usage for data in resource_data]
+    disk_data = [(data.disk_used / data.disk_total) * 100 if data.disk_total > 0 else 0 for data in resource_data]
+
     context = {
         "alert_logs": alert_logs,
-        "watch_list_logs": watch_list_logs
+        "watch_list_logs": watch_list_logs,
+        "timestamps": json.dumps(timestamps[::-1]),  # Reverse to show oldest first
+        "cpu_data": json.dumps(cpu_data[::-1]),
+        "ram_data": json.dumps(ram_data[::-1]),
+        "disk_data": json.dumps(disk_data[::-1]),
+        "ram_total": resource_data[0].ram_total if resource_data else 0,
+        "ram_used": resource_data[0].ram_used if resource_data else 0,
+        "disk_total": resource_data[0].disk_total if resource_data else 0,
+        "disk_used": resource_data[0].disk_used if resource_data else 0,
     }
     template = '../templates/toolkit/dashboard.html'
     return render(request, template, context)
@@ -55,8 +72,24 @@ def log_analysis(request):
 @csrf_exempt
 @login_required(login_url='login')
 def network_analysis(request):
-    context = {}
+    suspicious_packets = SuspiciousPackets.objects.all()
+    malicious_packets = MaliciousPackets.objects.all()
+
+    context = {
+        "suspicious_packets": suspicious_packets,
+        "malicious_packets": malicious_packets,
+    }
     template = '../templates/toolkit/network_analysis.html'
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "network_analysis",
+        {
+            'type': 'network_message',
+            'message': 'Network message'
+        }
+    )
+
     return render(request, template, context)
 
 

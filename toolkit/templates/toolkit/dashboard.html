@@ -5,6 +5,10 @@
     <title>Incident Response</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
     <style>
@@ -176,6 +180,30 @@
         footer a:hover {
             color: #296c83;
         }
+
+        .graph-container {
+        position: relative;
+        height: 150px;
+        width: 100%;
+        margin-bottom: 10px;
+        }
+
+        .graph-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .metric-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #1c3d5a;
+            font-weight: bold;
+        }
+
+        .metric-info span:first-child {
+            color: #296c83;
+        }
     </style>
 </head>
 
@@ -254,33 +282,238 @@
                 </div>
             </div>
 
-            <div class="section">
-                <h4>Memory</h4>
-                <div class="graph-placeholder">
-                    Memory Usage Graph (Placeholder)
+            <!-- Update the graph sections in your template -->
+                <div class="section">
+                    <h4>Memory <small>({{ ram_used|floatformat:1 }} MB / {{ ram_total|floatformat:1 }} MB)</small></h4>
+                    <div style="height: 250px;">
+                        <canvas id="ramChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <div class="section">
-                <h4>Processor</h4>
-                <div class="graph-placeholder">
-                    CPU Usage Graph (Placeholder)
+                <div class="section">
+                    <h4>Processor</h4>
+                    <div style="height: 250px;">
+                        <canvas id="cpuChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <div class="section">
-                <h4>Storage</h4>
-                <div class="graph-placeholder">
-                    Disk Usage Graph (Placeholder)
+                <div class="section">
+                    <h4>Storage <small>({{ disk_used|floatformat:1 }} GB / {{ disk_total|floatformat:1 }} GB)</small></h4>
+                    <div style="height: 250px;">
+                        <canvas id="diskChart"></canvas>
+                    </div>
                 </div>
+
             </div>
         </div>
-    </div>
 
     <!-- Footer -->
     <footer>
         <p>&copy; 2023 Incident Response. All rights reserved. | <a href="#">Privacy Policy</a></p>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Chart is properly loaded
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded!');
+                return;
+            }
+
+            // Get data from Django template variables
+            const chartData = {
+                ram: {
+                    labels: JSON.parse('{{ timestamps|escapejs }}'),
+                    values: JSON.parse('{{ ram_data|escapejs }}'),
+                    label: 'RAM Usage %',
+                    color: 'rgb(54, 162, 235)',
+                    unit: 'MB',
+                    current: '{{ ram_used|floatformat:1 }}',
+                    total: '{{ ram_total|floatformat:1 }}'
+                },
+                cpu: {
+                    labels: JSON.parse('{{ timestamps|escapejs }}'),
+                    values: JSON.parse('{{ cpu_data|escapejs }}'),
+                    label: 'CPU Usage %',
+                    color: 'rgb(255, 99, 132)'
+                },
+                disk: {
+                    labels: JSON.parse('{{ timestamps|escapejs }}'),
+                    values: JSON.parse('{{ disk_data|escapejs }}'),
+                    label: 'Disk Usage %',
+                    color: 'rgb(75, 192, 192)',
+                    unit: 'GB',
+                    current: '{{ disk_used|floatformat:1 }}',
+                    total: '{{ disk_total|floatformat:1 }}'
+                }
+            };
+
+            // Common chart configuration
+            const chartConfig = {
+                type: 'line',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Usage (%)'
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.4
+                        },
+                        point: {
+                            radius: 2,
+                            hoverRadius: 5
+                        }
+                    }
+                }
+            };
+
+            // Initialize chart function
+            function initializeChart(canvasId, data) {
+                const ctx = document.getElementById(canvasId);
+                if (!ctx) {
+                    console.error(`Canvas element with ID ${canvasId} not found`);
+                    return null;
+                }
+
+                try {
+                    return new Chart(ctx, {
+                        ...chartConfig,
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: data.label,
+                                data: data.values,
+                                borderColor: data.color,
+                                backgroundColor: data.color.replace(')', ', 0.2)').replace('rgb', 'rgba'),
+                                borderWidth: 2,
+                                fill: true
+                            }]
+                        }
+                    });
+                } catch (e) {
+                    console.error(`Error initializing ${canvasId} chart:`, e);
+                    return null;
+                }
+            }
+
+            // Initialize all charts
+            const ramChart = initializeChart('ramChart', chartData.ram);
+            const cpuChart = initializeChart('cpuChart', chartData.cpu);
+            const diskChart = initializeChart('diskChart', chartData.disk);
+
+            // WebSocket connection with reconnection logic
+            function connectWebSocket() {
+                const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+                const wsPath = wsScheme + "://" + window.location.host + "/ws/resources/";
+                const socket = new WebSocket(wsPath);
+
+                socket.onopen = function() {
+                    console.log('WebSocket connection established');
+                };
+
+                socket.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (!data) return;
+
+                        const timestamp = new Date(data.timestamp).toLocaleTimeString();
+
+                        // Update RAM chart if it exists
+                        if (ramChart) {
+                            updateChart(ramChart, timestamp, data.ram_usage);
+                            updateUsageText(
+                                '.section:nth-child(3) h4 small',
+                                `${data.ram_used.toFixed(1)} ${chartData.ram.unit} / ${data.ram_total.toFixed(1)} ${chartData.ram.unit}`
+                            );
+                        }
+
+                        // Update CPU chart if it exists
+                        if (cpuChart) {
+                            updateChart(cpuChart, timestamp, data.cpu_usage);
+                        }
+
+                        // Update Disk chart if it exists
+                        if (diskChart) {
+                            const diskUsage = (data.disk_used / data.disk_total) * 100;
+                            updateChart(diskChart, timestamp, diskUsage);
+                            updateUsageText(
+                                '.section:nth-child(5) h4 small',
+                                `${data.disk_used.toFixed(1)} ${chartData.disk.unit} / ${data.disk_total.toFixed(1)} ${chartData.disk.unit}`
+                            );
+                        }
+                    } catch (e) {
+                        console.error('Error processing WebSocket message:', e);
+                    }
+                };
+
+                socket.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                };
+
+                socket.onclose = function() {
+                    console.log('WebSocket connection closed. Reconnecting...');
+                    setTimeout(connectWebSocket, 3000);
+                };
+            }
+
+            // Helper function to update chart data
+            function updateChart(chart, label, value) {
+                if (!chart || !chart.data || !chart.data.labels || !chart.data.datasets) return;
+
+                chart.data.labels.push(label);
+                chart.data.datasets[0].data.push(value);
+
+                // Keep only the last 30 data points
+                if (chart.data.labels.length > 30) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+
+                chart.update();
+            }
+
+            // Helper function to update usage text
+            function updateUsageText(selector, text) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.textContent = text;
+                }
+            }
+
+            // Start WebSocket connection
+            connectWebSocket();
+        });
+    </script>
 </body>
 
 </html>
