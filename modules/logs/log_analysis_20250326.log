@@ -1,0 +1,26 @@
+2025-03-26 16:27:25.132 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=42.0%, Memory=63.4%, Disk=89.7%
+2025-03-26 16:27:35.151 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=20.9%, Memory=63.5%, Disk=89.7%
+2025-03-26 16:27:45.155 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=16.6%, Memory=62.9%, Disk=89.7%
+2025-03-26 16:27:55.159 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=15.9%, Memory=63.0%, Disk=89.7%
+2025-03-26 16:28:05.164 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=20.2%, Memory=63.0%, Disk=89.7%
+2025-03-26 16:28:15.170 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=16.3%, Memory=63.3%, Disk=89.7%
+2025-03-26 16:28:25.181 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=25.5%, Memory=63.3%, Disk=89.7%
+2025-03-26 16:28:35.187 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.2%, Memory=63.1%, Disk=89.7%
+2025-03-26 16:28:45.192 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=9.3%, Memory=63.1%, Disk=89.7%
+2025-03-26 16:28:55.198 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.6%, Memory=63.2%, Disk=89.7%
+2025-03-26 16:29:05.203 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.8%, Memory=63.1%, Disk=89.7%
+2025-03-26 16:29:15.207 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.8%, Memory=63.4%, Disk=89.7%
+2025-03-26 16:29:25.213 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=15.5%, Memory=63.3%, Disk=89.7%
+2025-03-26 16:29:35.218 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=10.9%, Memory=63.7%, Disk=89.7%
+2025-03-26 16:29:45.222 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=14.3%, Memory=63.8%, Disk=89.7%
+2025-03-26 16:29:55.227 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=8.8%, Memory=63.6%, Disk=89.7%
+2025-03-26 16:30:05.233 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.2%, Memory=63.3%, Disk=89.7%
+2025-03-26 16:30:15.239 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=5.1%, Memory=63.2%, Disk=89.7%
+2025-03-26 16:30:25.244 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=19.5%, Memory=63.0%, Disk=89.7%
+2025-03-26 16:30:35.249 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=8.4%, Memory=63.0%, Disk=89.7%
+2025-03-26 16:30:45.253 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=3.0%, Memory=62.7%, Disk=89.7%
+2025-03-26 16:30:55.260 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=11.3%, Memory=62.7%, Disk=89.7%
+2025-03-26 16:31:00.863 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 51.136.48.243
+2025-03-26 16:31:05.266 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.0%, Memory=62.6%, Disk=89.7%
+2025-03-26 16:31:15.272 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=4.3%, Memory=62.6%, Disk=89.7%
+2025-03-26 16:31:25.278 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=5.4%, Memory=62.8%, Disk=89.7%

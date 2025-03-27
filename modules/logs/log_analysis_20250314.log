@@ -1,0 +1,53 @@
+2025-03-14 10:27:01.941 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=12.7%, Memory=50.1%, Disk=92.9%
+2025-03-14 10:27:11.970 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=42.0%, Memory=50.2%, Disk=92.9%
+2025-03-14 10:27:21.972 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=5.4%, Memory=49.8%, Disk=92.9%
+2025-03-14 10:27:31.982 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=8.1%, Memory=49.7%, Disk=92.9%
+2025-03-14 10:27:41.990 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=19.7%, Memory=49.9%, Disk=92.9%
+2025-03-14 10:27:51.992 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.6%, Memory=49.9%, Disk=92.9%
+2025-03-14 10:28:01.999 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=20.5%, Memory=50.0%, Disk=92.9%
+2025-03-14 10:28:12.012 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=18.9%, Memory=49.8%, Disk=92.9%
+2025-03-14 10:28:22.078 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=9.9%, Memory=49.8%, Disk=92.9%
+2025-03-14 10:28:32.164 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=17.0%, Memory=49.6%, Disk=92.9%
+2025-03-14 10:28:42.172 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=7.9%, Memory=49.7%, Disk=92.9%
+2025-03-14 10:28:52.177 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.5%, Memory=49.6%, Disk=92.9%
+2025-03-14 10:29:02.184 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=10.0%, Memory=49.6%, Disk=92.9%
+2025-03-14 10:29:12.192 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.2%, Memory=49.6%, Disk=92.9%
+2025-03-14 10:29:22.200 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.3%, Memory=49.9%, Disk=92.9%
+2025-03-14 10:29:32.209 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=5.7%, Memory=49.9%, Disk=92.9%
+2025-03-14 10:29:42.215 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=7.0%, Memory=49.8%, Disk=92.9%
+2025-03-14 10:29:52.220 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.6%, Memory=49.9%, Disk=92.9%
+2025-03-14 10:30:02.228 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=10.8%, Memory=49.8%, Disk=92.9%
+2025-03-14 10:30:12.235 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=7.1%, Memory=49.8%, Disk=92.9%
+2025-03-14 10:30:22.257 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.8%, Memory=49.7%, Disk=92.9%
+2025-03-14 10:30:32.268 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=5.6%, Memory=49.8%, Disk=92.9%
+2025-03-14 10:30:38.021 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 69.193.127.60
+2025-03-14 10:30:42.273 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.2%, Memory=49.6%, Disk=92.9%
+2025-03-14 10:30:52.281 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=9.5%, Memory=49.4%, Disk=92.9%
+2025-03-14 10:30:53.659 | CRITICAL | LogAnalysis:log_analysis:291 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 16.199.33.191
+2025-03-14 10:31:02.288 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=12.1%, Memory=49.5%, Disk=92.9%
+2025-03-14 10:31:12.294 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=5.5%, Memory=49.5%, Disk=92.9%
+2025-03-14 10:31:22.301 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=5.4%, Memory=49.5%, Disk=92.9%
+2025-03-14 10:31:32.307 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=7.2%, Memory=49.4%, Disk=92.9%
+2025-03-14 10:31:42.312 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=8.7%, Memory=49.5%, Disk=92.9%
+2025-03-14 10:31:52.318 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=7.2%, Memory=49.4%, Disk=92.9%
+2025-03-14 10:32:02.325 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=8.9%, Memory=49.4%, Disk=92.9%
+2025-03-14 10:32:12.331 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=7.0%, Memory=49.3%, Disk=92.9%
+2025-03-14 10:32:22.375 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=13.1%, Memory=49.5%, Disk=92.9%
+2025-03-14 10:32:27.646 | CRITICAL | LogAnalysis:log_analysis:291 - SQL Injection attempt detected in URL: /search?query=; ls -la from IP: 52.118.202.242
+2025-03-14 10:32:27.646 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /search?query=; ls -la from IP: 52.118.202.242
+2025-03-14 10:32:32.395 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=15.9%, Memory=49.6%, Disk=92.9%
+2025-03-14 10:32:36.963 | ERROR    | LogAnalysis:monitor_watchlist:211 - IP 52.118.202.242 is under close watch due to 3 anomalies.
+2025-03-14 10:32:36.964 | WARNING  | LogAnalysis:monitor_suspicious_ip:225 - Recent activity from suspicious IP 52.118.202.242:
+2025-03-14 10:32:36.964 | WARNING  | LogAnalysis:monitor_suspicious_ip:227 - - 14/Mar/2025:10:32:25 : POST /search?query=; ls -la (500)
+2025-03-14 10:32:42.400 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=15.3%, Memory=49.7%, Disk=92.9%
+2025-03-14 10:32:46.965 | ERROR    | LogAnalysis:monitor_watchlist:211 - IP 52.118.202.242 is under close watch due to 3 anomalies.
+2025-03-14 10:32:46.965 | WARNING  | LogAnalysis:monitor_suspicious_ip:225 - Recent activity from suspicious IP 52.118.202.242:
+2025-03-14 10:32:46.965 | WARNING  | LogAnalysis:monitor_suspicious_ip:227 - - 14/Mar/2025:10:32:25 : POST /search?query=; ls -la (500)
+2025-03-14 10:32:52.406 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.9%, Memory=49.7%, Disk=92.9%
+2025-03-14 10:32:56.966 | ERROR    | LogAnalysis:monitor_watchlist:211 - IP 52.118.202.242 is under close watch due to 3 anomalies.
+2025-03-14 10:32:56.966 | WARNING  | LogAnalysis:monitor_suspicious_ip:225 - Recent activity from suspicious IP 52.118.202.242:
+2025-03-14 10:32:56.967 | WARNING  | LogAnalysis:monitor_suspicious_ip:227 - - 14/Mar/2025:10:32:25 : POST /search?query=; ls -la (500)
+2025-03-14 10:33:02.412 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=16.9%, Memory=49.8%, Disk=92.9%
+2025-03-14 10:33:06.968 | ERROR    | LogAnalysis:monitor_watchlist:211 - IP 52.118.202.242 is under close watch due to 3 anomalies.
+2025-03-14 10:33:06.969 | WARNING  | LogAnalysis:monitor_suspicious_ip:225 - Recent activity from suspicious IP 52.118.202.242:
+2025-03-14 10:33:06.969 | WARNING  | LogAnalysis:monitor_suspicious_ip:227 - - 14/Mar/2025:10:32:25 : POST /search?query=; ls -la (500)

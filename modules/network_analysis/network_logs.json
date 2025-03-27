@@ -1,0 +1,153 @@
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": 17, "payload": "IP / UDP 192.168.134.16:57621 > 192.168.134.255:57621 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.16 says 192.168.134.164"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": "Unknown", "payload": "ARP is at a2:10:af:6d:4a:7d says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.215:44896 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.91:34240 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.86:13089 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "3c:a6:f6:37:12:7f", "dst": "ff:ff:ff:ff:ff:ff", "protocol": 17, "payload": "IP / UDP 192.168.134.160:57621 > 192.168.134.255:57621 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": 17, "payload": "IP / UDP 192.168.134.16:57621 > 192.168.134.255:57621 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "01:00:5e:7f:ff:fa", "protocol": 17, "payload": "IP / UDP 192.168.134.164:53590 > 239.255.255.250:ssdp / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "01:00:5e:7f:ff:fa", "protocol": 17, "payload": "IP / UDP 192.168.134.164:53590 > 239.255.255.250:ssdp / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.16 says 192.168.134.164"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": "Unknown", "payload": "ARP is at a2:10:af:6d:4a:7d says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.229:11591 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.125:55259 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.88:12869 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.3 says 192.168.134.16"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "3c:a6:f6:37:12:7f", "dst": "01:00:5e:7f:ff:fa", "protocol": 17, "payload": "IP / UDP 192.168.134.160:56771 > 239.255.255.250:ssdp / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.16 says 192.168.134.164"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": "Unknown", "payload": "ARP is at a2:10:af:6d:4a:7d says 192.168.134.16"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.159:11030 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.134:20811 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.7:18400 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.63:37314 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.2:43579 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.44:28169 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.155:ws_discovery > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.126:52133 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "ff:ff:ff:ff:ff:ff", "protocol": "Unknown", "payload": "ARP who has 192.168.134.16 says 192.168.134.164"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": "Unknown", "payload": "ARP is at a2:10:af:6d:4a:7d says 192.168.134.16"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.141:52488 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.171:55204 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.110:32812 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.96:49770 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "ff:ff:ff:ff:ff:ff", "protocol": 17, "payload": "IP / UDP 192.168.134.16:57621 > 192.168.134.255:57621 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.190:23289 > 192.168.1.1:http S / Raw"}
+{"src": "3c:a6:f6:37:12:7f", "dst": "01:00:5e:00:00:fb", "protocol": 17, "payload": "IP / UDP / mDNS Qry b'_spotify-connect._tcp.local.'"}
+{"src": "3c:a6:f6:37:12:7f", "dst": "33:33:00:00:00:fb", "protocol": "Unknown", "payload": "IPv6 / UDP / mDNS Qry b'_spotify-connect._tcp.local.'"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.253:24375 > 192.168.1.1:http S / Raw"}
+{"src": "3c:a6:f6:37:12:7f", "dst": "01:00:5e:7f:ff:fa", "protocol": 17, "payload": "IP / UDP 192.168.134.160:62403 > 239.255.255.250:ssdp / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.136:53538 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.141:6960 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.191:47065 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.104:7620 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.96:35991 > 192.168.1.1:http S / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 6, "payload": "IP / TCP 192.168.1.232:50161 > 192.168.1.1:http S / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "b0:a4:60:1c:cb:09", "dst": "a2:10:af:6d:4a:7d", "protocol": 17, "payload": "IP / UDP 192.168.134.164:65078 > 162.159.192.9:2408 / Raw"}
+{"src": "a2:10:af:6d:4a:7d", "dst": "b0:a4:60:1c:cb:09", "protocol": 17, "payload": "IP / UDP 162.159.192.9:2408 > 192.168.134.164:65078 / Raw"}

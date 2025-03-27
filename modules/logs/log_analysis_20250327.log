@@ -1,0 +1,52 @@
+2025-03-27 17:52:01.968 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=19.7%, Memory=59.2%, Disk=89.4%
+2025-03-27 17:52:12.190 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=41.3%, Memory=59.6%, Disk=89.4%
+2025-03-27 17:52:22.196 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=21.8%, Memory=59.5%, Disk=89.4%
+2025-03-27 17:52:32.200 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=9.3%, Memory=59.5%, Disk=89.4%
+2025-03-27 17:52:42.208 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=28.5%, Memory=59.3%, Disk=89.4%
+2025-03-27 17:52:52.226 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=8.3%, Memory=59.3%, Disk=89.4%
+2025-03-27 17:53:02.236 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=53.1%, Memory=59.4%, Disk=89.4%
+2025-03-27 17:53:12.245 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=29.1%, Memory=59.4%, Disk=89.4%
+2025-03-27 17:53:22.263 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=35.1%, Memory=59.3%, Disk=89.4%
+2025-03-27 17:53:32.280 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=20.2%, Memory=59.2%, Disk=89.4%
+2025-03-27 17:53:42.292 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=38.0%, Memory=59.5%, Disk=89.4%
+2025-03-27 17:53:52.300 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=9.0%, Memory=58.8%, Disk=89.4%
+2025-03-27 17:54:02.311 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=14.3%, Memory=59.2%, Disk=89.4%
+2025-03-27 17:54:12.316 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=8.5%, Memory=59.2%, Disk=89.4%
+2025-03-27 17:54:22.326 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=8.8%, Memory=59.2%, Disk=89.4%
+2025-03-27 17:54:32.334 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=11.8%, Memory=59.6%, Disk=89.4%
+2025-03-27 17:54:37.333 | CRITICAL | LogAnalysis:log_analysis:291 - SQL Injection attempt detected in URL: /search?query=; ls -la from IP: 203.42.255.19
+2025-03-27 17:54:37.333 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /search?query=; ls -la from IP: 203.42.255.19
+2025-03-27 17:54:42.342 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=53.9%, Memory=60.2%, Disk=89.4%
+2025-03-27 17:54:52.366 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=40.9%, Memory=60.4%, Disk=89.4%
+2025-03-27 17:55:02.374 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=24.7%, Memory=60.3%, Disk=89.4%
+2025-03-27 17:55:12.377 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=11.2%, Memory=60.0%, Disk=89.4%
+2025-03-27 17:55:22.387 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=30.8%, Memory=59.8%, Disk=89.4%
+2025-03-27 17:55:32.398 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=6.4%, Memory=59.5%, Disk=89.4%
+2025-03-27 17:55:42.404 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=41.7%, Memory=58.0%, Disk=89.4%
+2025-03-27 17:55:52.482 | INFO     | LogAnalysis:monitor_resources:49 - Resource Usage: CPU=23.1%, Memory=58.0%, Disk=89.4%
+2025-03-27 18:10:18.073 | CRITICAL | LogAnalysis:log_analysis:291 - SQL Injection attempt detected in URL: /account?user=' UNION SELECT * FROM users; -- from IP: 172.196.234.67
+2025-03-27 18:10:18.074 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /account?user=' UNION SELECT * FROM users; -- from IP: 172.196.234.67
+2025-03-27 18:10:33.782 | CRITICAL | LogAnalysis:log_analysis:291 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 89.161.72.94
+2025-03-27 18:10:38.966 | CRITICAL | LogAnalysis:log_analysis:291 - SQL Injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 172.207.92.104
+2025-03-27 18:10:38.967 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 172.207.92.104
+2025-03-27 18:10:49.467 | CRITICAL | LogAnalysis:log_analysis:291 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 159.58.181.6
+2025-03-27 18:10:54.845 | CRITICAL | LogAnalysis:log_analysis:291 - SQL Injection attempt detected in URL: /account?user=' UNION SELECT * FROM users; -- from IP: 175.73.132.196
+2025-03-27 18:10:54.846 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /account?user=' UNION SELECT * FROM users; -- from IP: 175.73.132.196
+2025-03-27 18:11:00.069 | CRITICAL | LogAnalysis:log_analysis:291 - SQL Injection attempt detected in URL: /products?id=' OR '1'='1 from IP: 124.227.175.162
+2025-03-27 18:11:02.874 | ERROR    | LogAnalysis:monitor_watchlist:211 - IP 175.73.132.196 is under close watch due to 3 anomalies.
+2025-03-27 18:11:02.874 | WARNING  | LogAnalysis:monitor_suspicious_ip:225 - Recent activity from suspicious IP 175.73.132.196:
+2025-03-27 18:11:02.875 | WARNING  | LogAnalysis:monitor_suspicious_ip:227 - - 27/Mar/2025:18:10:53 : HEAD /account?user=' UNION SELECT * FROM users; -- (500)
+2025-03-27 18:11:05.290 | CRITICAL | LogAnalysis:log_analysis:291 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 94.176.194.107
+2025-03-27 18:11:12.875 | ERROR    | LogAnalysis:monitor_watchlist:211 - IP 175.73.132.196 is under close watch due to 3 anomalies.
+2025-03-27 18:11:12.876 | WARNING  | LogAnalysis:monitor_suspicious_ip:225 - Recent activity from suspicious IP 175.73.132.196:
+2025-03-27 18:11:12.876 | WARNING  | LogAnalysis:monitor_suspicious_ip:227 - - 27/Mar/2025:18:10:53 : HEAD /account?user=' UNION SELECT * FROM users; -- (500)
+2025-03-27 18:19:44.910 | CRITICAL | LogAnalysis:log_analysis:291 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 59.182.203.53
+2025-03-27 18:19:44.910 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 54.192.28.69
+2025-03-27 18:19:55.692 | CRITICAL | LogAnalysis:log_analysis:291 - XSS attack attempt detected in URL: /profile?input=<script>alert('XSS')</script> from IP: 104.91.9.129
+2025-03-27 18:20:28.196 | CRITICAL | LogAnalysis:log_analysis:291 - XSS attack attempt detected in URL: /profile?input=<script>alert('XSS')</script> from IP: 7.110.173.161
+2025-03-27 18:20:38.937 | CRITICAL | LogAnalysis:log_analysis:291 - Directory traversal attempt detected in URL: /../../../etc/passwd from IP: 75.186.3.77
+2025-03-27 18:20:44.301 | CRITICAL | LogAnalysis:log_analysis:291 - XSS attack attempt detected in URL: /comments?input=<img src='x' onerror='alert(1)'> from IP: 48.101.146.204
+2025-03-27 18:21:49.135 | CRITICAL | LogAnalysis:log_analysis:291 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 36.121.133.112
+2025-03-27 18:21:54.536 | CRITICAL | LogAnalysis:log_analysis:291 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 135.72.36.181
+2025-03-27 18:22:10.601 | CRITICAL | LogAnalysis:log_analysis:291 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 25.72.52.208
+2025-03-27 18:22:21.443 | CRITICAL | LogAnalysis:log_analysis:291 - XSS attack attempt detected in URL: /profile?input=<script>alert('XSS')</script> from IP: 22.213.26.197
