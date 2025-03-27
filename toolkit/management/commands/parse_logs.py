@@ -96,16 +96,16 @@ class Command(BaseCommand):
                         }
                     )
 
-                elif level == 'INFO' and not ResourceUsageLogs.objects.filter(timeStamp=timestamp, message=message).exists():
-                    ResourceUsageLogs.objects.create(timeStamp=timestamp, message=message)
-                    # Trigger WebSocket update for resource usage logs
-                    async_to_sync(channel_layer.group_send)(
-                        "logs",
-                        {
-                            'type': 'log_message',
-                            'log_type': 'resource',
-                        }
-                    )
+                # elif level == 'INFO' and not ResourceUsageLogs.objects.filter(timeStamp=timestamp, message=message).exists():
+                #     ResourceUsageLogs.objects.create(timeStamp=timestamp, message=message)
+                #     # Trigger WebSocket update for resource usage logs
+                #     async_to_sync(channel_layer.group_send)(
+                #         "logs",
+                #         {
+                #             'type': 'log_message',
+                #             'log_type': 'resource',
+                #         }
+                #     )
 
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'Error processing log entry: {e}'))

@@ -79,11 +79,11 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'parse-logs-every-minute': {
         'task': 'toolkit.tasks.parse_logs_task',
-        'schedule': crontab(minute='*/1'),
+        'schedule': timedelta(seconds=30),
     },
     'collect-resource-metrics': {
         'task': 'toolkit.tasks.collect_resource_metrics',
-        'schedule': timedelta(seconds=3),  # Collect every 3 seconds
+        'schedule': timedelta(seconds=5),  # Collect every 3 seconds
     },
 }
 # Add this to suppress the warning

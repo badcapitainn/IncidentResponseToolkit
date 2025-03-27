@@ -51,44 +51,32 @@ class LogConsumer(AsyncWebsocketConsumer):
 
 
 class ResourceConsumer(AsyncWebsocketConsumer):
-    groups = ["resource_updates"]
-
     async def connect(self):
-        await self.channel_layer.group_add(
-            "resource_updates",
-            self.channel_name
-        )
         await self.accept()
+        await self.channel_layer.group_add("resources", self.channel_name)
         await self.send_initial_data()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            "resource_updates",
-            self.channel_name
-        )
+        await self.channel_layer.group_discard("resources", self.channel_name)
 
     @database_sync_to_async
-    def get_latest_resource_data(self):
-        latest = SystemMetrics.objects.last()
+    def get_latest_metrics(self):
+        latest = SystemMetrics.objects.filter(is_application_only=True).last()
         if latest:
             return {
                 'type': 'resource.update',
                 'timestamp': latest.timestamp.isoformat(),
                 'cpu_usage': latest.cpu_usage,
-                'ram_usage': latest.ram_usage,
-                'ram_total': latest.ram_total,
                 'ram_used': latest.ram_used,
-                'disk_usage': latest.disk_usage,
-                'disk_total': latest.disk_total,
-                'disk_used': latest.disk_used,
+                'disk_read': latest.disk_read,
+                'disk_write': latest.disk_write,
             }
         return None
 
     async def send_initial_data(self):
-        data = await self.get_latest_resource_data()
+        data = await self.get_latest_metrics()
         if data:
             await self.send(text_data=json.dumps(data))
 
     async def resource_update(self, event):
-        # Send updates to the WebSocket
         await self.send(text_data=json.dumps(event))

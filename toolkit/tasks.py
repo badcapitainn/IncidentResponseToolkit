@@ -1,3 +1,4 @@
+import os
 import psutil
 from celery import shared_task
 from django.core.management import call_command
@@ -11,46 +12,47 @@ def parse_logs_task():
     call_command('parse_logs')
 
 
-# toolkit/tasks.py
 @shared_task
 def collect_resource_metrics():
     try:
-        # Get system metrics
-        cpu_usage = psutil.cpu_percent(interval=1)
-        ram = psutil.virtual_memory()
-        disk = psutil.disk_usage('/')
+        current_process = psutil.Process(os.getpid())
 
-        # Create new record
+        # Get metrics
+        cpu_percent = current_process.cpu_percent(interval=1)
+        mem_info = current_process.memory_info()
+        ram_used = mem_info.rss / (1024 * 1024)  # MB
+        io_counters = current_process.io_counters()
+        disk_read = io_counters.read_bytes / (1024 * 1024)  # MB
+        disk_write = io_counters.write_bytes / (1024 * 1024)  # MB
+
+        # Create record
         metric = SystemMetrics.objects.create(
-            cpu_usage=cpu_usage,
-            ram_usage=ram.percent,
-            ram_total=ram.total / (1024 * 1024),
-            ram_used=ram.used / (1024 * 1024),
-            disk_usage=disk.percent,
-            disk_total=disk.total / (1024 * 1024 * 1024),
-            disk_used=disk.used / (1024 * 1024 * 1024)
+            cpu_usage=cpu_percent,
+            ram_used=ram_used,
+            disk_read=disk_read,
+            disk_write=disk_write,
+            is_application_only=True
         )
 
-        # Delete old records
-        newest_ids = SystemMetrics.objects.all() \
+        # Clean up old records
+        newest_ids = SystemMetrics.objects.filter(is_application_only=True) \
                          .order_by('-timestamp') \
                          .values_list('id', flat=True)[:100]
-        SystemMetrics.objects.exclude(id__in=newest_ids).delete()
+        SystemMetrics.objects.filter(is_application_only=True) \
+            .exclude(id__in=newest_ids) \
+            .delete()
 
         # Send WebSocket update
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            "resource_updates",
+            "resources",
             {
                 'type': 'resource.update',
                 'timestamp': metric.timestamp.isoformat(),
                 'cpu_usage': metric.cpu_usage,
-                'ram_usage': metric.ram_usage,
-                'ram_total': metric.ram_total,
                 'ram_used': metric.ram_used,
-                'disk_usage': metric.disk_usage,
-                'disk_total': metric.disk_total,
-                'disk_used': metric.disk_used,
+                'disk_read': metric.disk_read,
+                'disk_write': metric.disk_write,
             }
         )
 

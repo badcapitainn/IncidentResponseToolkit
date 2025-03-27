@@ -40,14 +40,14 @@ class Services:
             # Fallback without timezone
             return datetime.strptime(timestamp.strip(), "%d/%b/%Y:%H:%M:%S")
 
-    def monitor_resources(self):
-        while True:
-            cpu_usage = psutil.cpu_percent(interval=self.thresholds['resource_monitoring_interval'])
-            memory_info = psutil.virtual_memory()
-            memory_usage = memory_info.percent
-            disk_usage = psutil.disk_usage('/').percent
-            logger.info(f"Resource Usage: CPU={cpu_usage}%, Memory={memory_usage}%, Disk={disk_usage}%")
-            time.sleep(self.thresholds['resource_monitoring_interval'])
+    # def monitor_resources(self):
+    #     while True:
+    #         cpu_usage = psutil.cpu_percent(interval=self.thresholds['resource_monitoring_interval'])
+    #         memory_info = psutil.virtual_memory()
+    #         memory_usage = memory_info.percent
+    #         disk_usage = psutil.disk_usage('/').percent
+    #         logger.info(f"Resource Usage: CPU={cpu_usage}%, Memory={memory_usage}%, Disk={disk_usage}%")
+    #         time.sleep(self.thresholds['resource_monitoring_interval'])
 
 
 class LogAnalysis:
@@ -305,9 +305,9 @@ class LogAnalysis:
         analysis_thread.start()
 
         # Start resource monitoring in a separate thread
-        resource_thread = threading.Thread(target=self.services.monitor_resources)
-        resource_thread.daemon = True
-        resource_thread.start()
+        # resource_thread = threading.Thread(target=self.services.monitor_resources)
+        # resource_thread.daemon = True
+        # resource_thread.start()
 
         # Start watchlist monitoring in a separate thread
         watchlist_thread = threading.Thread(target=self.monitor_watchlist)

@@ -57,12 +57,10 @@ class MaliciousPackets(models.Model):
 class SystemMetrics(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     cpu_usage = models.FloatField()  # percentage
-    ram_usage = models.FloatField()  # percentage
-    ram_used = models.FloatField()  # in GB
-    ram_total = models.FloatField()  # in GB
-    disk_usage = models.FloatField(null=True)  # percentage
-    disk_used = models.FloatField()  # in GB
-    disk_total = models.FloatField()  # in GB
+    ram_used = models.FloatField()  # in MB
+    disk_read = models.FloatField()  # in MB
+    disk_write = models.FloatField()  # in MB
+    is_application_only = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ('timestamp',)
+        ordering = ['-timestamp']

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <title>Incident Response</title>
@@ -72,6 +72,7 @@
             flex-wrap: wrap;
             gap: 20px;
             justify-content: space-around;
+
         }
 
         .section {
@@ -204,6 +205,7 @@
         .metric-info span:first-child {
             color: #296c83;
         }
+
     </style>
 </head>
 
@@ -283,26 +285,37 @@
             </div>
 
             <!-- Update the graph sections in your template -->
-                <div class="section">
-                    <h4>Memory <small>({{ ram_used|floatformat:1 }} MB / {{ ram_total|floatformat:1 }} MB)</small></h4>
-                    <div style="height: 250px;">
-                        <canvas id="ramChart"></canvas>
-                    </div>
+                           <!-- RAM Chart -->
+            <div class="section">
+                <h4>Application RAM <small class="ram-usage-text">{{ latest_ram|floatformat:1 }} MB</small></h4>
+                <div style="height: 250px;">
+                    <canvas id="ramChart"></canvas>
                 </div>
+            </div>
 
-                <div class="section">
-                    <h4>Processor</h4>
-                    <div style="height: 250px;">
-                        <canvas id="cpuChart"></canvas>
-                    </div>
+            <!-- CPU Chart -->
+            <div class="section">
+                <h4>Application CPU <small class="cpu-usage-text">{{ latest_cpu|floatformat:1 }}%</small></h4>
+                <div style="height: 250px;">
+                    <canvas id="cpuChart"></canvas>
                 </div>
+            </div>
 
-                <div class="section">
-                    <h4>Storage <small>({{ disk_used|floatformat:1 }} GB / {{ disk_total|floatformat:1 }} GB)</small></h4>
-                    <div style="height: 250px;">
-                        <canvas id="diskChart"></canvas>
-                    </div>
+            <!-- Disk Read Chart -->
+            <div class="section">
+                <h4>Disk Read <small class="disk-read-text">{{ latest_disk_read|floatformat:1 }} MB</small></h4>
+                <div style="height: 250px;">
+                    <canvas id="diskReadChart"></canvas>
                 </div>
+            </div>
+
+            <!-- Disk Write Chart -->
+            <div class="section">
+                <h4>Disk Write <small class="disk-write-text">{{ latest_disk_write|floatformat:1 }} MB</small></h4>
+                <div style="height: 250px;">
+                    <canvas id="diskWriteChart"></canvas>
+                </div>
+            </div>
 
             </div>
         </div>
@@ -312,40 +325,16 @@
         <p>&copy; 2023 Incident Response. All rights reserved. | <a href="#">Privacy Policy</a></p>
     </footer>
     <script>
+        // Store chart instances globally
+        let ramChart, cpuChart, diskReadChart, diskWriteChart;
+        let socket;
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if Chart is properly loaded
+            // Check if Chart.js is loaded
             if (typeof Chart === 'undefined') {
                 console.error('Chart.js is not loaded!');
                 return;
             }
-
-            // Get data from Django template variables
-            const chartData = {
-                ram: {
-                    labels: JSON.parse('{{ timestamps|escapejs }}'),
-                    values: JSON.parse('{{ ram_data|escapejs }}'),
-                    label: 'RAM Usage %',
-                    color: 'rgb(54, 162, 235)',
-                    unit: 'MB',
-                    current: '{{ ram_used|floatformat:1 }}',
-                    total: '{{ ram_total|floatformat:1 }}'
-                },
-                cpu: {
-                    labels: JSON.parse('{{ timestamps|escapejs }}'),
-                    values: JSON.parse('{{ cpu_data|escapejs }}'),
-                    label: 'CPU Usage %',
-                    color: 'rgb(255, 99, 132)'
-                },
-                disk: {
-                    labels: JSON.parse('{{ timestamps|escapejs }}'),
-                    values: JSON.parse('{{ disk_data|escapejs }}'),
-                    label: 'Disk Usage %',
-                    color: 'rgb(75, 192, 192)',
-                    unit: 'GB',
-                    current: '{{ disk_used|floatformat:1 }}',
-                    total: '{{ disk_total|floatformat:1 }}'
-                }
-            };
 
             // Common chart configuration
             const chartConfig = {
@@ -353,26 +342,31 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
                     scales: {
                         x: {
-                            display: true,
+                            type: 'linear',
+                            position: 'bottom',
+                            ticks: {
+                                callback: function(value) {
+                                    return new Date(value).toLocaleTimeString();
+                                },
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
                             title: {
                                 display: true,
                                 text: 'Time'
-                            },
-                            ticks: {
-                                maxRotation: 45,
-                                minRotation: 45
                             }
                         },
                         y: {
-                            display: true,
+                            beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Usage (%)'
-                            },
-                            min: 0,
-                            max: 100
+                                text: 'Usage'
+                            }
                         }
                     },
                     plugins: {
@@ -381,8 +375,11 @@
                             position: 'top'
                         },
                         tooltip: {
-                            mode: 'index',
-                            intersect: false
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(1)} ${context.dataset.unit || ''}`;
+                                }
+                            }
                         }
                     },
                     elements: {
@@ -397,85 +394,124 @@
                 }
             };
 
-            // Initialize chart function
-            function initializeChart(canvasId, data) {
-                const ctx = document.getElementById(canvasId);
-                if (!ctx) {
-                    console.error(`Canvas element with ID ${canvasId} not found`);
-                    return null;
-                }
+            // Initialize all charts
+            function initializeCharts() {
+                // RAM Chart
+                const ramCtx = document.getElementById('ramChart').getContext('2d');
+                ramChart = new Chart(ramCtx, {
+                    ...chartConfig,
+                    data: {
+                        datasets: [{
+                            label: 'RAM Usage',
+                            data: [],
+                            borderColor: 'rgb(54, 162, 235)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            unit: 'MB'
+                        }]
+                    }
+                });
 
-                try {
-                    return new Chart(ctx, {
-                        ...chartConfig,
-                        data: {
-                            labels: data.labels,
-                            datasets: [{
-                                label: data.label,
-                                data: data.values,
-                                borderColor: data.color,
-                                backgroundColor: data.color.replace(')', ', 0.2)').replace('rgb', 'rgba'),
-                                borderWidth: 2,
-                                fill: true
-                            }]
-                        }
-                    });
-                } catch (e) {
-                    console.error(`Error initializing ${canvasId} chart:`, e);
-                    return null;
-                }
+                // CPU Chart
+                const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+                cpuChart = new Chart(cpuCtx, {
+                    ...chartConfig,
+                    data: {
+                        datasets: [{
+                            label: 'CPU Usage',
+                            data: [],
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            unit: '%'
+                        }]
+                    }
+                });
+
+                // Disk Read Chart
+                const diskReadCtx = document.getElementById('diskReadChart').getContext('2d');
+                diskReadChart = new Chart(diskReadCtx, {
+                    ...chartConfig,
+                    data: {
+                        datasets: [{
+                            label: 'Disk Read',
+                            data: [],
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            unit: 'MB'
+                        }]
+                    }
+                });
+
+                // Disk Write Chart
+                const diskWriteCtx = document.getElementById('diskWriteChart').getContext('2d');
+                diskWriteChart = new Chart(diskWriteCtx, {
+                    ...chartConfig,
+                    data: {
+                        datasets: [{
+                            label: 'Disk Write',
+                            data: [],
+                            borderColor: 'rgb(153, 102, 255)',
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            unit: 'MB'
+                        }]
+                    }
+                });
             }
 
-            // Initialize all charts
-            const ramChart = initializeChart('ramChart', chartData.ram);
-            const cpuChart = initializeChart('cpuChart', chartData.cpu);
-            const diskChart = initializeChart('diskChart', chartData.disk);
-
-            // WebSocket connection with reconnection logic
+            // Connect to WebSocket
             function connectWebSocket() {
                 const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
                 const wsPath = wsScheme + "://" + window.location.host + "/ws/resources/";
-                const socket = new WebSocket(wsPath);
+                socket = new WebSocket(wsPath);
 
                 socket.onopen = function() {
-                    console.log('WebSocket connection established');
+                    console.log('WebSocket connected');
+                    // Request initial data
+                    socket.send(JSON.stringify({type: 'get_initial_data'}));
                 };
 
                 socket.onmessage = function(event) {
                     try {
                         const data = JSON.parse(event.data);
-                        if (!data || data.type !== 'resource.update') return;
+                        if (!data) return;
 
-                        const timestamp = new Date(data.timestamp).toLocaleTimeString();
-
-                        // Update RAM chart
-                        if (ramChart) {
-                            updateChart(ramChart, timestamp, data.ram_usage);
-                            updateUsageText(
-                                '.section:nth-child(3) h4 small',
-                                `${data.ram_used.toFixed(1)} ${chartData.ram.unit} / ${data.ram_total.toFixed(1)} ${chartData.ram.unit}`
-                            );
+                        if (data.type === 'initial_data') {
+                            // Load initial data
+                            loadInitialData(data);
                         }
+                        else if (data.type === 'resource.update') {
+                            // Process real-time update
+                            const timestamp = new Date(data.timestamp).getTime();
 
-                        // Update CPU chart
-                        if (cpuChart) {
+                            // Update RAM
+                            updateChart(ramChart, timestamp, data.ram_used);
+                            document.querySelector('.ram-usage-text').textContent =
+                                `${data.ram_used.toFixed(1)} MB`;
+
+                            // Update CPU
                             updateChart(cpuChart, timestamp, data.cpu_usage);
+                            document.querySelector('.cpu-usage-text').textContent =
+                                `${data.cpu_usage.toFixed(1)}%`;
+
+                            // Update Disk Read
+                            updateChart(diskReadChart, timestamp, data.disk_read);
+                            document.querySelector('.disk-read-text').textContent =
+                                `${data.disk_read.toFixed(1)} MB`;
+
+                            // Update Disk Write
+                            updateChart(diskWriteChart, timestamp, data.disk_write);
+                            document.querySelector('.disk-write-text').textContent =
+                                `${data.disk_write.toFixed(1)} MB`;
                         }
-
-                        // Update Disk chart
-                        if (diskChart) {
-                            updateChart(diskChart, timestamp, data.disk_usage);
-                            updateUsageText(
-                                '.section:nth-child(5) h4 small',
-                                `${data.disk_used.toFixed(1)} ${chartData.disk.unit} / ${data.disk_total.toFixed(1)} ${chartData.disk.unit}`
-                            );
-                        }
-
-                        // Add this to update your tables
-                        updateTables(data);
-
                     } catch (e) {
-                        console.error('Error processing WebSocket message:', e);
+                        console.error('Error processing message:', e);
                     }
                 };
 
@@ -484,56 +520,75 @@
                 };
 
                 socket.onclose = function() {
-                    console.log('WebSocket connection closed. Reconnecting...');
+                    console.log('WebSocket disconnected. Reconnecting...');
                     setTimeout(connectWebSocket, 3000);
                 };
             }
-            function updateTables(data) {
-                // Update your alert logs table if needed
-                // Example: prepend new row to the table
-                const alertTableBody = document.querySelector('.table tbody');
-                if (alertTableBody) {
-                    const newRow = document.createElement('tr');
-                    newRow.innerHTML = `
-                            <td>${new Date(data.timestamp).toLocaleString()}</td>
-                            <td>CPU: ${data.cpu_usage.toFixed(1)}%, RAM: ${data.ram_usage.toFixed(1)}%</td>
-                        `;
-                    alertTableBody.prepend(newRow);
 
-                    // Keep only the last N rows
-                    const rows = alertTableBody.querySelectorAll('tr');
-                    if (rows.length > 30) {
-                        alertTableBody.removeChild(rows[rows.length - 1]);
-                    }
+            // Load initial data
+            function loadInitialData(data) {
+                if (data.ram_data) {
+                    ramChart.data.datasets[0].data = data.ram_data.map(item => ({
+                        x: new Date(item.timestamp).getTime(),
+                        y: item.value
+                    }));
+                    ramChart.update();
+                }
+
+                if (data.cpu_data) {
+                    cpuChart.data.datasets[0].data = data.cpu_data.map(item => ({
+                        x: new Date(item.timestamp).getTime(),
+                        y: item.value
+                    }));
+                    cpuChart.update();
+                }
+
+                if (data.disk_read_data) {
+                    diskReadChart.data.datasets[0].data = data.disk_read_data.map(item => ({
+                        x: new Date(item.timestamp).getTime(),
+                        y: item.value
+                    }));
+                    diskReadChart.update();
+                }
+
+                if (data.disk_write_data) {
+                    diskWriteChart.data.datasets[0].data = data.disk_write_data.map(item => ({
+                        x: new Date(item.timestamp).getTime(),
+                        y: item.value
+                    }));
+                    diskWriteChart.update();
                 }
             }
 
-            // Helper function to update chart data
-            function updateChart(chart, label, value) {
-                if (!chart || !chart.data || !chart.data.labels || !chart.data.datasets) return;
+            // Update chart with new data point
+            function updateChart(chart, timestamp, value) {
+                if (!chart || !chart.data.datasets[0]) return;
 
-                chart.data.labels.push(label);
-                chart.data.datasets[0].data.push(value);
+                chart.data.datasets[0].data.push({
+                    x: timestamp,
+                    y: value
+                });
 
-                // Keep only the last 30 data points
-                if (chart.data.labels.length > 30) {
-                    chart.data.labels.shift();
+                // Keep only last 30 points
+                if (chart.data.datasets[0].data.length > 30) {
                     chart.data.datasets[0].data.shift();
                 }
 
                 chart.update();
             }
 
-            // Helper function to update usage text
-            function updateUsageText(selector, text) {
-                const element = document.querySelector(selector);
-                if (element) {
-                    element.textContent = text;
-                }
-            }
-
-            // Start WebSocket connection
+            // Initialize everything
+            initializeCharts();
             connectWebSocket();
+
+            // Clean up on page unload
+            window.addEventListener('beforeunload', function() {
+                if (socket) socket.close();
+                if (ramChart) ramChart.destroy();
+                if (cpuChart) cpuChart.destroy();
+                if (diskReadChart) diskReadChart.destroy();
+                if (diskWriteChart) diskWriteChart.destroy();
+            });
         });
     </script>
 </body>

@@ -36,12 +36,12 @@ def parse_timestamp(timestamp):
         return datetime.strptime(timestamp.strip(), "%d/%b/%Y:%H:%M:%S")
 
 
-def monitor_resources():
-    while True:
-        cpu_usage = psutil.cpu_percent(interval=thresholds['resource_monitoring_interval'])
-        memory_info = psutil.virtual_memory()
-        memory_usage = memory_info.percent
-        disk_usage = psutil.disk_usage('/').percent
-        logger.info(f"Resource Usage: CPU={cpu_usage}%, Memory={memory_usage}%, Disk={disk_usage}%")
-        time.sleep(thresholds['resource_monitoring_interval'])
-
+# def monitor_resources():
+#     while True:
+#         cpu_usage = psutil.cpu_percent(interval=thresholds['resource_monitoring_interval'])
+#         memory_info = psutil.virtual_memory()
+#         memory_usage = memory_info.percent
+#         disk_usage = psutil.disk_usage('/').percent
+#         logger.info(f"Resource Usage: CPU={cpu_usage}%, Memory={memory_usage}%, Disk={disk_usage}%")
+#         time.sleep(thresholds['resource_monitoring_interval'])
+#
