@@ -15,7 +15,6 @@ if __name__ == "__main__":
         generate_thread = threading.Thread(target=generate_logs, args=(LOG_FILE,))
         log_thread = threading.Thread(target=log_analyzer.run, daemon=True)
 
-
         generate_thread.start()
         log_thread.start()
 
@@ -24,5 +23,3 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("\nExiting...")
-
-

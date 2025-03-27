@@ -444,11 +444,11 @@
                 socket.onmessage = function(event) {
                     try {
                         const data = JSON.parse(event.data);
-                        if (!data) return;
+                        if (!data || data.type !== 'resource.update') return;
 
                         const timestamp = new Date(data.timestamp).toLocaleTimeString();
 
-                        // Update RAM chart if it exists
+                        // Update RAM chart
                         if (ramChart) {
                             updateChart(ramChart, timestamp, data.ram_usage);
                             updateUsageText(
@@ -457,20 +457,23 @@
                             );
                         }
 
-                        // Update CPU chart if it exists
+                        // Update CPU chart
                         if (cpuChart) {
                             updateChart(cpuChart, timestamp, data.cpu_usage);
                         }
 
-                        // Update Disk chart if it exists
+                        // Update Disk chart
                         if (diskChart) {
-                            const diskUsage = (data.disk_used / data.disk_total) * 100;
-                            updateChart(diskChart, timestamp, diskUsage);
+                            updateChart(diskChart, timestamp, data.disk_usage);
                             updateUsageText(
                                 '.section:nth-child(5) h4 small',
                                 `${data.disk_used.toFixed(1)} ${chartData.disk.unit} / ${data.disk_total.toFixed(1)} ${chartData.disk.unit}`
                             );
                         }
+
+                        // Add this to update your tables
+                        updateTables(data);
+
                     } catch (e) {
                         console.error('Error processing WebSocket message:', e);
                     }
@@ -484,6 +487,25 @@
                     console.log('WebSocket connection closed. Reconnecting...');
                     setTimeout(connectWebSocket, 3000);
                 };
+            }
+            function updateTables(data) {
+                // Update your alert logs table if needed
+                // Example: prepend new row to the table
+                const alertTableBody = document.querySelector('.table tbody');
+                if (alertTableBody) {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                            <td>${new Date(data.timestamp).toLocaleString()}</td>
+                            <td>CPU: ${data.cpu_usage.toFixed(1)}%, RAM: ${data.ram_usage.toFixed(1)}%</td>
+                        `;
+                    alertTableBody.prepend(newRow);
+
+                    // Keep only the last N rows
+                    const rows = alertTableBody.querySelectorAll('tr');
+                    if (rows.length > 30) {
+                        alertTableBody.removeChild(rows[rows.length - 1]);
+                    }
+                }
             }
 
             // Helper function to update chart data

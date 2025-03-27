@@ -83,7 +83,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'collect-resource-metrics': {
         'task': 'toolkit.tasks.collect_resource_metrics',
-        'schedule': crontab(minute='*/1'),  # Collect every minute
+        'schedule': timedelta(seconds=3),  # Collect every 3 seconds
     },
 }
 # Add this to suppress the warning
