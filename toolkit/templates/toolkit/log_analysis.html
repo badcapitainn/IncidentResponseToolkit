@@ -6,57 +6,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Viewer</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
     <style>
+        :root {
+            --primary-color: #1c3d5a;
+            --secondary-color: #296c83;
+            --accent-color: #3a9db5;
+            --light-color: #f8f9fa;
+            --dark-color: #333;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
         body {
-            background: #ffffff;
-            font-family: 'Arial', sans-serif;
+            background: #f5f7fa !important;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            color: var(--dark-color);
+            line-height: 1.6;
             padding: 20px;
-            color: #333;
         }
 
-        h1 {
-            text-align: center;
-            color: #1c3d5a;
-            font-weight: bold;
-            margin: 30px 0;
-            font-size: 28px;
+        .top-bar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
         }
 
-        table {
-            width: 90%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            background: #f8f9fa;
-            border-radius: 10px;
-            overflow: hidden;
+        .top-bar h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
         }
 
-        th,
-        td {
+        .top-bar h1 i {
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .log-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .log-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        .log-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .log-section h2 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .log-section h2 i {
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+
+        .log-count {
+            background: var(--accent-color);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
+        }
+
+        .log-table th {
+            position: sticky;
+            top: 0;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 500;
             padding: 15px;
             text-align: left;
-            border: 1px solid #ddd;
         }
 
-        th {
-            background-color: #1c3d5a;
-            color: white;
-            font-weight: bold;
+        .log-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
+        .log-table tr:last-child td {
+            border-bottom: none;
         }
 
-        tr:hover {
-            background-color: #e0e0e0;
-            transition: background-color 0.3s ease;
+        .log-table tr:nth-child(even) {
+            background-color: rgba(240, 244, 248, 0.5);
+        }
+
+        .log-table tr:hover {
+            background-color: rgba(28, 61, 90, 0.05);
         }
 
         .empty-row {
-            color: #888;
             text-align: center;
+            color: #888;
+            padding: 20px;
             font-style: italic;
         }
 
@@ -65,13 +151,24 @@
             justify-content: center;
             align-items: center;
             margin: 30px 0;
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 25px;
+            width: 60px;
+            height: 30px;
+            margin: 0 15px;
         }
 
         .switch input {
@@ -88,208 +185,525 @@
             right: 0;
             bottom: 0;
             background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 25px;
+            transition: var(--transition);
+            border-radius: 34px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 17px;
-            width: 17px;
+            height: 22px;
+            width: 22px;
             left: 4px;
             bottom: 4px;
             background-color: white;
-            transition: 0.4s;
+            transition: var(--transition);
             border-radius: 50%;
         }
 
-        input:checked+.slider {
-            background-color: #1c3d5a;
+        input:checked + .slider {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         }
 
-        input:checked+.slider:before {
-            transform: translateX(25px);
+        input:checked + .slider:before {
+            transform: translateX(30px);
         }
 
         .status {
+            font-weight: 600;
+            font-size: 1rem;
             margin-left: 10px;
-            font-weight: bold;
-            font-size: 16px;
+        }
+
+        .status-on {
+            color: var(--success-color);
+        }
+
+        .status-off {
+            color: var(--danger-color);
         }
 
         footer {
-            background: #1c3d5a;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             text-align: center;
-            padding: 15px 0;
-            margin-top: 40px;
-            font-size: 14px;
+            padding: 20px 0;
+            margin-top: 50px;
+            font-size: 0.9rem;
+            border-radius: var(--border-radius);
         }
 
         footer a {
-            color: #fff;
+            color: var(--accent-color);
             text-decoration: none;
             transition: color 0.3s ease;
         }
 
         footer a:hover {
-            color: #296c83;
+            color: white;
         }
 
-        .log-section {
-            margin-bottom: 40px;
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
 
-        .log-section h1 {
-            margin-bottom: 20px;
+        .status-alert {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger-color);
+        }
+
+        .status-warning {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-info {
+            background: rgba(58, 157, 181, 0.1);
+            color: var(--accent-color);
+        }
+
+        .timestamp-col {
+            white-space: nowrap;
+            width: 180px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 10px;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .log-details {
+            display: none;
+            padding: 15px;
+            background: rgba(240, 244, 248, 0.7);
+            border-radius: var(--border-radius);
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .log-details pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .top-bar h1 {
+                font-size: 1.4rem;
+            }
+
+            .timestamp-col {
+                width: 120px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <div class="log-container">
+        <div class="top-bar">
+            <h1><i class="fas fa-clipboard-list"></i> Log Viewer</h1>
+        </div>
 
-    <div class="toggle-container">
-        <label class="switch">
-            <input id="logToggle" type="checkbox">
-            <span class="slider"></span>
-        </label>
-        <span id="logStatus" class="status">Log Analysis: Off</span>
-    </div>
+        <div class="toggle-container">
+            <label class="toggle-label">
+                <span class="status status-off" id="logStatus">Analysis OFF</span>
+                <div class="switch">
+                    <input id="logToggle" type="checkbox">
+                    <span class="slider"></span>
+                </div>
+                <span class="status status-on" style="display:none">Analysis ON</span>
+            </label>
+        </div>
 
-    <div class="log-section">
-        <h1>Alert Logs</h1>
-        <table id="alert-logs-table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Message</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in alert_logs %}
-                <tr>
-                    <td>{{ log.timeStamp }}</td>
-                    <td>{{ log.message }}</td>
-                </tr>
-                {% empty %}
-                <tr id="alert-empty-row">
-                    <td colspan="2" class="empty-row">No alert logs available</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <div class="log-section">
+            <h2>
+                <span><i class="fas fa-exclamation-circle"></i> Alert Logs</span>
+                <span class="log-count" id="alert-count">{{ alert_logs|length }}</span>
+            </h2>
+            <div class="table-container">
+                <table class="log-table" id="alert-logs-table">
+                    <thead>
+                        <tr>
+                            <th class="timestamp-col">Timestamp</th>
+                            <th>Message</th>
+                            <th>Severity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in alert_logs %}
+                        <tr>
+                            <td class="timestamp-col">{{ log.timeStamp }}</td>
+                            <td>{{ log.message }}</td>
+                            <td>
+                                <span class="status-badge
+                                    {% if 'critical' in log.message|lower %}status-alert
+                                    {% elif 'warning' in log.message|lower %}status-warning
+                                    {% else %}status-info{% endif %}">
+                                    {% if 'critical' in log.message|lower %}Critical
+                                    {% elif 'warning' in log.message|lower %}Warning
+                                    {% else %}Info{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn view-details" data-log-id="{{ log.id }}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="log-details-row" style="display: none;">
+                            <td colspan="4">
+                                <div class="log-details">
+                                    <pre>{{ log.details|default:"No additional details available" }}</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="alert-empty-row">
+                            <td colspan="4" class="empty-row">No alert logs available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <div class="log-section">
-        <h1>Suspicious Logs</h1>
-        <table id="suspicious-logs-table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Message</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in suspicious_logs %}
-                <tr>
-                    <td>{{ log.timeStamp }}</td>
-                    <td>{{ log.message }}</td>
-                </tr>
-                {% empty %}
-                <tr id="suspicious-empty-row">
-                    <td colspan="2" class="empty-row">No suspicious logs available</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <div class="log-section">
+            <h2>
+                <span><i class="fas fa-search"></i> Suspicious Logs</span>
+                <span class="log-count" id="suspicious-count">{{ suspicious_logs|length }}</span>
+            </h2>
+            <div class="table-container">
+                <table class="log-table" id="suspicious-logs-table">
+                    <thead>
+                        <tr>
+                            <th class="timestamp-col">Timestamp</th>
+                            <th>Message</th>
+                            <th>Risk Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in suspicious_logs %}
+                        <tr>
+                            <td class="timestamp-col">{{ log.timeStamp }}</td>
+                            <td>{{ log.message }}</td>
+                            <td>
+                                <span class="status-badge
+                                    {% if 'high' in log.message|lower %}status-alert
+                                    {% elif 'medium' in log.message|lower %}status-warning
+                                    {% else %}status-info{% endif %}">
+                                    {% if 'high' in log.message|lower %}High
+                                    {% elif 'medium' in log.message|lower %}Medium
+                                    {% else %}Low{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn view-details" data-log-id="{{ log.id }}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="log-details-row" style="display: none;">
+                            <td colspan="4">
+                                <div class="log-details">
+                                    <pre>{{ log.details|default:"No additional details available" }}</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="suspicious-empty-row">
+                            <td colspan="4" class="empty-row">No suspicious logs available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <div class="log-section">
-        <h1>Watchlist Logs</h1>
-        <table id="watchlist-logs-table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Message</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in watchlist_logs %}
-                <tr>
-                    <td>{{ log.timeStamp }}</td>
-                    <td>{{ log.message }}</td>
-                </tr>
-                {% empty %}
-                <tr id="watchlist-empty-row">
-                    <td colspan="2" class="empty-row">No watchlist logs available</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="log-section">
+            <h2>
+                <span><i class="fas fa-eye"></i> Watchlist Logs</span>
+                <span class="log-count" id="watchlist-count">{{ watchlist_logs|length }}</span>
+            </h2>
+            <div class="table-container">
+                <table class="log-table" id="watchlist-logs-table">
+                    <thead>
+                        <tr>
+                            <th class="timestamp-col">Timestamp</th>
+                            <th>Message</th>
+                            <th>Priority</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in watchlist_logs %}
+                        <tr>
+                            <td class="timestamp-col">{{ log.timeStamp }}</td>
+                            <td>{{ log.message }}</td>
+                            <td>
+                                <span class="status-badge
+                                    {% if 'urgent' in log.message|lower %}status-alert
+                                    {% elif 'important' in log.message|lower %}status-warning
+                                    {% else %}status-info{% endif %}">
+                                    {% if 'urgent' in log.message|lower %}Urgent
+                                    {% elif 'important' in log.message|lower %}Important
+                                    {% else %}Normal{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn view-details" data-log-id="{{ log.id }}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="log-details-row" style="display: none;">
+                            <td colspan="4">
+                                <div class="log-details">
+                                    <pre>{{ log.details|default:"No additional details available" }}</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="watchlist-empty-row">
+                            <td colspan="4" class="empty-row">No watchlist logs available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2023 Incident Response System. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </footer>
     </div>
 
     <script>
-        const toggle = document.getElementById('logToggle');
-        const status = document.getElementById('logStatus');
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('logToggle');
+            const statusOn = document.querySelector('.status-on');
+            const statusOff = document.querySelector('.status-off');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const socket = new WebSocket('ws://' + window.location.host + '/ws/logs/');
 
-        const socket = new WebSocket('ws://' + window.location.host + '/ws/logs/');
-
-        socket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            const logType = data.log_type;
-            const logs = data.logs;
-
-            // Update the table based on the log type
-            if (logType === 'alert') {
-                updateTable('alert-logs-table', logs);
-            } else if (logType === 'suspicious') {
-                updateTable('suspicious-logs-table', logs);
-            } else if (logType === 'watchlist') {
-                updateTable('watchlist-logs-table', logs);
-            } else if (logType === 'resource') {
-                updateTable('resource-logs-table', logs);
-            }
-        };
-
-        function updateTable(tableId, logs) {
-            const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
-            table.innerHTML = ''; // Clear existing rows
-
-            if (logs.length === 0) {
-                // Add a row for "No logs available"
-                const row = table.insertRow();
-                const cell = row.insertCell();
-                cell.colSpan = 2;
-                cell.className = 'empty-row';
-                cell.textContent = 'No logs available';
-            } else {
-                // Add rows for each log
-                logs.forEach(log => {
-                    const row = table.insertRow();
-                    const timestampCell = row.insertCell();
-                    const messageCell = row.insertCell();
-                    timestampCell.textContent = log.timeStamp;  // Display the ISO format datetime string
-                    messageCell.textContent = log.message;
+            // Toggle details visibility
+            document.querySelectorAll('.view-details').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const logId = this.getAttribute('data-log-id');
+                    const detailsRow = this.closest('tr').nextElementSibling;
+                    detailsRow.style.display = detailsRow.style.display === 'none' ? '' : 'none';
                 });
-            }
-        }
+            });
 
-    toggle.addEventListener('change', function () {
-            if (this.checked) {
-                status.textContent = "Log Analysis: On";
-                status.style.color = '#1c3d5a';
-                // Implement AJAX/fetch to send toggle on command to backend
-            } else {
-                status.textContent = "Log Analysis: Off";
-                status.style.color = 'red';
-                // Implement AJAX/fetch to send toggle off command to backend
+            // Add to watchlist
+            document.querySelectorAll('.add-to-watchlist').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const logId = this.getAttribute('data-log-id');
+                    fetch(`/api/watchlist/add/${logId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            // Update UI to reflect the change
+                            this.innerHTML = '<i class="fas fa-check"></i>';
+                            this.style.color = 'var(--success-color)';
+                            setTimeout(() => {
+                                this.innerHTML = '<i class="fas fa-eye"></i>';
+                                this.style.color = 'var(--accent-color)';
+                            }, 1000);
+                        }
+                    });
+                });
+            });
+
+            // Remove from watchlist
+            document.querySelectorAll('.remove-from-watchlist').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const logId = this.getAttribute('data-log-id');
+                    fetch(`/api/watchlist/remove/${logId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            // Remove the row from the table
+                            const row = this.closest('tr');
+                            row.nextElementSibling.remove(); // Remove details row
+                            row.remove();
+
+                            // Update count
+                            const countElement = document.getElementById('watchlist-count');
+                            countElement.textContent = parseInt(countElement.textContent) - 1;
+                        }
+                    });
+                });
+            });
+
+            // Refresh button
+            refreshBtn.addEventListener('click', function() {
+                fetch('/api/logs/refresh/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        this.innerHTML = '<i class="fas fa-check"></i> Refreshed';
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                        }, 1000);
+                    }
+                });
+            });
+
+            // WebSocket handling
+            socket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                const logType = data.log_type;
+                const logs = data.logs;
+
+                if (logType === 'alert') {
+                    updateTable('alert-logs-table', logs, 'alert');
+                    document.getElementById('alert-count').textContent = logs.length;
+                } else if (logType === 'suspicious') {
+                    updateTable('suspicious-logs-table', logs, 'suspicious');
+                    document.getElementById('suspicious-count').textContent = logs.length;
+                } else if (logType === 'watchlist') {
+                    updateTable('watchlist-logs-table', logs, 'watchlist');
+                    document.getElementById('watchlist-count').textContent = logs.length;
+                }
+            };
+
+            function updateTable(tableId, logs, type) {
+                const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+                table.innerHTML = '';
+
+                if (logs.length === 0) {
+                    const row = table.insertRow();
+                    const cell = row.insertCell();
+                    cell.colSpan = 4;
+                    cell.className = 'empty-row';
+                    cell.textContent = `No ${type} logs available`;
+                } else {
+                    logs.forEach(log => {
+                        const row = table.insertRow();
+                        const timestampCell = row.insertCell();
+                        const messageCell = row.insertCell();
+                        const statusCell = row.insertCell();
+                        const actionsCell = row.insertCell();
+
+                        timestampCell.className = 'timestamp-col';
+                        timestampCell.textContent = log.timeStamp;
+                        messageCell.textContent = log.message;
+
+                        // Status badge
+                        let badgeClass = 'status-info';
+                        let badgeText = 'Normal';
+
+                        if (type === 'alert') {
+                            if (log.message.toLowerCase().includes('critical')) {
+                                badgeClass = 'status-alert';
+                                badgeText = 'Critical';
+                            } else if (log.message.toLowerCase().includes('warning')) {
+                                badgeClass = 'status-warning';
+                                badgeText = 'Warning';
+                            }
+                        } else if (type === 'suspicious') {
+                            if (log.message.toLowerCase().includes('high')) {
+                                badgeClass = 'status-alert';
+                                badgeText = 'High';
+                            } else if (log.message.toLowerCase().includes('medium')) {
+                                badgeClass = 'status-warning';
+                                badgeText = 'Medium';
+                            } else {
+                                badgeText = 'Low';
+                            }
+                        } else if (type === 'watchlist') {
+                            if (log.message.toLowerCase().includes('urgent')) {
+                                badgeClass = 'status-alert';
+                                badgeText = 'Urgent';
+                            } else if (log.message.toLowerCase().includes('important')) {
+                                badgeClass = 'status-warning';
+                                badgeText = 'Important';
+                            }
+                        }
+
+                        statusCell.innerHTML = `<span class="status-badge ${badgeClass}">${badgeText}</span>`;
+
+                        // Actions
+                        if (type === 'watchlist') {
+                            actionsCell.innerHTML = `
+                                <button class="action-btn view-details" data-log-id="${log.id}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="action-btn remove-from-watchlist" data-log-id="${log.id}">
+                                    <i class="fas fa-eye-slash"></i>
+                                </button>
+                            `;
+                        } else {
+                            actionsCell.innerHTML = `
+                                <button class="action-btn view-details" data-log-id="${log.id}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="action-btn add-to-watchlist" data-log-id="${log.id}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            `;
+                        }
+                    });
+                }
             }
+
+            toggle.addEventListener('change', function() {
+                if (this.checked) {
+                    statusOn.style.display = 'inline';
+                    statusOff.style.display = 'none';
+                    fetch('/api/log-analysis/start/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    });
+                } else {
+                    statusOn.style.display = 'none';
+                    statusOff.style.display = 'inline';
+                    fetch('/api/log-analysis/stop/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    });
+                }
+            });
         });
     </script>
-    <footer>
-        <p>&copy; 2023 Log Viewer. All rights reserved. | <a href="#">Privacy Policy</a></p>
-    </footer>
 </body>
-
 </html>

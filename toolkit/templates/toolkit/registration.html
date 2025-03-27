@@ -5,155 +5,274 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
     <style>
+        :root {
+            --primary-color: #1c3d5a;
+            --secondary-color: #296c83;
+            --accent-color: #3a9db5;
+            --light-color: #f8f9fa;
+            --dark-color: #333;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
         body,
         html {
             margin: 0;
             padding: 0;
             height: 100%;
-            background: #ffffff;
-            font-family: 'Arial', sans-serif;
+            background: #f5f7fa !important;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            color: var(--dark-color);
+            line-height: 1.6;
         }
 
-        .user_card {
-            width: 500px;
-            margin: auto;
-            background: #ffffff;
-            padding: 40px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            position: relative;
-            text-align: center;
-        }
-
-        #form-title {
-            color: #1c3d5a;
-            font-weight: bold;
-            margin-bottom: 40px;
-        }
-
-        .form_container {
-            margin-top: 10px;
+        .register-container {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(28, 61, 90, 0.1), rgba(41, 108, 131, 0.1));
+            padding: 20px;
         }
 
-        .login_btn {
-            background: #1c3d5a !important;
-            color: white !important;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 10px 20px;
-            width: auto;
-            transition: all 0.3s ease;
-            border: 2px solid #1c3d5a;
+        .register-card {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 40px;
+            transition: var(--transition);
         }
 
-        .login_btn:hover {
-            background: white !important;
-            color: #1c3d5a !important;
-            border: 2px solid #1c3d5a !important;
+        .register-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
-        .input-group-text {
-            background: #1c3d5a !important;
-            color: white !important;
-            border-radius: 5px 0 0 5px !important;
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .form-control {
-            border: 1px solid #ddd;
-            border-radius: 0 5px 5px 0 !important;
-            padding: 10px;
-            height: 45px;
-            max-width: 300px;
+        .register-header h3 {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
         }
 
-        .form-control:focus {
-            border-color: #1c3d5a;
-            box-shadow: none;
+        .register-header i {
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
         }
 
         .input-group {
             margin-bottom: 25px;
+            position: relative;
         }
 
-        .links a {
-            color: #1c3d5a;
+        .input-group-prepend {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            z-index: 4;
+        }
+
+        .input-group-text {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border: none !important;
+            height: 100%;
+            width: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius) 0 0 var(--border-radius) !important;
+        }
+
+        .form-control {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius) !important;
+            padding: 12px 15px 12px 55px;
+            height: 48px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(58, 157, 181, 0.2);
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .register-btn:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .register-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+        }
+
+        .register-footer a {
+            color: var(--accent-color);
+            font-weight: 600;
             text-decoration: none;
-            font-weight: bold;
+            transition: color 0.3s ease;
         }
 
-        .links a:hover {
+        .register-footer a:hover {
+            color: var(--primary-color);
             text-decoration: underline;
         }
 
-        .error {
-            color: red;
-            font-size: 14px;
-            margin-top: 10px;
+        .alert-error {
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(244, 67, 54, 0.2);
+            text-align: left;
+        }
+
+        .alert-error ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        .alert-error li {
+            margin-bottom: 5px;
+        }
+
+        .password-requirements {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+            text-align: left;
+            padding-left: 55px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container h-100 d-flex align-items-center justify-content-center">
-        <div class="user_card">
-            <h3 id="form-title">Register</h3>
-            <div class="form_container">
-                <form method="POST" action="">
-                    {% csrf_token %}
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <i class="fas fa-user-plus"></i>
+                <h3>Create Account</h3>
+            </div>
+
+            {% if form.errors %}
+                <div class="alert-error">
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                         </div>
-                        {{ form.username }}
+                        <input type="text" name="username" class="form-control" placeholder="Username" required>
                     </div>
+                </div>
+
+                <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                         </div>
-                        {{ form.email }}
+                        <input type="email" name="email" class="form-control" placeholder="Email" required>
                     </div>
+                </div>
+
+                <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-key"></i></span>
                         </div>
-                        {{ form.password1 }}
+                        <input type="password" name="password1" class="form-control" placeholder="Password" required>
                     </div>
+                    <div class="password-requirements">
+                        Your password must contain at least 8 characters, including letters and numbers.
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-key"></i></span>
                         </div>
-                        {{ form.password2 }}
+                        <input type="password" name="password2" class="form-control" placeholder="Confirm Password" required>
                     </div>
-                    <button type="submit" class="btn login_btn">Register</button>
-                </form>
-            </div>
-            {% if form.errors %}
-            <div class="error">
-                {{ form.errors }}
-            </div>
-            {% endif %}
+                </div>
+
+                <button type="submit" class="register-btn">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </form>
         </div>
     </div>
+
+    <script>
+        // Set placeholder values dynamically if form fields are rendered by Django
+        document.addEventListener('DOMContentLoaded', function() {
+            var formFields = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+
+            if (formFields.length > 0) {
+                formFields[0].placeholder = 'Username';
+                formFields[1].placeholder = 'Email';
+                formFields[2].placeholder = 'Password';
+                formFields[3].placeholder = 'Confirm Password';
+
+                formFields.forEach(function(field) {
+                    field.classList.add('form-control');
+                });
+            }
+        });
+    </script>
 </body>
-
-<script>
-    // Set placeholder values dynamically
-    var formFields = document.getElementsByTagName('input');
-    formFields[1].placeholder = 'Username';
-    formFields[2].placeholder = 'Email';
-    formFields[3].placeholder = 'Enter password';
-    formFields[4].placeholder = 'Re-enter password';
-
-    for (var i = 1; i < formFields.length; i++) {
-        formFields[i].className += ' form-control';
-    }
-</script>
-
 </html>
