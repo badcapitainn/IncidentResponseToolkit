@@ -77,8 +77,12 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
-    'parse-logs-every-minute': {
+    'parse-logs-every-30seconds': {
         'task': 'toolkit.tasks.parse_logs_task',
+        'schedule': timedelta(seconds=30),
+    },
+    'parse-packets-every-30seconds': {
+        'task': 'toolkit.tasks.monitor_network_packets',
         'schedule': timedelta(seconds=30),
     },
     'collect-resource-metrics': {

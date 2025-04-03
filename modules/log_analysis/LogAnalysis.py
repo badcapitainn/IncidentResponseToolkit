@@ -9,7 +9,6 @@ import numpy as np
 from sklearn.ensemble import IsolationForest
 
 
-
 class Services:
     def __init__(self):
 
@@ -39,15 +38,6 @@ class Services:
         except ValueError:
             # Fallback without timezone
             return datetime.strptime(timestamp.strip(), "%d/%b/%Y:%H:%M:%S")
-
-    # def monitor_resources(self):
-    #     while True:
-    #         cpu_usage = psutil.cpu_percent(interval=self.thresholds['resource_monitoring_interval'])
-    #         memory_info = psutil.virtual_memory()
-    #         memory_usage = memory_info.percent
-    #         disk_usage = psutil.disk_usage('/').percent
-    #         logger.info(f"Resource Usage: CPU={cpu_usage}%, Memory={memory_usage}%, Disk={disk_usage}%")
-    #         time.sleep(self.thresholds['resource_monitoring_interval'])
 
 
 class LogAnalysis:
@@ -290,7 +280,7 @@ class LogAnalysis:
                         for alert in alerts:
                             logger.critical(alert)
                         # for warning in warnings:
-                        #     logger.warning(warning)
+                        #      logger.warning(warning)
 
                     time.sleep(5)
         except Exception as e:

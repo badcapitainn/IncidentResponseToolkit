@@ -6,10 +6,15 @@ from .models import SystemMetrics
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+
 @shared_task
 def parse_logs_task():
-    print('Parsing logs')
     call_command('parse_logs')
+
+
+@shared_task
+def monitor_network_packets():
+    call_command('parse_network_packets')
 
 
 @shared_task

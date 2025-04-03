@@ -1,0 +1,339 @@
+2025-03-28 11:27:27.931 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /../../../etc/passwd from IP: 147.138.110.152
+2025-03-28 11:27:33.144 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /ping?host=127.0.0.1; rm -rf / from IP: 40.234.232.121
+2025-03-28 11:27:33.144 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 152.219.47.160
+2025-03-28 11:27:33.144 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /ping?host=127.0.0.1; rm -rf / from IP: 40.234.232.121
+2025-03-28 11:27:38.461 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 157.0.25.20
+2025-03-28 12:11:36.070 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /comments?input=<img src='x' onerror='alert(1)'> from IP: 111.114.204.35
+2025-03-28 12:11:41.420 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 41.139.2.42
+2025-03-28 12:12:08.623 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 202.17.120.37
+2025-03-28 12:12:08.623 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 68.14.229.108
+2025-03-28 12:12:31.059 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 68.123.74.113
+2025-03-28 12:12:53.106 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /comments?input=<img src='x' onerror='alert(1)'> from IP: 192.184.180.240
+2025-03-28 12:13:09.496 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /search?query=; ls -la from IP: 161.243.231.53
+2025-03-28 12:13:09.496 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /search?query=; ls -la from IP: 161.243.231.53
+2025-03-28 12:13:15.025 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 102.223.75.210
+2025-03-28 12:13:32.354 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 166.106.5.88
+2025-03-28 12:13:43.571 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /ping?host=127.0.0.1; rm -rf / from IP: 59.228.63.160
+2025-03-28 12:13:43.571 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /ping?host=127.0.0.1; rm -rf / from IP: 59.228.63.160
+2025-03-28 12:14:17.186 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /profile?input=<script>alert('XSS')</script> from IP: 112.139.113.155
+2025-03-28 12:14:22.680 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 19.159.119.17
+2025-03-28 12:14:44.439 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 60.67.223.255
+2025-03-28 12:36:00.635 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /ping?host=127.0.0.1; rm -rf / from IP: 40.105.208.152
+2025-03-28 12:36:00.636 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /profile?input=<script>alert('XSS')</script> from IP: 174.60.199.173
+2025-03-28 12:36:00.636 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /ping?host=127.0.0.1; rm -rf / from IP: 40.105.208.152
+2025-03-28 12:36:11.414 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 43.237.218.147
+2025-03-28 12:36:22.070 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 57.180.35.195
+2025-03-28 12:36:22.070 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /../../../etc/passwd from IP: 63.113.3.238
+2025-03-28 12:36:27.511 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /comments?input=<img src='x' onerror='alert(1)'> from IP: 74.134.6.229
+2025-03-28 12:36:39.901 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 90.161.54.174
+2025-03-28 12:37:02.355 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 24.203.66.226
+2025-03-28 12:37:33.885 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /comments?input=<img src='x' onerror='alert(1)'> from IP: 154.227.191.236
+2025-03-28 12:37:33.885 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /backup?cmd=| cat /etc/shadow from IP: 220.143.176.73
+2025-03-28 12:37:44.651 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /comments?input=<img src='x' onerror='alert(1)'> from IP: 14.42.209.255
+2025-03-28 12:37:55.825 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /comments?input=<img src='x' onerror='alert(1)'> from IP: 27.82.111.49
+2025-03-28 12:38:01.371 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 66.251.36.154
+2025-03-28 12:38:01.372 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 53.46.75.121
+2025-03-28 12:38:01.372 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 66.251.36.154
+2025-03-28 12:38:01.372 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 53.46.75.121
+2025-03-28 12:38:05.444 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:38:05.444 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:38:05.444 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:38:15.446 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:38:15.446 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:38:15.446 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:38:17.915 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /profile?input=<script>alert('XSS')</script> from IP: 22.191.217.65
+2025-03-28 12:38:25.447 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:38:25.447 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:38:25.447 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:38:35.449 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:38:35.449 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:38:35.449 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:38:45.450 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:38:45.458 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:38:45.468 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:38:55.476 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:38:55.476 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:38:55.476 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:05.478 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:39:05.478 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:39:05.478 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:13.208 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 174.53.35.69
+2025-03-28 12:39:13.208 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 174.53.35.69
+2025-03-28 12:39:15.479 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:39:15.479 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:39:15.479 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:15.479 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:39:15.479 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:39:15.479 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:18.690 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /../../../etc/passwd from IP: 159.72.140.203
+2025-03-28 12:39:25.483 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:39:25.483 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:39:25.483 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:25.483 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:39:25.483 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:39:25.483 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:35.496 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:39:35.496 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:39:35.497 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:35.497 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:39:35.498 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:39:35.498 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:45.499 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:39:45.499 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:39:45.499 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:45.499 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:39:45.499 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:39:45.499 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:55.502 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:39:55.502 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:39:55.502 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:39:55.502 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:39:55.502 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:39:55.502 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:05.505 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:40:05.505 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:40:05.505 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:05.505 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:40:05.505 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:40:05.505 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:13.826 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 157.223.94.86
+2025-03-28 12:40:15.508 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:40:15.508 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:40:15.508 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:15.508 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:40:15.508 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:40:15.508 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:19.304 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 34.200.245.248
+2025-03-28 12:40:24.778 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 67.37.222.111
+2025-03-28 12:40:25.511 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:40:25.511 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:40:25.511 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:25.511 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:40:25.511 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:40:25.511 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:35.515 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:40:35.523 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:40:35.535 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:35.535 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:40:35.553 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:40:35.565 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:35.925 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /ping?host=127.0.0.1; rm -rf / from IP: 58.176.92.150
+2025-03-28 12:40:35.937 | CRITICAL | LogAnalysis:log_analysis:281 - Directory traversal attempt detected in URL: /files?path=../../../../config.php from IP: 212.23.135.114
+2025-03-28 12:40:35.937 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /ping?host=127.0.0.1; rm -rf / from IP: 58.176.92.150
+2025-03-28 12:40:41.474 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 67.208.244.84
+2025-03-28 12:40:45.566 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:40:45.566 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:40:45.566 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:45.566 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:40:45.566 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:40:45.566 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:45.566 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:40:45.566 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:40:45.566 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:40:55.570 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:40:55.570 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:40:55.570 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:55.570 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:40:55.572 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:40:55.572 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:40:55.572 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:40:55.572 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:40:55.572 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:41:05.574 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:41:05.577 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:41:05.577 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:05.577 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:41:05.577 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:41:05.577 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:05.577 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:41:05.577 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:41:05.577 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:41:14.762 | CRITICAL | LogAnalysis:log_analysis:281 - XSS attack attempt detected in URL: /view?name=javascript:alert('XSS') from IP: 134.143.20.222
+2025-03-28 12:41:15.579 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:41:15.579 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:41:15.579 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:15.579 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:41:15.579 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:41:15.579 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:15.579 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:41:15.582 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:41:15.582 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:41:25.586 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:41:25.592 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:41:25.592 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:25.598 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:41:25.611 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:41:25.629 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:25.637 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:41:25.649 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:41:25.660 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:41:35.664 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:41:35.664 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:41:35.664 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:35.664 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:41:35.666 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:41:35.666 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:35.666 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:41:35.666 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:41:35.666 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:41:42.268 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 200.92.6.236
+2025-03-28 12:41:42.268 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 200.92.6.236
+2025-03-28 12:41:45.668 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:41:45.668 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:41:45.668 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:45.668 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:41:45.670 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:41:45.670 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:45.670 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:41:45.670 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:41:45.670 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:41:45.670 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:41:45.672 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:41:45.672 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:55.673 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:41:55.673 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:41:55.673 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:55.673 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:41:55.673 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:41:55.673 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:55.673 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:41:55.673 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:41:55.673 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:41:55.673 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:41:55.673 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:41:55.673 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:41:58.397 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 42.81.182.194
+2025-03-28 12:41:58.397 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /search?query='; DROP TABLE users; -- from IP: 42.81.182.194
+2025-03-28 12:42:05.679 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:42:05.679 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:42:05.679 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:05.679 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:42:05.681 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:42:05.681 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:05.681 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:42:05.681 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:42:05.681 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:42:05.682 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:42:05.682 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:42:05.682 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:15.684 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:42:15.684 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:42:15.684 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:15.684 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:42:15.684 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:42:15.684 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:15.684 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:42:15.684 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:42:15.684 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:42:15.684 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:42:15.684 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:42:15.684 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:20.320 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /search?query=; ls -la from IP: 120.86.116.184
+2025-03-28 12:42:20.320 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /search?query=; ls -la from IP: 120.86.116.184
+2025-03-28 12:42:25.687 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:42:25.687 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:42:25.704 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:25.734 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:42:25.777 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:42:25.777 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:25.781 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:42:25.781 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:42:25.781 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:42:25.781 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:42:25.781 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:42:25.781 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:25.781 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 120.86.116.184 is under close watch due to 3 anomalies.
+2025-03-28 12:42:25.781 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 120.86.116.184:
+2025-03-28 12:42:25.781 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:42:17 : DELETE /search?query=; ls -la (500)
+2025-03-28 12:42:31.279 | CRITICAL | LogAnalysis:log_analysis:281 - SQL Injection attempt detected in URL: /account?user=' UNION SELECT * FROM users; -- from IP: 217.29.211.54
+2025-03-28 12:42:31.279 | CRITICAL | LogAnalysis:log_analysis:281 - Command injection attempt detected in URL: /account?user=' UNION SELECT * FROM users; -- from IP: 217.29.211.54
+2025-03-28 12:42:35.784 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:42:35.784 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:42:35.785 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:35.785 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:42:35.785 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:42:35.785 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:35.785 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:42:35.787 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:42:35.787 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:42:35.787 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:42:35.787 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:42:35.787 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:35.787 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 120.86.116.184 is under close watch due to 3 anomalies.
+2025-03-28 12:42:35.789 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 120.86.116.184:
+2025-03-28 12:42:35.789 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:42:17 : DELETE /search?query=; ls -la (500)
+2025-03-28 12:42:45.790 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:42:45.790 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:42:45.790 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:45.790 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:42:45.790 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:42:45.793 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:45.793 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:42:45.793 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:42:45.793 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:42:45.793 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:42:45.793 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:42:45.795 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:45.795 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 120.86.116.184 is under close watch due to 3 anomalies.
+2025-03-28 12:42:45.795 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 120.86.116.184:
+2025-03-28 12:42:45.795 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:42:17 : DELETE /search?query=; ls -la (500)
+2025-03-28 12:42:55.796 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:55.796 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:55.796 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:42:55.796 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:42:55.796 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 120.86.116.184 is under close watch due to 3 anomalies.
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 120.86.116.184:
+2025-03-28 12:42:55.796 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:42:17 : DELETE /search?query=; ls -la (500)
+2025-03-28 12:43:05.802 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:43:05.802 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:43:05.803 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:05.803 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:43:05.803 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:43:05.803 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:05.804 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:43:05.804 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:43:05.804 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:43:05.805 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:43:05.805 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:43:05.805 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:05.805 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 120.86.116.184 is under close watch due to 3 anomalies.
+2025-03-28 12:43:05.806 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 120.86.116.184:
+2025-03-28 12:43:05.806 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:42:17 : DELETE /search?query=; ls -la (500)
+2025-03-28 12:43:15.808 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:43:15.808 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:43:15.809 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:15.809 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:43:15.809 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:43:15.810 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:15.810 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:43:15.811 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:43:15.811 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:43:15.811 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:43:15.811 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:43:15.812 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:15.812 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 120.86.116.184 is under close watch due to 3 anomalies.
+2025-03-28 12:43:15.812 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 120.86.116.184:
+2025-03-28 12:43:15.812 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:42:17 : DELETE /search?query=; ls -la (500)
+2025-03-28 12:43:25.821 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 53.46.75.121 is under close watch due to 3 anomalies.
+2025-03-28 12:43:25.828 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 53.46.75.121:
+2025-03-28 12:43:25.840 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:37:58 : GET /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:25.840 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 174.53.35.69 is under close watch due to 3 anomalies.
+2025-03-28 12:43:25.853 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 174.53.35.69:
+2025-03-28 12:43:25.862 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:39:07 : PUT /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:25.876 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 58.176.92.150 is under close watch due to 3 anomalies.
+2025-03-28 12:43:25.947 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 58.176.92.150:
+2025-03-28 12:43:25.947 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:40:34 : POST /ping?host=127.0.0.1; rm -rf / (500)
+2025-03-28 12:43:25.948 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 200.92.6.236 is under close watch due to 3 anomalies.
+2025-03-28 12:43:25.948 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 200.92.6.236:
+2025-03-28 12:43:25.948 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:41:40 : DELETE /search?query='; DROP TABLE users; -- (500)
+2025-03-28 12:43:25.948 | ERROR    | LogAnalysis:monitor_watchlist:201 - IP 120.86.116.184 is under close watch due to 3 anomalies.
+2025-03-28 12:43:25.949 | WARNING  | LogAnalysis:monitor_suspicious_ip:215 - Recent activity from suspicious IP 120.86.116.184:
+2025-03-28 12:43:25.949 | WARNING  | LogAnalysis:monitor_suspicious_ip:217 - - 28/Mar/2025:12:42:17 : DELETE /search?query=; ls -la (500)

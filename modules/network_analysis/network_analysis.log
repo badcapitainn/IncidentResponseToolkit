@@ -67,3 +67,21 @@
 2025-03-25T15:51:02.453018+0200 | INFO | [NORMAL] Sent packet: User login request.
 2025-03-25T15:51:03.223677+0200 | INFO | [+] Running anomaly detection...
 2025-03-25T15:51:03.233900+0200 | INFO | [+] Network analysis finished.
+2025-04-03T11:22:27.412659+0200 | INFO | [+] Network analysis module started.
+2025-04-03T11:22:27.412659+0200 | INFO | [+] Starting packet sniffer...
+2025-04-03T11:22:27.413660+0200 | INFO | [+] Starting deep packet inspection...
+2025-04-03T11:22:27.413660+0200 | INFO | Starting deep packet inspection on Wi-Fi...
+2025-04-03T11:22:29.414428+0200 | INFO | [+] Starting network traffic simulation...
+2025-04-03T11:22:31.494074+0200 | INFO | [NORMAL] Sent packet: GET /index.html HTTP/1.1
+2025-04-03T11:22:35.216875+0200 | INFO | [NORMAL] Sent packet: GET /index.html HTTP/1.1
+2025-04-03T11:22:38.383231+0200 | INFO | [NORMAL] Sent packet: User login request.
+2025-04-03T11:22:41.865749+0200 | INFO | [NORMAL] Sent packet: GET /index.html HTTP/1.1
+2025-04-03T11:22:44.799613+0200 | INFO | [NORMAL] Sent packet: User login request.
+2025-04-03T11:22:47.746986+0200 | INFO | [NORMAL] Sent packet: Hello, this is a normal request.
+2025-04-03T11:22:50.709376+0200 | INFO | [NORMAL] Sent packet: Ping request to server.
+2025-04-03T11:22:53.746291+0200 | INFO | [NORMAL] Sent packet: GET /index.html HTTP/1.1
+2025-04-03T11:22:56.545925+0200 | INFO | [NORMAL] Sent packet: Ping request to server.
+2025-04-03T11:23:00.453158+0200 | INFO | [NORMAL] Sent packet: GET /index.html HTTP/1.1
+2025-04-03T11:23:04.258539+0200 | INFO | [NORMAL] Sent packet: Ping request to server.
+2025-04-03T11:23:06.797683+0200 | INFO | [NORMAL] Sent packet: GET /index.html HTTP/1.1
+2025-04-03T11:23:10.643092+0200 | INFO | [NORMAL] Sent packet: GET /index.html HTTP/1.1
