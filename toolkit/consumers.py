@@ -82,23 +82,25 @@ class ResourceConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
 
-class NetworkPacketConsumer(AsyncWebsocketConsumer):
+class NetworkAnalysisConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.channel_layer.group_add(
-            "network_packets",
+            "network_analysis",
             self.channel_name
         )
         await self.accept()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
-            "network_packets",
+            "network_analysis",
             self.channel_name
         )
 
+    async def network_message(self, event):
+        await self.send(text_data=json.dumps(event))
+
     async def packet_update(self, event):
         await self.send(text_data=json.dumps({
-            'type': event['packet_type'],
-            'packet': event['message']
+            'type': 'packet.update',
+            'packet': event['packet']
         }))
-

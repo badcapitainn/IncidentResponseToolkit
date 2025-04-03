@@ -8,7 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs, MaliciousPackets, SuspiciousPackets, SystemMetrics
+from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs, MaliciousPackets, SuspiciousPackets, \
+    SystemMetrics
 
 
 @csrf_exempt
@@ -76,24 +77,14 @@ def log_analysis(request):
 @csrf_exempt
 @login_required(login_url='login')
 def network_analysis(request):
-    suspicious_packets = SuspiciousPackets.objects.all()
-    malicious_packets = MaliciousPackets.objects.all()
+    suspicious_packets = SuspiciousPackets.objects.all().order_by('-timeStamp')
+    malicious_packets = MaliciousPackets.objects.all().order_by('-timeStamp')
 
     context = {
         "suspicious_packets": suspicious_packets,
         "malicious_packets": malicious_packets,
     }
     template = '../templates/toolkit/network_analysis.html'
-
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        "network_analysis",
-        {
-            'type': 'network_message',
-            'message': 'Network message'
-        }
-    )
-
     return render(request, template, context)
 
 
@@ -143,5 +134,3 @@ def registration(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
-
-

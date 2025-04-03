@@ -498,212 +498,244 @@
         </footer>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.getElementById('logToggle');
-            const statusOn = document.querySelector('.status-on');
-            const statusOff = document.querySelector('.status-off');
-            const refreshBtn = document.getElementById('refreshBtn');
-            const socket = new WebSocket('ws://' + window.location.host + '/ws/logs/');
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize WebSocket connection for network packets
+                const networkSocket = new WebSocket(
+                    'ws://' + window.location.host + '/ws/network/'
+                );
 
-            // Toggle details visibility
-            document.querySelectorAll('.view-details').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const logId = this.getAttribute('data-log-id');
-                    const detailsRow = this.closest('tr').nextElementSibling;
-                    detailsRow.style.display = detailsRow.style.display === 'none' ? '' : 'none';
+                // Toggle details visibility
+                document.querySelectorAll('.view-details').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const logId = this.getAttribute('data-log-id');
+                        const detailsRow = this.closest('tr').nextElementSibling;
+                        detailsRow.style.display = detailsRow.style.display === 'none' ? '' : 'none';
+                    });
                 });
-            });
 
-            // Add to watchlist
-            document.querySelectorAll('.add-to-watchlist').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const logId = this.getAttribute('data-log-id');
-                    fetch(`/api/watchlist/add/${logId}/`, {
+                // WebSocket message handler for network packets
+                networkSocket.onmessage = function(e) {
+                    const data = JSON.parse(e.data);
+
+                    if (data.type === 'packet.update') {
+                        const packet = data.packet;
+                        if (packet.packet_type === 'malicious') {
+                            addMaliciousPacket(packet.message);
+                        } else if (packet.packet_type === 'suspicious') {
+                            addSuspiciousPacket(packet.message);
+                        }
+                    }
+                };
+
+                // Add a malicious packet to the table
+                function addMaliciousPacket(packet) {
+                    const table = document.getElementById('malicious-packets-table').getElementsByTagName('tbody')[0];
+
+                    // Remove empty row if present
+                    const emptyRow = document.getElementById('malicious-empty-row');
+                    if (emptyRow) emptyRow.remove();
+
+                    // Add new row
+                    const row = table.insertRow();
+                    row.innerHTML = `
+                        <td class="timestamp-col">${new Date(packet.timestamp).toLocaleString()}</td>
+                        <td>${packet.source_ip || 'N/A'}</td>
+                        <td>${packet.destination_ip || 'N/A'}</td>
+                        <td>
+                            <span class="status-badge status-alert">
+                                ${packet.threat_type || 'Malicious'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn view-details" data-packet-id="${packet.id}">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="action-btn block-ip" data-ip="${packet.source_ip || ''}">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        </td>
+                    `;
+
+                    // Add details row
+                    const detailsRow = table.insertRow();
+                    detailsRow.className = 'packet-details-row';
+                    detailsRow.style.display = 'none';
+                    detailsRow.innerHTML = `
+                        <td colspan="5">
+                            <div class="log-details">
+                                <pre>${packet.message || 'No additional details available'}</pre>
+                            </div>
+                        </td>
+                    `;
+
+                    // Update count
+                    const countElement = document.getElementById('malicious-count');
+                    countElement.textContent = parseInt(countElement.textContent) + 1;
+
+                    // Add event listeners
+                    row.querySelector('.view-details').addEventListener('click', function() {
+                        detailsRow.style.display = detailsRow.style.display === 'none' ? '' : 'none';
+                    });
+
+                    row.querySelector('.block-ip').addEventListener('click', function() {
+                        const ip = this.getAttribute('data-ip');
+                        if (ip) {
+                            blockIP(ip, this);
+                        }
+                    });
+                }
+
+                // Add a suspicious packet to the table
+                function addSuspiciousPacket(packet) {
+                    const table = document.getElementById('suspicious-packets-table').getElementsByTagName('tbody')[0];
+                    const emptyRow = document.getElementById('suspicious-empty-row');
+
+                    if (emptyRow) {
+                        table.removeChild(emptyRow);
+                    }
+
+                    const row = table.insertRow();
+                    row.innerHTML = `
+                        <td class="timestamp-col">${new Date(packet.timestamp).toLocaleString()}</td>
+                        <td>${packet.source_ip || 'N/A'}</td>
+                        <td>${packet.destination_ip || 'N/A'}</td>
+                        <td>
+                            <span class="status-badge ${getRiskLevelClass(packet.risk_level)}">
+                                ${packet.risk_level ? packet.risk_level.charAt(0).toUpperCase() + packet.risk_level.slice(1) : 'Low'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn view-details" data-packet-id="${packet.id}">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="action-btn monitor-ip" data-ip="${packet.source_ip || ''}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    `;
+
+                    const detailsRow = table.insertRow();
+                    detailsRow.className = 'packet-details-row';
+                    detailsRow.style.display = 'none';
+                    detailsRow.innerHTML = `
+                        <td colspan="5">
+                            <div class="log-details">
+                                <pre>${packet.message || 'No additional details available'}</pre>
+                            </div>
+                        </td>
+                    `;
+
+                    const countElement = document.getElementById('suspicious-count');
+                    countElement.textContent = parseInt(countElement.textContent) + 1;
+
+                    row.querySelector('.view-details').addEventListener('click', function() {
+                        detailsRow.style.display = detailsRow.style.display === 'none' ? '' : 'none';
+                    });
+
+                    row.querySelector('.monitor-ip').addEventListener('click', function() {
+                        const ip = this.getAttribute('data-ip');
+                        if (ip) {
+                            monitorIP(ip, this);
+                        }
+                    });
+                }
+
+                // Helper function to determine risk level class
+                function getRiskLevelClass(riskLevel) {
+                    if (!riskLevel) return 'status-info';
+                    switch(riskLevel.toLowerCase()) {
+                        case 'high': return 'status-alert';
+                        case 'medium': return 'status-warning';
+                        default: return 'status-info';
+                    }
+                }
+
+                // Block an IP address
+                function blockIP(ip, button) {
+                    fetch(`/api/network/block/${ip}/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
+                            'X-CSRFToken': getCookie('csrftoken')
                         }
                     }).then(response => {
                         if (response.ok) {
-                            // Update UI to reflect the change
-                            this.innerHTML = '<i class="fas fa-check"></i>';
-                            this.style.color = 'var(--success-color)';
+                            button.innerHTML = '<i class="fas fa-check"></i>';
+                            button.style.color = 'var(--success-color)';
                             setTimeout(() => {
-                                this.innerHTML = '<i class="fas fa-eye"></i>';
-                                this.style.color = 'var(--accent-color)';
+                                button.innerHTML = '<i class="fas fa-ban"></i>';
+                                button.style.color = 'var(--accent-color)';
                             }, 1000);
                         }
                     });
-                });
-            });
+                }
 
-            // Remove from watchlist
-            document.querySelectorAll('.remove-from-watchlist').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const logId = this.getAttribute('data-log-id');
-                    fetch(`/api/watchlist/remove/${logId}/`, {
+                // Monitor an IP address
+                function monitorIP(ip, button) {
+                    fetch(`/api/network/monitor/${ip}/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
+                            'X-CSRFToken': getCookie('csrftoken')
                         }
                     }).then(response => {
                         if (response.ok) {
-                            // Remove the row from the table
-                            const row = this.closest('tr');
-                            row.nextElementSibling.remove(); // Remove details row
-                            row.remove();
-
-                            // Update count
-                            const countElement = document.getElementById('watchlist-count');
-                            countElement.textContent = parseInt(countElement.textContent) - 1;
+                            button.innerHTML = '<i class="fas fa-check"></i>';
+                            button.style.color = 'var(--success-color)';
+                            setTimeout(() => {
+                                button.innerHTML = '<i class="fas fa-eye"></i>';
+                                button.style.color = 'var(--accent-color)';
+                            }, 1000);
                         }
                     });
+                }
+
+                // Get CSRF token from cookies
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                // Toggle monitoring
+                const toggle = document.getElementById('logToggle');
+                const statusOn = document.querySelector('.status-on');
+                const statusOff = document.querySelector('.status-off');
+
+                toggle.addEventListener('change', function() {
+                    if (this.checked) {
+                        statusOn.style.display = 'inline';
+                        statusOff.style.display = 'none';
+                        fetch('/api/network/monitoring/start/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            }
+                        });
+                    } else {
+                        statusOn.style.display = 'none';
+                        statusOff.style.display = 'inline';
+                        fetch('/api/network/monitoring/stop/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            }
+                        });
+                    }
                 });
             });
-
-            // Refresh button
-            refreshBtn.addEventListener('click', function() {
-                fetch('/api/logs/refresh/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        this.innerHTML = '<i class="fas fa-check"></i> Refreshed';
-                        setTimeout(() => {
-                            this.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
-                        }, 1000);
-                    }
-                });
-            });
-
-            // WebSocket handling
-            socket.onmessage = function(e) {
-                const data = JSON.parse(e.data);
-                const logType = data.log_type;
-                const logs = data.logs;
-
-                if (logType === 'alert') {
-                    updateTable('alert-logs-table', logs, 'alert');
-                    document.getElementById('alert-count').textContent = logs.length;
-                } else if (logType === 'suspicious') {
-                    updateTable('suspicious-logs-table', logs, 'suspicious');
-                    document.getElementById('suspicious-count').textContent = logs.length;
-                } else if (logType === 'watchlist') {
-                    updateTable('watchlist-logs-table', logs, 'watchlist');
-                    document.getElementById('watchlist-count').textContent = logs.length;
-                }
-            };
-
-            function updateTable(tableId, logs, type) {
-                const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
-                table.innerHTML = '';
-
-                if (logs.length === 0) {
-                    const row = table.insertRow();
-                    const cell = row.insertCell();
-                    cell.colSpan = 4;
-                    cell.className = 'empty-row';
-                    cell.textContent = `No ${type} logs available`;
-                } else {
-                    logs.forEach(log => {
-                        const row = table.insertRow();
-                        const timestampCell = row.insertCell();
-                        const messageCell = row.insertCell();
-                        const statusCell = row.insertCell();
-                        const actionsCell = row.insertCell();
-
-                        timestampCell.className = 'timestamp-col';
-                        timestampCell.textContent = log.timeStamp;
-                        messageCell.textContent = log.message;
-
-                        // Status badge
-                        let badgeClass = 'status-info';
-                        let badgeText = 'Normal';
-
-                        if (type === 'alert') {
-                            if (log.message.toLowerCase().includes('critical')) {
-                                badgeClass = 'status-alert';
-                                badgeText = 'Critical';
-                            } else if (log.message.toLowerCase().includes('warning')) {
-                                badgeClass = 'status-warning';
-                                badgeText = 'Warning';
-                            }
-                        } else if (type === 'suspicious') {
-                            if (log.message.toLowerCase().includes('high')) {
-                                badgeClass = 'status-alert';
-                                badgeText = 'High';
-                            } else if (log.message.toLowerCase().includes('medium')) {
-                                badgeClass = 'status-warning';
-                                badgeText = 'Medium';
-                            } else {
-                                badgeText = 'Low';
-                            }
-                        } else if (type === 'watchlist') {
-                            if (log.message.toLowerCase().includes('urgent')) {
-                                badgeClass = 'status-alert';
-                                badgeText = 'Urgent';
-                            } else if (log.message.toLowerCase().includes('important')) {
-                                badgeClass = 'status-warning';
-                                badgeText = 'Important';
-                            }
-                        }
-
-                        statusCell.innerHTML = `<span class="status-badge ${badgeClass}">${badgeText}</span>`;
-
-                        // Actions
-                        if (type === 'watchlist') {
-                            actionsCell.innerHTML = `
-                                <button class="action-btn view-details" data-log-id="${log.id}">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
-                                <button class="action-btn remove-from-watchlist" data-log-id="${log.id}">
-                                    <i class="fas fa-eye-slash"></i>
-                                </button>
-                            `;
-                        } else {
-                            actionsCell.innerHTML = `
-                                <button class="action-btn view-details" data-log-id="${log.id}">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
-                                <button class="action-btn add-to-watchlist" data-log-id="${log.id}">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            `;
-                        }
-                    });
-                }
-            }
-
-            toggle.addEventListener('change', function() {
-                if (this.checked) {
-                    statusOn.style.display = 'inline';
-                    statusOff.style.display = 'none';
-                    fetch('/api/log-analysis/start/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        }
-                    });
-                } else {
-                    statusOn.style.display = 'none';
-                    statusOff.style.display = 'inline';
-                    fetch('/api/log-analysis/stop/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        }
-                    });
-                }
-            });
-        });
-    </script>
+        </script>
 </body>
 </html>

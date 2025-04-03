@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Packet Monitor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Network Analysis</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
     <style>
         :root {
             --primary-color: #1c3d5a;
@@ -18,10 +19,11 @@
             --danger-color: #f44336;
             --border-radius: 12px;
             --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         body {
-            background: #f5f7fa;
+            background: #f5f7fa !important;
             font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
             color: var(--dark-color);
             line-height: 1.6;
@@ -32,9 +34,17 @@
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 15px 30px;
-            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
-            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
+        }
+
+        .network-container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .packet-section {
@@ -43,6 +53,36 @@
             padding: 25px;
             box-shadow: var(--box-shadow);
             margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        .packet-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .packet-section h2 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .packet-section h2 i {
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+
+        .packet-count {
+            background: var(--accent-color);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .table-container {
@@ -56,6 +96,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
+            font-size: 0.95rem;
         }
 
         .packet-table th {
@@ -65,11 +106,13 @@
             color: white;
             font-weight: 500;
             padding: 15px;
+            text-align: left;
         }
 
         .packet-table td {
             padding: 12px 15px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            vertical-align: top;
         }
 
         .packet-table tr:last-child td {
@@ -78,6 +121,28 @@
 
         .packet-table tr:nth-child(even) {
             background-color: rgba(240, 244, 248, 0.5);
+        }
+
+        .packet-table tr:hover {
+            background-color: rgba(28, 61, 90, 0.05);
+        }
+
+        .empty-row {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
 
         .status-badge {
@@ -103,6 +168,18 @@
             color: var(--accent-color);
         }
 
+        .timestamp-col {
+            white-space: nowrap;
+            width: 180px;
+        }
+
+        .message-col {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .action-btn {
             background: none;
             border: none;
@@ -110,6 +187,11 @@
             cursor: pointer;
             font-size: 1rem;
             margin-left: 10px;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover {
+            color: var(--primary-color);
         }
 
         .packet-details {
@@ -118,214 +200,264 @@
             background: rgba(240, 244, 248, 0.7);
             border-radius: var(--border-radius);
             margin-top: 10px;
+            font-size: 0.9rem;
         }
 
-        .toggle-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 30px 0;
-            background: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+        .packet-details pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
         }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-            margin: 0 15px;
-        }
+        @media (max-width: 768px) {
+            .table-container {
+                display: block;
+                overflow-x: auto;
+            }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+            .top-bar h1 {
+                font-size: 1.4rem;
+            }
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
+            .timestamp-col {
+                width: 120px;
+            }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(30px);
+            .message-col {
+                max-width: 150px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container-fluid">
+    <div class="network-container">
         <div class="top-bar">
-            <h1><i class="fas fa-network-wired"></i> Network Packet Monitor</h1>
+            <h1><i class="fas fa-network-wired"></i> Network Analysis</h1>
         </div>
 
         <div class="toggle-container">
-            <span class="status status-off" id="netStatus">Monitoring OFF</span>
-            <label class="switch">
-                <input id="netToggle" type="checkbox">
-                <span class="slider"></span>
+            <label class="toggle-label">
+                <span class="status status-off" id="netStatus">Monitoring OFF</span>
+                <div class="switch">
+                    <input id="netToggle" type="checkbox">
+                    <span class="slider"></span>
+                </div>
+                <span class="status status-on" style="display:none">Monitoring ON</span>
             </label>
-            <span class="status status-on" style="display:none">Monitoring ON</span>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="packet-section">
-                    <h2>
-                        <span><i class="fas fa-skull-crossbones"></i> Malicious Packets</span>
-                        <span class="badge bg-danger" id="malicious-count">0</span>
-                    </h2>
-                    <div class="table-container">
-                        <table class="packet-table" id="malicious-packets-table">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>Source IP</th>
-                                    <th>Threat Type</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="malicious-packets-body">
-                                <tr id="malicious-empty-row">
-                                    <td colspan="4" class="text-center py-4 text-muted">No malicious packets detected</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="packet-section">
-                    <h2>
-                        <span><i class="fas fa-search"></i> Suspicious Packets</span>
-                        <span class="badge bg-warning" id="suspicious-count">0</span>
-                    </h2>
-                    <div class="table-container">
-                        <table class="packet-table" id="suspicious-packets-table">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>Source IP</th>
-                                    <th>Risk Level</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="suspicious-packets-body">
-                                <tr id="suspicious-empty-row">
-                                    <td colspan="4" class="text-center py-4 text-muted">No suspicious packets detected</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Malicious Packets Table -->
+        <div class="packet-section">
+            <h2>
+                <span><i class="fas fa-skull-crossbones"></i> Malicious Packets</span>
+                <span class="packet-count" id="malicious-count">{{ malicious_packets|length }}</span>
+            </h2>
+            <div class="table-container">
+                <table class="packet-table" id="malicious-packets-table">
+                    <thead>
+                        <tr>
+                            <th class="timestamp-col">Timestamp</th>
+                            <th>Source IP</th>
+                            <th>Destination IP</th>
+                            <th>Threat Type</th>
+                            <th class="message-col">Message</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for packet in malicious_packets %}
+                        <tr>
+                            <td class="timestamp-col">{{ packet.timeStamp }}</td>
+                            <td>{{ packet.source_ip|default:"N/A" }}</td>
+                            <td>{{ packet.destination_ip|default:"N/A" }}</td>
+                            <td>
+                                <span class="status-badge status-danger">
+                                    {{ packet.get_threat_type_display }}
+                                </span>
+                            </td>
+                            <td class="message-col" title="{{ packet.message }}">{{ packet.message|truncatechars:50 }}</td>
+                            <td>
+                                <button class="action-btn view-details" data-packet-id="{{ packet.log_Id }}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="action-btn block-ip" data-ip="{{ packet.source_ip|default:'' }}">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="packet-details-row" style="display: none;">
+                            <td colspan="6">
+                                <div class="packet-details">
+                                    <pre>{{ packet.message }}</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="malicious-empty-row">
+                            <td colspan="6" class="empty-row">No malicious packets detected</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
+
+        <!-- Suspicious Packets Table -->
+        <div class="packet-section">
+            <h2>
+                <span><i class="fas fa-search"></i> Suspicious Packets</span>
+                <span class="packet-count" id="suspicious-count">{{ suspicious_packets|length }}</span>
+            </h2>
+            <div class="table-container">
+                <table class="packet-table" id="suspicious-packets-table">
+                    <thead>
+                        <tr>
+                            <th class="timestamp-col">Timestamp</th>
+                            <th>Source IP</th>
+                            <th>Destination IP</th>
+                            <th>Risk Level</th>
+                            <th class="message-col">Message</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for packet in suspicious_packets %}
+                        <tr>
+                            <td class="timestamp-col">{{ packet.timeStamp }}</td>
+                            <td>{{ packet.source_ip|default:"N/A" }}</td>
+                            <td>{{ packet.destination_ip|default:"N/A" }}</td>
+                            <td>
+                                <span class="status-badge
+                                    {% if packet.risk_level == 'high' %}status-danger
+                                    {% elif packet.risk_level == 'medium' %}status-warning
+                                    {% else %}status-info{% endif %}">
+                                    {{ packet.get_risk_level_display }}
+                                </span>
+                            </td>
+                            <td class="message-col" title="{{ packet.message }}">{{ packet.message|truncatechars:50 }}</td>
+                            <td>
+                                <button class="action-btn view-details" data-packet-id="{{ packet.log_Id }}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="action-btn monitor-ip" data-ip="{{ packet.source_ip|default:'' }}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="packet-details-row" style="display: none;">
+                            <td colspan="6">
+                                <div class="packet-details">
+                                    <pre>{{ packet.message }}</pre>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="suspicious-empty-row">
+                            <td colspan="6" class="empty-row">No suspicious packets detected</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2023 Network Security Dashboard. All rights reserved.</p>
+        </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.getElementById('netToggle');
-            const statusOn = document.querySelector('.status-on');
-            const statusOff = document.querySelector('.status-off');
+            // Initialize WebSocket connection
+            const socket = new WebSocket('ws://' + window.location.host + '/ws/network/');
 
-            // WebSocket connection
-            const socket = new WebSocket(
-                'ws://' + window.location.host + '/ws/network/'
-            );
-
-            // Toggle monitoring
-            toggle.addEventListener('change', function() {
-                if (this.checked) {
-                    statusOn.style.display = 'inline';
-                    statusOff.style.display = 'none';
-                    startMonitoring();
-                } else {
-                    statusOn.style.display = 'none';
-                    statusOff.style.display = 'inline';
-                    stopMonitoring();
-                }
+            // Toggle details visibility
+            document.querySelectorAll('.view-details').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const packetId = this.getAttribute('data-packet-id');
+                    const detailsRow = this.closest('tr').nextElementSibling;
+                    detailsRow.style.display = detailsRow.style.display === 'none' ? '' : 'none';
+                });
             });
 
-            function startMonitoring() {
-                fetch('/api/network/monitoring/start/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                }).then(response => {
-                    if (!response.ok) {
-                        toggle.checked = false;
-                        statusOn.style.display = 'none';
-                        statusOff.style.display = 'inline';
-                        alert('Failed to start monitoring');
+            // Block IP action
+            document.querySelectorAll('.block-ip').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const ip = this.getAttribute('data-ip');
+                    if (ip) {
+                        fetch(`/api/network/block/${ip}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                this.innerHTML = '<i class="fas fa-check"></i>';
+                                this.style.color = 'var(--success-color)';
+                                setTimeout(() => {
+                                    this.innerHTML = '<i class="fas fa-ban"></i>';
+                                    this.style.color = 'var(--accent-color)';
+                                }, 1000);
+                            }
+                        });
                     }
                 });
-            }
+            });
 
-            function stopMonitoring() {
-                fetch('/api/network/monitoring/stop/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
+            // Monitor IP action
+            document.querySelectorAll('.monitor-ip').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const ip = this.getAttribute('data-ip');
+                    if (ip) {
+                        fetch(`/api/network/monitor/${ip}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                this.innerHTML = '<i class="fas fa-check"></i>';
+                                this.style.color = 'var(--success-color)';
+                                setTimeout(() => {
+                                    this.innerHTML = '<i class="fas fa-eye"></i>';
+                                    this.style.color = 'var(--accent-color)';
+                                }, 1000);
+                            }
+                        });
                     }
                 });
-            }
+            });
 
             // WebSocket message handling
             socket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-
-                if (data.type === 'malicious') {
-                    addMaliciousPacket(data.packet);
-                } else if (data.type === 'suspicious') {
-                    addSuspiciousPacket(data.packet);
+                if (data.type === 'packet.update') {
+                    const packet = data.packet;
+                    if (packet.packet_type === 'malicious') {
+                        addMaliciousPacket(packet);
+                    } else if (packet.packet_type === 'suspicious') {
+                        addSuspiciousPacket(packet);
+                    }
                 }
             };
 
+            // Add malicious packet to table
             function addMaliciousPacket(packet) {
-                const tableBody = document.getElementById('malicious-packets-body');
+                const table = document.getElementById('malicious-packets-table').getElementsByTagName('tbody')[0];
                 const emptyRow = document.getElementById('malicious-empty-row');
 
-                // Remove empty row if it exists
-                if (emptyRow) {
-                    tableBody.removeChild(emptyRow);
-                }
+                if (emptyRow) table.removeChild(emptyRow);
 
-                // Create new row
-                const row = document.createElement('tr');
+                const row = table.insertRow();
                 row.innerHTML = `
-                    <td>${new Date(packet.timestamp).toLocaleString()}</td>
+                    <td class="timestamp-col">${new Date(packet.timestamp).toLocaleString()}</td>
                     <td>${packet.source_ip || 'N/A'}</td>
+                    <td>${packet.destination_ip || 'N/A'}</td>
                     <td><span class="status-badge status-danger">${packet.threat_type || 'Malicious'}</span></td>
+                    <td class="message-col" title="${packet.message}">${packet.message.length > 50 ? packet.message.substring(0, 50) + '...' : packet.message}</td>
                     <td>
                         <button class="action-btn view-details" data-packet-id="${packet.id}">
                             <i class="fas fa-info-circle"></i>
@@ -336,55 +468,38 @@
                     </td>
                 `;
 
-                // Add details row
-                const detailsRow = document.createElement('tr');
+                const detailsRow = table.insertRow();
                 detailsRow.className = 'packet-details-row';
                 detailsRow.style.display = 'none';
                 detailsRow.innerHTML = `
-                    <td colspan="4">
+                    <td colspan="6">
                         <div class="packet-details">
-                            <pre>${packet.message || 'No additional details available'}</pre>
+                            <pre>${packet.message}</pre>
                         </div>
                     </td>
                 `;
 
-                tableBody.prepend(detailsRow);
-                tableBody.prepend(row);
-
-                // Update count
-                const countElement = document.getElementById('malicious-count');
-                countElement.textContent = parseInt(countElement.textContent) + 1;
-
-                // Add event listeners
-                row.querySelector('.view-details').addEventListener('click', function() {
-                    detailsRow.style.display = detailsRow.style.display === 'none' ? '' : 'none';
-                });
-
-                row.querySelector('.block-ip').addEventListener('click', function() {
-                    const ip = this.getAttribute('data-ip');
-                    if (ip) {
-                        blockIP(ip, this);
-                    }
-                });
+                document.getElementById('malicious-count').textContent = parseInt(document.getElementById('malicious-count').textContent) + 1;
             }
 
+            // Add suspicious packet to table
             function addSuspiciousPacket(packet) {
-                const tableBody = document.getElementById('suspicious-packets-body');
+                const table = document.getElementById('suspicious-packets-table').getElementsByTagName('tbody')[0];
                 const emptyRow = document.getElementById('suspicious-empty-row');
 
-                if (emptyRow) {
-                    tableBody.removeChild(emptyRow);
-                }
+                if (emptyRow) table.removeChild(emptyRow);
 
-                const row = document.createElement('tr');
+                const row = table.insertRow();
                 row.innerHTML = `
-                    <td>${new Date(packet.timestamp).toLocaleString()}</td>
+                    <td class="timestamp-col">${new Date(packet.timestamp).toLocaleString()}</td>
                     <td>${packet.source_ip || 'N/A'}</td>
+                    <td>${packet.destination_ip || 'N/A'}</td>
                     <td>
                         <span class="status-badge ${getRiskLevelClass(packet.risk_level)}">
                             ${packet.risk_level ? packet.risk_level.charAt(0).toUpperCase() + packet.risk_level.slice(1) : 'Low'}
                         </span>
                     </td>
+                    <td class="message-col" title="${packet.message}">${packet.message.length > 50 ? packet.message.substring(0, 50) + '...' : packet.message}</td>
                     <td>
                         <button class="action-btn view-details" data-packet-id="${packet.id}">
                             <i class="fas fa-info-circle"></i>
@@ -395,35 +510,21 @@
                     </td>
                 `;
 
-                const detailsRow = document.createElement('tr');
+                const detailsRow = table.insertRow();
                 detailsRow.className = 'packet-details-row';
                 detailsRow.style.display = 'none';
                 detailsRow.innerHTML = `
-                    <td colspan="4">
+                    <td colspan="6">
                         <div class="packet-details">
-                            <pre>${packet.message || 'No additional details available'}</pre>
+                            <pre>${packet.message}</pre>
                         </div>
                     </td>
                 `;
 
-                tableBody.prepend(detailsRow);
-                tableBody.prepend(row);
-
-                const countElement = document.getElementById('suspicious-count');
-                countElement.textContent = parseInt(countElement.textContent) + 1;
-
-                row.querySelector('.view-details').addEventListener('click', function() {
-                    detailsRow.style.display = detailsRow.style.display === 'none' ? '' : 'none';
-                });
-
-                row.querySelector('.monitor-ip').addEventListener('click', function() {
-                    const ip = this.getAttribute('data-ip');
-                    if (ip) {
-                        monitorIP(ip, this);
-                    }
-                });
+                document.getElementById('suspicious-count').textContent = parseInt(document.getElementById('suspicious-count').textContent) + 1;
             }
 
+            // Helper function to get risk level class
             function getRiskLevelClass(riskLevel) {
                 if (!riskLevel) return 'status-info';
                 switch(riskLevel.toLowerCase()) {
@@ -433,44 +534,7 @@
                 }
             }
 
-            function blockIP(ip, button) {
-                fetch(`/api/network/block/${ip}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        button.innerHTML = '<i class="fas fa-check"></i>';
-                        button.style.color = 'var(--success-color)';
-                        setTimeout(() => {
-                            button.innerHTML = '<i class="fas fa-ban"></i>';
-                            button.style.color = 'var(--accent-color)';
-                        }, 1000);
-                    }
-                });
-            }
-
-            function monitorIP(ip, button) {
-                fetch(`/api/network/monitor/${ip}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        button.innerHTML = '<i class="fas fa-check"></i>';
-                        button.style.color = 'var(--success-color)';
-                        setTimeout(() => {
-                            button.innerHTML = '<i class="fas fa-eye"></i>';
-                            button.style.color = 'var(--accent-color)';
-                        }, 1000);
-                    }
-                });
-            }
-
+            // Get CSRF token from cookies
             function getCookie(name) {
                 let cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
@@ -485,6 +549,35 @@
                 }
                 return cookieValue;
             }
+
+            // Toggle monitoring
+            const toggle = document.getElementById('netToggle');
+            const statusOn = document.querySelector('.status-on');
+            const statusOff = document.querySelector('.status-off');
+
+            toggle.addEventListener('change', function() {
+                if (this.checked) {
+                    statusOn.style.display = 'inline';
+                    statusOff.style.display = 'none';
+                    fetch('/api/network/monitoring/start/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+                } else {
+                    statusOn.style.display = 'none';
+                    statusOff.style.display = 'inline';
+                    fetch('/api/network/monitoring/stop/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+                }
+            });
         });
     </script>
 </body>
