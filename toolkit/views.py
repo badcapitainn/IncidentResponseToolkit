@@ -8,8 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, ResourceUsageLogs, MaliciousPackets, SuspiciousPackets, \
-    SystemMetrics
+from django.views.generic import TemplateView
+from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, MaliciousPackets, SuspiciousPackets, SystemMetrics
 
 
 @csrf_exempt
