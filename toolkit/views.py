@@ -1,4 +1,7 @@
 import json
+import os
+from datetime import datetime
+
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -8,8 +11,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from django.views.generic import TemplateView
-from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, MaliciousPackets, SuspiciousPackets, SystemMetrics
+from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, MaliciousPackets, SuspiciousPackets, SystemMetrics, \
+    MalwareDetectionResult
+from modules.malware_detection.scanner import MalwareScanner
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 
 @csrf_exempt
@@ -91,9 +97,83 @@ def network_analysis(request):
 @csrf_exempt
 @login_required(login_url='login')
 def malware_detection(request):
-    context = {}
-    template = '../templates/toolkit/malware_detection.html'
-    return render(request, template, context)
+    if request.method == 'POST':
+        # Handle file upload
+        if 'file_scan' in request.FILES:
+            return handle_file_scan(request)
+        # Handle directory scan
+        elif 'directory_path' in request.POST:
+            return handle_directory_scan(request)
+
+    # Get recent scan results
+    recent_scans = MalwareDetectionResult.objects.all().order_by('-scan_time')[:10]
+    return render(request, 'toolkit/malware_detection.html', {
+        'recent_scans': recent_scans
+    })
+
+
+def handle_file_scan(request):
+    uploaded_file = request.FILES['file_scan']
+    fs = FileSystemStorage()
+
+    # Save the uploaded file temporarily
+    filename = fs.save(uploaded_file.name, uploaded_file)
+    file_path = os.path.join(settings.MEDIA_ROOT, filename)
+
+    # Scan the file
+    scanner = MalwareScanner()
+    try:
+        matches = scanner.scan_file(file_path)
+
+        if matches:
+            result = MalwareDetectionResult.objects.create(
+                file_path=file_path,
+                scan_time=datetime.now(),
+                is_malicious=True,
+                malware_type=", ".join([m.rule for m in matches]),
+                details=str(matches),
+                detected_by=request.user
+            )
+            messages.warning(request, f"Malware detected: {result.malware_type}")
+        else:
+            result = MalwareDetectionResult.objects.create(
+                file_path=file_path,
+                scan_time=datetime.now(),
+                is_malicious=False,
+                detected_by=request.user
+            )
+            messages.success(request, "No malware detected in the file.")
+
+    except Exception as e:
+        messages.error(request, f"Scanning error: {str(e)}")
+    finally:
+        # Clean up the temporary file
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+    return redirect('malware_detection')
+
+
+def handle_directory_scan(request):
+    directory_path = request.POST['directory_path']
+
+    if not os.path.isdir(directory_path):
+        messages.error(request, "Invalid directory path.")
+        return redirect('malware_detection')
+
+    scanner = MalwareScanner()
+    try:
+        results = scanner.scan_directory(directory_path)
+
+        if results:
+            messages.warning(request, f"Found {len(results)} malicious files in the directory.")
+        else:
+            messages.success(request, "No malware detected in the directory.")
+
+    except Exception as e:
+        messages.error(request, f"Scanning error: {str(e)}")
+
+    return redirect('malware_detection')
 
 
 @csrf_exempt

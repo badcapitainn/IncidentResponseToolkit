@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -89,3 +91,25 @@ class SystemMetrics(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+
+
+class MalwareDetectionResult(models.Model):
+    SCAN_TYPES = (
+        ('FILE', 'File Scan'),
+        ('DIR', 'Directory Scan'),
+        ('MEM', 'Memory Scan'),
+    )
+
+    file_path = models.CharField(max_length=512)
+    scan_time = models.DateTimeField()
+    is_malicious = models.BooleanField(default=False)
+    malware_type = models.CharField(max_length=255, blank=True, null=True)
+    details = models.TextField(blank=True, null=True)
+    scan_type = models.CharField(max_length=4, choices=SCAN_TYPES, default='FILE')
+    detected_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        ordering = ['-scan_time']
+
+    def __str__(self):
+        return f"{self.file_path} - {self.malware_type if self.is_malicious else 'Clean'}"

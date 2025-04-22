@@ -8,5 +8,5 @@ urlpatterns = [
     path("logout/", views.user_logout, name="logout"),
     path("home/log_analysis/", views.log_analysis, name="log_analysis"),
     path("home/network_analysis/", views.network_analysis, name="network_analysis"),
-    path("home/malware_detection/", views.malware_detection, name="malware_detection"),
+    path('malware-detection/', views.malware_detection, name='malware_detection'),
 ]
