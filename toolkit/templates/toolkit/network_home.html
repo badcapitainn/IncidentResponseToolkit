@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Traffic Analysis</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .info-box {
+            display: flex;
+            background: #fff;
+            width: 100%;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            border-radius: 2px;
+            margin-bottom: 15px;
+            min-height: 80px;
+        }
+        .info-box-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            font-size: 30px;
+            color: white;
+        }
+        .info-box-content {
+            padding: 10px;
+            flex: 1;
+        }
+        .info-box-text {
+            display: block;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .info-box-number {
+            display: block;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .badge {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 8px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .card {
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            padding: 12px 20px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="mb-4">Network Traffic Analysis</h1>
+
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Capture Controls</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'start_network_capture' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="interface" class="form-label">Network Interface</label>
+                                <select class="form-select" id="interface" name="interface">
+                                    {% for interface in interfaces %}
+                                    <option value="{{ interface }}">{{ interface }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            {% if is_capturing %}
+                            <a href="{% url 'stop_network_capture' %}" class="btn btn-danger">
+                                <i class="fas fa-stop"></i> Stop Capture
+                            </a>
+                            <span class="badge bg-success ms-2">Running</span>
+                            {% else %}
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Start Capture
+                            </button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Network Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-info"><i class="fas fa-arrow-down"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Received</span>
+                                        <span class="info-box-number">{{ stats.packets_received|default:"0" }} packets</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-success"><i class="fas fa-arrow-up"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Sent</span>
+                                        <span class="info-box-number">{{ stats.packets_sent|default:"0" }} packets</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-info"><i class="fas fa-database"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Received</span>
+                                        <span class="info-box-number">{{ stats.bytes_received|filesizeformat|default:"0" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-success"><i class="fas fa-database"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Sent</span>
+                                        <span class="info-box-number">{{ stats.bytes_sent|filesizeformat|default:"0" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Alerts</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Rule</th>
+                                        <th>Severity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for alert in alerts %}
+                                    <tr>
+                                        <td>{{ alert.created_at|timesince }} ago</td>
+                                        <td>{{ alert.rule.name|truncatechars:30 }}</td>
+                                        <td>
+                                            <span class="badge {% if alert.severity == 'critical' %}bg-danger{% elif alert.severity == 'high' %}bg-warning{% elif alert.severity == 'medium' %}bg-info{% else %}bg-secondary{% endif %}">
+                                                {{ alert.severity|title }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No alerts found</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="{% url 'network_alerts_list' %}" class="btn btn-sm btn-outline-primary">View All Alerts</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Network Traffic</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Source IP</th>
+                                        <th>Destination IP</th>
+                                        <th>Protocol</th>
+                                        <th>Port</th>
+                                        <th>Size</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for traffic in recent_traffic %}
+                                    <tr>
+                                        <td>{{ traffic.timestamp|timesince }} ago</td>
+                                        <td>{{ traffic.source_ip }}</td>
+                                        <td>{{ traffic.destination_ip }}</td>
+                                        <td>{{ traffic.protocol }}</td>
+                                        <td>{{ traffic.port|default:"" }}</td>
+                                        <td>{{ traffic.packet_size|filesizeformat }}</td>
+                                        <td>
+                                            {% if traffic.is_malicious %}
+                                            <span class="badge bg-danger">Malicious</span>
+                                            {% else %}
+                                            <span class="badge bg-success">Normal</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">No traffic data available</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="{% url 'network_traffic_list' %}" class="btn btn-sm btn-outline-primary">View All Traffic</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        // Refresh stats every 5 seconds if capture is running
+        {% if is_capturing %}
+        setInterval(function() {
+            $.get("{% url 'network_dashboard_data' %}", function(data) {
+                // Update stats - implement this based on your needs
+                console.log("Updated stats:", data);
+            });
+        }, 5000);
+        {% endif %}
+
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+    });
+    </script>
+</body>
+</html>

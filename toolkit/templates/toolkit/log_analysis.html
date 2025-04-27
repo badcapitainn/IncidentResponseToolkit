@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Viewer | Incident Response</title>
+    <title>Log Analysis</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #0f172a;
@@ -663,34 +664,8 @@
     <!-- App Bar -->
     <div class="app-bar">
         <div class="app-title">
-            <i class="fas fa-shield-alt"></i>
+            <i class="fas fa-search"></i>
             <span>Log Analysis</span>
-        </div>
-        
-        <div class="app-actions">
-            <div class="user-menu" id="userMenu">
-                <button class="user-btn" id="userBtn">
-                    <div class="user-avatar">AD</div>
-                    <span class="user-name">Admin</span>
-                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; margin-left: 8px;"></i>
-                </button>
-                
-                <div class="user-dropdown">
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-user"></i>
-                        <span>Profile</span>
-                    </a>
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="{% url 'logout' %}" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -796,10 +771,10 @@
                                             <span class="status-badge
                                                 {% if 'critical' in log.message|lower %}critical
                                                 {% elif 'warning' in log.message|lower %}warning
-                                                {% else %}normal{% endif %}">
+                                                {% else %}critical{% endif %}">
                                                 {% if 'critical' in log.message|lower %}<i class="fas fa-exclamation"></i> Critical
                                                 {% elif 'warning' in log.message|lower %}<i class="fas fa-exclamation-triangle"></i> Warning
-                                                {% else %}<i class="fas fa-check"></i> Info{% endif %}
+                                                {% else %}<i class="fas fa-exclamation"></i> Critical{% endif %}
                                             </span>
                                         </td>
                                         <td>
@@ -863,10 +838,10 @@
                                             <span class="status-badge
                                                 {% if 'high' in log.message|lower %}critical
                                                 {% elif 'medium' in log.message|lower %}warning
-                                                {% else %}info{% endif %}">
+                                                {% else %}warning{% endif %}">
                                                 {% if 'high' in log.message|lower %}<i class="fas fa-exclamation"></i> High
                                                 {% elif 'medium' in log.message|lower %}<i class="fas fa-exclamation-triangle"></i> Medium
-                                                {% else %}<i class="fas fa-info-circle"></i> Low{% endif %}
+                                                {% else %}<i class="fas fa-exclamation-triangle"></i> Low{% endif %}
                                             </span>
                                         </td>
                                         <td>
@@ -929,10 +904,10 @@
                                     <span class="status-badge
                                         {% if 'urgent' in log.message|lower %}critical
                                         {% elif 'important' in log.message|lower %}warning
-                                        {% else %}info{% endif %}">
+                                        {% else %}warning{% endif %}">
                                         {% if 'urgent' in log.message|lower %}<i class="fas fa-exclamation"></i> Urgent
                                         {% elif 'important' in log.message|lower %}<i class="fas fa-exclamation-triangle"></i> Important
-                                        {% else %}<i class="fas fa-info-circle"></i> Normal{% endif %}
+                                        {% else %}<i class="fas fa-exclamation-triangle"></i> Important{% endif %}
                                     </span>
                                 </td>
                                 <td>
@@ -964,6 +939,11 @@
             </div>
         </div>
     </div>
+    <footer class="mt-5">
+        <div class="container text-center py-3">
+            <small>Sentry Toolkit - Efficient Open-Source Incidence Response Automation Toolkit</small>
+        </div>
+    </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>

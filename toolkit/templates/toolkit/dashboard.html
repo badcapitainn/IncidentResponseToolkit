@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Incident Response Dashboard</title>
+    <title>Sentry</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1"></script>
@@ -732,7 +732,7 @@
     <div class="app-bar">
         <div class="app-title">
             <i class="fas fa-shield-alt"></i>
-            <span>SentryLite</span>
+            <span>Sentry</span>
         </div>
         
         <div class="app-actions">
@@ -774,9 +774,6 @@
                     </div>
                 </div>
                 <div class="stat-value">12</div>
-                <div class="stat-change negative">
-                    <i class="fas fa-arrow-up"></i> 20% from yesterday
-                </div>
             </div>
             
             <div class="stat-card">
@@ -787,9 +784,6 @@
                     </div>
                 </div>
                 <div class="stat-value">24</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-down"></i> 15% from yesterday
-                </div>
             </div>
             
             <div class="stat-card">
@@ -800,9 +794,6 @@
                     </div>
                 </div>
                 <div class="stat-value">3</div>
-                <div class="stat-change">
-                    No change
-                </div>
             </div>
             
             <div class="stat-card">
@@ -813,9 +804,6 @@
                     </div>
                 </div>
                 <div class="stat-value">8m 42s</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-down"></i> 25% from last week
-                </div>
             </div>
             
             <div class="stat-card">
@@ -826,9 +814,6 @@
                     </div>
                 </div>
                 <div class="stat-value">5</div>
-                <div class="stat-change negative">
-                    <i class="fas fa-arrow-up"></i> 2 new today
-                </div>
             </div>
             
             <div class="stat-card">
@@ -839,207 +824,16 @@
                     </div>
                 </div>
                 <div class="stat-value">87/100</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i> 5 points this month
-                </div>
             </div>
         </div>
 
         <!-- Main Layout -->
-        <div class="dashboard-layout">
-            <!-- Left Column -->
-            <div class="left-column">
-                <!-- Alerts Panel -->
-                <div class="alert-panel">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span>Security Alerts</span>
-                        </div>
-                        <div class="panel-badge">12 New</div>
-                    </div>
-                    <div class="panel-content">
-                        <div class="scrollable-table-container">
-                            <table class="alert-table">
-                                <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>Message</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for log in alert_logs %}
-                                        <tr>
-                                            <td>{{ log.timeStamp }}</td>
-                                            <td>{{ log.message }}</td>
-                                            <td>
-                                                <span class="status-badge 
-                                                    {% if 'critical' in log.message|lower %}critical
-                                                    {% elif 'warning' in log.message|lower %}warning
-                                                    {% else %}normal{% endif %}">
-                                                    {% if 'critical' in log.message|lower %}<i class="fas fa-exclamation"></i> Critical
-                                                    {% elif 'warning' in log.message|lower %}<i class="fas fa-exclamation-triangle"></i> Warning
-                                                    {% else %}<i class="fas fa-check"></i> Normal{% endif %}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    {% empty %}
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="empty-state">
-                                                    <i class="fas fa-check-circle"></i>
-                                                    <p>No alert logs available</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Right Column -->
-            <div class="right-column">
-                <!-- Watch List Panel -->
-                <div class="alert-panel">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <i class="fas fa-eye"></i>
-                            <span>Watch List</span>
-                        </div>
-                        <div class="panel-badge">Monitoring</div>
-                    </div>
-                    <div class="panel-content">
-                        <div class="scrollable-table-container">
-                            <table class="alert-table">
-                                <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>Message</th>
-                                        <th>Severity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for log in watch_list_logs %}
-                                        <tr>
-                                            <td>{{ log.timeStamp }}</td>
-                                            <td>{{ log.message }}</td>
-                                            <td>
-                                                <span class="status-badge 
-                                                    {% if 'high' in log.message|lower %}critical
-                                                    {% elif 'medium' in log.message|lower %}warning
-                                                    {% else %}info{% endif %}">
-                                                    {% if 'high' in log.message|lower %}<i class="fas fa-exclamation"></i> High
-                                                    {% elif 'medium' in log.message|lower %}<i class="fas fa-exclamation-triangle"></i> Medium
-                                                    {% else %}<i class="fas fa-info-circle"></i> Low{% endif %}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    {% empty %}
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="empty-state">
-                                                    <i class="fas fa-eye-slash"></i>
-                                                    <p>No logs available in watch list</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Charts Row -->
-        <div class="dashboard-layout" style="margin-top: 24px;">
-            <!-- RAM Chart -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title">
-                        <i class="fas fa-memory"></i>
-                        <span>RAM Usage</span>
-                    </div>
-                    <div class="chart-actions">
-                        <button class="chart-action-btn active">1h</button>
-                        <button class="chart-action-btn">6h</button>
-                        <button class="chart-action-btn">24h</button>
-                    </div>
-                </div>
-                <div class="chart-wrapper">
-                    <canvas id="ramChart"></canvas>
-                </div>
-            </div>
-            
-            <!-- CPU Chart -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title">
-                        <i class="fas fa-microchip"></i>
-                        <span>CPU Usage</span>
-                    </div>
-                    <div class="chart-actions">
-                        <button class="chart-action-btn active">1h</button>
-                        <button class="chart-action-btn">6h</button>
-                        <button class="chart-action-btn">24h</button>
-                    </div>
-                </div>
-                <div class="chart-wrapper">
-                    <canvas id="cpuChart"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <div class="dashboard-layout" style="margin-top: 24px;">
-            <!-- Disk Read Chart -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title">
-                        <i class="fas fa-hdd"></i>
-                        <span>Disk Read</span>
-                    </div>
-                    <div class="chart-actions">
-                        <button class="chart-action-btn active">1h</button>
-                        <button class="chart-action-btn">6h</button>
-                        <button class="chart-action-btn">24h</button>
-                    </div>
-                </div>
-                <div class="chart-wrapper">
-                    <canvas id="diskReadChart"></canvas>
-                </div>
-            </div>
-            
-            <!-- Disk Write Chart -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <div class="chart-title">
-                        <i class="fas fa-hdd"></i>
-                        <span>Disk Write</span>
-                    </div>
-                    <div class="chart-actions">
-                        <button class="chart-action-btn active">1h</button>
-                        <button class="chart-action-btn">6h</button>
-                        <button class="chart-action-btn">24h</button>
-                    </div>
-                </div>
-                <div class="chart-wrapper">
-                    <canvas id="diskWriteChart"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quick Actions -->
         <div class="dashboard-layout" style="margin-top: 24px;">
             <div class="chart-container">
                 <div class="chart-header">
                     <div class="chart-title">
                         <i class="fas fa-bolt"></i>
-                        <span>Quick Actions</span>
+                        <span>Modules</span>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; padding: 16px;">
@@ -1047,24 +841,24 @@
                         <i class="fas fa-search"></i>
                         <span>Log Analysis</span>
                     </a>
-                    
-                    <a href="{% url 'network_analysis' %}" class="quick-action">
+
+                    <a href="{% url 'network_home' %}" class="quick-action">
                         <i class="fas fa-network-wired"></i>
                         <span>Network Analysis</span>
                     </a>
-                    
+
                     <a href="{% url 'malware_detection' %}" class="quick-action">
                         <i class="fas fa-bug"></i>
                         <span>Malware Detection</span>
                     </a>
-                    
+
                     <a href="#" class="quick-action">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Threat Intel</span>
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Summery Report</span>
                     </a>
                 </div>
             </div>
-            
+
             <!-- Recent Activity -->
             <div class="chart-container">
                 <div class="chart-header">
@@ -1083,7 +877,7 @@
                             <div class="activity-time">2 minutes ago</div>
                         </div>
                     </div>
-                    
+
                     <div class="activity-item">
                         <div class="activity-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--info-color);">
                             <i class="fas fa-user"></i>
@@ -1093,7 +887,7 @@
                             <div class="activity-time">15 minutes ago</div>
                         </div>
                     </div>
-                    
+
                     <div class="activity-item">
                         <div class="activity-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color);">
                             <i class="fas fa-exclamation"></i>
@@ -1103,7 +897,7 @@
                             <div class="activity-time">1 hour ago</div>
                         </div>
                     </div>
-                    
+
                     <div class="activity-item">
                         <div class="activity-icon" style="background: rgba(124, 58, 237, 0.1); color: var(--secondary-color);">
                             <i class="fas fa-cog"></i>
@@ -1116,7 +910,72 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Charts Row -->
+        <div class="dashboard-layout" style="margin-top: 24px;">
+            <!-- RAM Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-memory"></i>
+                        <span>RAM Usage</span>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="ramChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- CPU Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-microchip"></i>
+                        <span>CPU Usage</span>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="cpuChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-layout" style="margin-top: 24px;">
+            <!-- Disk Read Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-hdd"></i>
+                        <span>Disk Read</span>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="diskReadChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Disk Write Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-hdd"></i>
+                        <span>Disk Write</span>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="diskWriteChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modules -->
+
     </div>
+     <footer class="mt-5">
+        <div class="container text-center py-3">
+            <small>Sentry Toolkit - Efficient Open-Source Incidence Response Automation Toolkit</small>
+        </div>
+    </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
