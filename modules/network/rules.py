@@ -4,8 +4,8 @@ STANDARD_RULES = [
         "name": "Unusual Port Scanning",
         "description": "Detects multiple connection attempts to different ports from a single source IP",
         "type": "PORT_SCAN",
-        "threshold": 5,  # Number of different ports scanned
-        "time_window": 60,  # Seconds
+        "threshold": 20,  # Number of different ports scanned
+        "time_window": 30,  # Seconds
         "severity": "high",
         "action": "ALERT"
     },
