@@ -20,6 +20,7 @@ class Services:
         self.log_prefix = "log_analysis_"
         self.log_extension = ".log"
 
+    @staticmethod
     def parse_log_entry(self, log_entry):
         apache_log = re.compile(
             r'(?P<ip>[\d.]+) - - \[(?P<timestamp>[^\]]+)\s*\] "(?P<method>[A-Z]+) (?P<url>[^"]+) (?P<protocol>[^"]+)" ('
@@ -31,6 +32,7 @@ class Services:
         logger.debug(f"Failed to parse log entry: {log_entry}")
         return None
 
+    @staticmethod
     def parse_timestamp(self, timestamp):
         try:
             # Try with timezone

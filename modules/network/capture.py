@@ -1,6 +1,6 @@
 # config/toolkit/modules/network_analysis/capture.py
 import pydivert
-from scapy.all import sniff
+from scapy.all import sniff, Raw
 from scapy.layers.inet import IP, TCP, UDP
 import dpkt
 import threading
@@ -69,6 +69,10 @@ class NetworkCapture:
             # Convert to Scapy packet for analysis
             scapy_pkt = IP(packet.raw)
             pkt_dict = packet_to_dict(scapy_pkt)
+
+            # Add raw payload if it exists
+            if Raw in scapy_pkt:
+                pkt_dict['payload'] = str(scapy_pkt[Raw].load)
 
             self.packets.append(pkt_dict)
             self.update_stats(pkt_dict)

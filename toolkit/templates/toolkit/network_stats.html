@@ -15,127 +15,307 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .severity-critical {
+            background-color: #f8d7da;
+        }
+        .severity-high {
+            background-color: #fff3cd;
+        }
+        .severity-medium {
+            background-color: #d1ecf1;
+        }
+        .severity-low {
+            background-color: #e2e3e5;
+        }
+        .alert-count {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
         .img-fluid {
             max-width: 100%;
             height: auto;
-        }
-        .badge {
-            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
 <div class="container mt-4">
-    <h2>Network Capture Statistics</h2>
-    <p class="text-muted">Capture from {{ capture.start_time }} to {{ capture.end_time }}</p>
-
     {% if error %}
         <div class="alert alert-danger">
-            <strong>Error:</strong> {{ error }}
+            <h4>Error</h4>
+            <p>{{ error }}</p>
+            <a href="{% url 'network_analysis' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Network Analysis
+            </a>
         </div>
     {% else %}
-        <!-- Rest of your template content -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Protocol Distribution</h5>
-                </div>
-                <div class="card-body">
-                    {% if stats.protocol_chart %}
-                    <img src="data:image/png;base64,{{ stats.protocol_chart }}" class="img-fluid" alt="Protocol Distribution">
-                    {% else %}
-                    <p>No protocol data available.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Traffic Timeline</h5>
-                </div>
-                <div class="card-body">
-                    {% if stats.timeline_chart %}
-                    <img src="data:image/png;base64,{{ stats.timeline_chart }}" class="img-fluid" alt="Traffic Timeline">
-                    {% else %}
-                    <p>No timeline data available.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+        <h2>Network Capture Statistics</h2>
+        <p class="text-muted">
+            Capture from {{ stats.start_time|date:"Y-m-d H:i:s" }} to {{ stats.end_time|date:"Y-m-d H:i:s" }} |
+            {{ stats.total_packets }} packets analyzed
+        </p>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Top Source IPs</h5>
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Packets</h5>
+                        <p class="alert-count">{{ stats.total_packets }}</p>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for ip, count in stats.top_source_ips.items %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ ip }}
-                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
-                        </li>
-                        {% empty %}
-                        <li class="list-group-item">No source IP data</li>
-                        {% endfor %}
-                    </ul>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Critical Alerts</h5>
+                        <p class="alert-count text-danger">{{ stats.alerts_by_severity.critical }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">High Alerts</h5>
+                        <p class="alert-count text-warning">{{ stats.alerts_by_severity.high }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Alerts</h5>
+                        <p class="alert-count">
+                            {{ stats.alerts_by_severity.critical|add:stats.alerts_by_severity.high|add:stats.alerts_by_severity.medium|add:stats.alerts_by_severity.low }}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Top Destination IPs</h5>
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Protocol Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if stats.protocol_chart %}
+                            <img src="data:image/png;base64,{{ stats.protocol_chart }}" class="img-fluid">
+                        {% else %}
+                            <p>No protocol data available</p>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for ip, count in stats.top_dest_ips.items %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ ip }}
-                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
-                        </li>
-                        {% empty %}
-                        <li class="list-group-item">No destination IP data</li>
-                        {% endfor %}
-                    </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Traffic Timeline</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if stats.timeline_chart %}
+                            <img src="data:image/png;base64,{{ stats.timeline_chart }}" class="img-fluid">
+                        {% else %}
+                            <p>No timeline data available</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Top Ports</h5>
+        <!-- Top IPs and Ports -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Top Source IPs</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for ip, count in stats.top_source_ips.items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ ip }}
+                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">No source IP data</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for port, count in stats.top_ports.items %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ port }}
-                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
-                        </li>
-                        {% empty %}
-                        <li class="list-group-item">No port data</li>
-                        {% endfor %}
-                    </ul>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Top Destination IPs</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for ip, count in stats.top_dest_ips.items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ ip }}
+                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">No destination IP data</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Top Ports</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for port, count in stats.top_ports.items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ port }}
+                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">No port data</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="mt-4">
-        <a href="{% url 'network_module' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Network Analysis
-        </a>
-    </div>
+        <!-- Security Alerts Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Security Alerts</h5>
+            </div>
+            <div class="card-body">
+                {% if stats.alerts %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Alert Type</th>
+                                <th>Severity</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Protocol</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alert in stats.alerts %}
+                            <tr class="severity-{{ alert.severity }}">
+                                <td>{{ alert.timestamp|date:"H:i:s" }}</td>
+                                <td>{{ alert.rule_name }}</td>
+                                <td>
+                                    <span class="badge
+                                        {% if alert.severity == 'critical' %}bg-danger
+                                        {% elif alert.severity == 'high' %}bg-warning
+                                        {% elif alert.severity == 'medium' %}bg-info
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ alert.severity|title }}
+                                    </span>
+                                </td>
+                                <td>{{ alert.src_ip }}:{{ alert.src_port }}</td>
+                                <td>{{ alert.dst_ip }}:{{ alert.dst_port }}</td>
+                                <td>{{ alert.protocol }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                        data-bs-target="#alertDetailsModal"
+                                        data-alert="{{ alert.rule_name }}"
+                                        data-src="{{ alert.src_ip }}:{{ alert.src_port }}"
+                                        data-dst="{{ alert.dst_ip }}:{{ alert.dst_port }}"
+                                        data-time="{{ alert.timestamp|date:'Y-m-d H:i:s' }}"
+                                        data-severity="{{ alert.severity }}"
+                                        data-details="{{ alert.details|escape }}">
+                                        <i class="fas fa-search"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> No security alerts detected in this capture.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Alert Details Modal -->
+        <div class="modal fade" id="alertDetailsModal" tabindex="-1" aria-labelledby="alertDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="alertDetailsModalLabel">Alert Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p><strong>Alert Type:</strong> <span id="modalAlertType"></span></p>
+                                <p><strong>Timestamp:</strong> <span id="modalTimestamp"></span></p>
+                                <p><strong>Severity:</strong> <span id="modalSeverity"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Source:</strong> <span id="modalSrc"></span></p>
+                                <p><strong>Destination:</strong> <span id="modalDst"></span></p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Packet Details</h6>
+                            </div>
+                            <div class="card-body">
+                                <pre id="modalDetails" class="bg-light p-3"></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-4">
+            <a href="{% url 'network_analysis' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Network Analysis
+            </a>
+        </div>
     {% endif %}
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Modal Script -->
+    <script>
+        $(document).ready(function() {
+            $('#alertDetailsModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                $('#modalAlertType').text(button.data('alert'));
+                $('#modalTimestamp').text(button.data('time'));
+                $('#modalSeverity').html('<span class="badge ' +
+                    (button.data('severity') == 'critical' ? 'bg-danger' :
+                     button.data('severity') == 'high' ? 'bg-warning' :
+                     button.data('severity') == 'medium' ? 'bg-info' : 'bg-secondary') + '">' +
+                    button.data('severity').charAt(0).toUpperCase() + button.data('severity').slice(1) + '</span>');
+                $('#modalSrc').text(button.data('src'));
+                $('#modalDst').text(button.data('dst'));
+                $('#modalDetails').text(JSON.stringify(JSON.parse(button.data('details')), null, 2));
+            });
+        });
+    </script>
+</div>
 </body>
 </html>

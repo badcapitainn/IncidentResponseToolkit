@@ -6,7 +6,7 @@ import time
 
 from django.utils import timezone
 from datetime import datetime, timedelta
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
@@ -26,6 +26,7 @@ from .models import NetworkCapture, NetworkAlert, NetworkRule
 from modules.network.capture import NetworkCapture as NetCapture
 from modules.network.analysis import NetworkAnalyzer
 from modules.network.rules import NetworkRuleManager
+import logging
 
 
 @csrf_exempt
@@ -234,15 +235,22 @@ def network_module(request):
     demo_mode = request.GET.get('demo', False)
 
     if demo_mode:
-        # Generate fresh test file each time
         test_dir = os.path.join(settings.BASE_DIR, 'test_captures')
         os.makedirs(test_dir, exist_ok=True)
         test_file = os.path.join(test_dir, f'demo_{int(time.time())}.pcap')
 
         from modules.network.packet_generator import PacketGenerator
+        print("Generating demo packets...")  # Debug output
         PacketGenerator.generate_pcap_file(test_file, packet_count=random.randint(50, 150))
 
-        # Create a demo capture record
+        # Verify file was created
+        if not os.path.exists(test_file):
+            print("Error: PCAP file not created!")  # Debug output
+            return HttpResponse("Error generating demo data", status=500)
+
+        print(f"Generated {os.path.getsize(test_file)} bytes of demo data")  # Debug output
+
+        # Create demo capture record
         capture = NetworkCapture.objects.create(
             user=request.user,
             start_time=datetime.now() - timedelta(minutes=5),
@@ -331,42 +339,104 @@ def network_module(request):
     return render(request, '../templates/toolkit/network_module.html', context)
 
 
+logger = logging.getLogger(__name__)
+
+
 @csrf_exempt
 @login_required(login_url='login')
 def network_stats(request, capture_id):
-    capture = NetworkCapture.objects.get(id=capture_id, user=request.user)
-
-    # Check if capture file exists
-    if not os.path.exists(capture.capture_file):
-        return render(request, '../templates/toolkit/network_stats.html', {
-            'capture': capture,
-            'error': 'Capture file not found'
-        })
-
-    analyzer = NetworkAnalyzer(capture.capture_file)
     try:
+        # Get the capture record
+        capture = NetworkCapture.objects.get(id=capture_id, user=request.user)
+
+        # Verify capture file exists
+        if not os.path.exists(capture.capture_file):
+            logger.error(f"Capture file not found: {capture.capture_file}")
+            return render(request, 'toolkit/network_stats.html', {
+                'error': 'Capture file not found',
+                'capture': capture
+            })
+
+        # Initialize analyzer and load packets
+        analyzer = NetworkAnalyzer(capture.capture_file)
         analyzer.load_pcap()
 
-        # Get statistics
+        # Initialize rule manager and check all packets
+        rule_manager = NetworkRuleManager()
+        alerts = []
+
+        # Debug: Print packet and rule matching info
+        logger.debug(f"Analyzing {len(analyzer.packets)} packets")
+        for i, packet in enumerate(analyzer.packets):
+            matched_rules = rule_manager.check_packet(packet)
+            if matched_rules:
+                logger.debug(f"Packet {i} matched rules: {[r.name for r in matched_rules]}")
+                for rule in matched_rules:
+                    alerts.append({
+                        'timestamp': datetime.fromtimestamp(packet.get('timestamp', time.time())),
+                        'rule_name': rule.name,
+                        'severity': rule.severity,
+                        'src_ip': packet.get('src_ip', ''),
+                        'src_port': packet.get('src_port', ''),
+                        'dst_ip': packet.get('dst_ip', ''),
+                        'dst_port': packet.get('dst_port', ''),
+                        'protocol': packet.get('protocol_name', ''),
+                        'details': {
+                            'flags': packet.get('flags', ''),
+                            'size': packet.get('size', 0),
+                            'payload_preview': str(packet.get('payload', ''))[:100] if 'payload' in packet else None
+                        }
+                    })
+
+        # Prepare statistics
         stats = {
+            'total_packets': analyzer.stats.get('total_packets', 0),
+            'start_time': datetime.fromtimestamp(analyzer.stats.get('start_time', time.time())),
+            'end_time': datetime.fromtimestamp(analyzer.stats.get('end_time', time.time())),
             'protocol_distribution': analyzer.get_protocol_distribution(),
             'top_source_ips': analyzer.get_top_ips(type='source'),
             'top_dest_ips': analyzer.get_top_ips(type='dest'),
             'top_ports': analyzer.get_top_ports(),
             'protocol_chart': analyzer.generate_protocol_chart(),
             'timeline_chart': analyzer.generate_timeline_chart(),
-            'total_packets': analyzer.stats.get('total_packets', 0),
-            'start_time': analyzer.stats.get('start_time'),
-            'end_time': analyzer.stats.get('end_time'),
+            'alerts': alerts[:100],  # Limit to 100 most recent alerts
+            'alerts_by_severity': {
+                'critical': len([a for a in alerts if a['severity'] == 'critical']),
+                'high': len([a for a in alerts if a['severity'] == 'high']),
+                'medium': len([a for a in alerts if a['severity'] == 'medium']),
+                'low': len([a for a in alerts if a['severity'] == 'low'])
+            }
         }
 
-        return render(request, '../templates/toolkit/network_stats.html', {
+        # Save alerts to database
+        for alert in alerts[:100]:  # Save only first 100 alerts
+            NetworkAlert.objects.create(
+                capture=capture,
+                timestamp=alert['timestamp'],
+                rule_name=alert['rule_name'],
+                severity=alert['severity'],
+                src_ip=alert['src_ip'],
+                dst_ip=alert['dst_ip'],
+                src_port=alert['src_port'],
+                dst_port=alert['dst_port'],
+                protocol=alert['protocol'],
+                details=alert['details']
+            )
+
+        return render(request, 'toolkit/network_stats.html', {
             'capture': capture,
-            'stats': stats
+            'stats': stats,
+            'alerts': alerts[:50]  # Only show 50 most recent in template
+        })
+
+    except NetworkCapture.DoesNotExist:
+        logger.error(f"Capture not found: {capture_id}")
+        return render(request, 'toolkit/network_stats.html', {
+            'error': 'Capture not found'
         })
     except Exception as e:
-        return render(request, '../templates/toolkit/network_stats.html', {
-            'capture': capture,
+        logger.error(f"Error analyzing capture: {str(e)}")
+        return render(request, 'toolkit/network_stats.html', {
             'error': f'Error analyzing capture: {str(e)}'
         })
 
