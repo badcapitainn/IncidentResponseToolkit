@@ -67,40 +67,54 @@
     </div>
 
     <!-- Recent Alerts -->
+    <!-- Recent Alerts Section -->
     <div class="card mb-4">
         <div class="card-header">
             <h5>Recent Alerts</h5>
         </div>
         <div class="card-body">
-            {% if alerts %}
+            {% if recent_alerts %}
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Time</th>
-                            <th>Rule</th>
+                            <th>Alert</th>
                             <th>Severity</th>
-                            <th>Source IP</th>
-                            <th>Destination IP</th>
+                            <th>Source</th>
+                            <th>Destination</th>
                             <th>Protocol</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for alert in alerts %}
-                        <tr class="{% if alert.severity == 'critical' %}table-danger{% elif alert.severity == 'high' %}table-warning{% elif alert.severity == 'medium' %}table-info{% else %}table-secondary{% endif %}">
-                            <td>{{ alert.timestamp }}</td>
+                        {% for alert in recent_alerts %}
+                        <tr class="{% if alert.severity == 'critical' %}table-danger
+                                  {% elif alert.severity == 'high' %}table-warning
+                                  {% elif alert.severity == 'medium' %}table-info
+                                  {% else %}table-secondary{% endif %}">
+                            <td>{{ alert.timestamp|date:"H:i:s" }}</td>
                             <td>{{ alert.rule_name }}</td>
-                            <td>{{ alert.get_severity_display }}</td>
-                            <td>{{ alert.src_ip }}:{{ alert.src_port }}</td>
-                            <td>{{ alert.dst_ip }}:{{ alert.dst_port }}</td>
-                            <td>{{ alert.protocol }}</td>
+                            <td>
+                                <span class="badge
+                                    {% if alert.severity == 'critical' %}bg-danger
+                                    {% elif alert.severity == 'high' %}bg-warning
+                                    {% elif alert.severity == 'medium' %}bg-info
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ alert.get_severity_display }}
+                                </span>
+                            </td>
+                            <td>{{ alert.src_ip|default:"-" }}:{{ alert.src_port|default:"-" }}</td>
+                            <td>{{ alert.dst_ip|default:"-" }}:{{ alert.dst_port|default:"-" }}</td>
+                            <td>{{ alert.protocol|default:"-" }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             {% else %}
-            <p>No alerts detected yet.</p>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No alerts detected in recent captures.
+            </div>
             {% endif %}
         </div>
     </div>

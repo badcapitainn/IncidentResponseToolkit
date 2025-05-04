@@ -322,6 +322,17 @@ def network_module(request):
             except Exception as e:
                 return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+    active_capture = NetworkCapture.objects.filter(user=request.user, is_active=True).first()
+    captures = NetworkCapture.objects.filter(user=request.user).order_by('-start_time')
+
+    # Get alerts for active capture or most recent capture
+    if active_capture:
+        recent_alerts = NetworkAlert.objects.filter(capture=active_capture).order_by('-timestamp')[:10]
+    elif captures.exists():
+        recent_alerts = NetworkAlert.objects.filter(capture=captures.first()).order_by('-timestamp')[:10]
+    else:
+        recent_alerts = []
+
     # GET request handling remains the same
     active_capture = NetworkCapture.objects.filter(user=request.user, is_active=True).first()
     captures = NetworkCapture.objects.filter(user=request.user).order_by('-start_time')
@@ -333,7 +344,8 @@ def network_module(request):
         'captures': captures,
         'alerts': alerts[:10],
         'rules': rules,
-        'is_capturing': request.session.get('network_capture', False)
+        'is_capturing': request.session.get('network_capture', False),
+        'recent_alerts': recent_alerts,
     }
 
     return render(request, '../templates/toolkit/network_module.html', context)
