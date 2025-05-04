@@ -1,119 +1,124 @@
-# Standard rules for network traffic analysis
-STANDARD_RULES = [
-    {
-        "name": "Unusual Port Scanning",
-        "description": "Detects multiple connection attempts to different ports from a single source IP",
-        "type": "PORT_SCAN",
-        "threshold": 20,  # Number of different ports scanned
-        "time_window": 30,  # Seconds
-        "severity": "high",
-        "action": "ALERT"
-    },
-    {
-        "name": "Large Packet Flood",
-        "description": "Detects an unusually large number of packets from a single source",
-        "type": "PACKET_FLOOD",
-        "threshold": 1000,  # Packets per second
-        "time_window": 1,
-        "severity": "high",
-        "action": "ALERT"
-    },
-    {
-        "name": "Suspicious TCP Flags",
-        "description": "Detects packets with unusual TCP flag combinations (e.g., SYN+FIN)",
-        "type": "TCP_FLAGS",
-        "flags": ["SYN+FIN", "NULL", "XMAS"],
-        "severity": "medium",
-        "action": "ALERT"
-    },
-    {
-        "name": "Known Malicious IP",
-        "description": "Detects traffic to/from known malicious IP addresses",
-        "type": "MALICIOUS_IP",
-        "ips": [
-            "185.143.223.0/24",
-            "91.219.236.0/24",
-            "45.9.148.0/24",
-            "193.142.146.0/24"
-        ],
-        "severity": "critical",
-        "action": "BLOCK"
-    },
-    {
-        "name": "Common Exploit Ports",
-        "description": "Detects traffic on commonly exploited ports",
-        "type": "EXPLOIT_PORTS",
-        "ports": [22, 23, 3389, 445, 1433, 3306, 8080, 80, 443],
-        "severity": "medium",
-        "action": "ALERT"
-    },
-    {
-        "name": "DNS Tunneling Attempt",
-        "description": "Detects unusually large DNS packets that may indicate tunneling",
-        "type": "DNS_TUNNELING",
-        "size_threshold": 512,  # Bytes
-        "severity": "high",
-        "action": "ALERT"
-    },
-    {
-        "name": "HTTP Suspicious User Agent",
-        "description": "Detects HTTP requests with suspicious user agents",
-        "type": "HTTP_USER_AGENT",
-        "patterns": [
-            "sqlmap", "nmap", "metasploit", "nikto",
-            "wget", "curl", "python-requests"
-        ],
-        "severity": "medium",
-        "action": "ALERT"
-    },
-    {
-        "name": "Suspicious PowerShell in HTTP",
-        "description": "Detects PowerShell commands in HTTP traffic",
-        "type": "HTTP_POWERSHELL",
-        "patterns": [
-            "powershell", "iex(", "Invoke-Expression",
-            "DownloadString", "System.Net.WebClient"
-        ],
-        "severity": "high",
-        "action": "ALERT"
-    },
-    {
-        "name": "Suspicious File Extensions",
-        "description": "Detects requests for suspicious file extensions",
-        "type": "SUSPICIOUS_EXTENSIONS",
-        "extensions": [
-            ".php", ".asp", ".aspx", ".jsp",
-            ".exe", ".dll", ".bat", ".cmd",
-            ".ps1", ".sh", ".py", ".pl"
-        ],
-        "severity": "medium",
-        "action": "ALERT"
-    },
-    {
-        "name": "Unusual HTTP Methods",
-        "description": "Detects unusual HTTP methods that may indicate exploitation attempts",
-        "type": "HTTP_METHODS",
-        "methods": ["PUT", "DELETE", "TRACE", "CONNECT", "PROPFIND"],
-        "severity": "medium",
-        "action": "ALERT"
-    }
-]
+# config/toolkit/modules/network_analysis/rules.py
+class NetworkRule:
+    def __init__(self, rule_id, name, condition, severity='medium'):
+        self.id = rule_id
+        self.name = name
+        self.condition = condition
+        self.severity = severity
+
+    def matches(self, packet):
+        """Check if packet matches this rule"""
+        try:
+            return eval(self.condition, {}, {'packet': packet})
+        except:
+            return False
 
 
-# Additional helper functions for rule processing
-def load_rules_from_db():
-    """Load rules from database if needed"""
-    from toolkit.models import NetworkRule
-    return list(NetworkRule.objects.filter(is_active=True).values())
+class NetworkRuleManager:
+    def __init__(self):
+        self.rules = []
+        self.load_default_rules()
 
+    def load_default_rules(self):
+        """Load default detection rules including attack patterns"""
+        default_rules = [
+            # Original rules
+            {
+                'id': 'rule-001',
+                'name': 'Suspicious Port Scan',
+                'condition': "packet.get('flags', '') == 'S' and packet.get('dst_port', 0) in range(1, 1024)",
+                'severity': 'high'
+            },
+            {
+                'id': 'rule-002',
+                'name': 'Possible DDoS',
+                'condition': "packet.get('src_ip') == packet.get('dst_ip')",
+                'severity': 'critical'
+            },
+            {
+                'id': 'rule-003',
+                'name': 'Unusual Protocol',
+                'condition': "packet.get('protocol_name', '') not in ['TCP', 'UDP', 'ICMP']",
+                'severity': 'medium'
+            },
+            {
+                'id': 'rule-004',
+                'name': 'High Port Activity',
+                'condition': "packet.get('dst_port', 0) > 49151",
+                'severity': 'low'
+            },
 
-def get_rule_by_type(rule_type):
-    """Get rules of a specific type"""
-    return [rule for rule in STANDARD_RULES if rule['type'] == rule_type]
+            # New attack detection rules
+            {
+                'id': 'rule-101',
+                'name': 'Port Scan Detected',
+                'condition': "packet.get('flags', 0) == 2 and packet.get('dst_port', 0) in range(1, 1024)",
+                'severity': 'high'
+            },
+            {
+                'id': 'rule-102',
+                'name': 'Possible DDoS Attack',
+                'condition': "packet.get('dst_ip', '') == '10.0.0.1' and packet.get('protocol_name', '') == 'TCP' and packet.get('flags', 0) == 2",
+                'severity': 'critical'
+            },
+            {
+                'id': 'rule-103',
+                'name': 'Brute Force Attempt',
+                'condition': "packet.get('dst_port', 0) == 22 and 'SSH-2.0' in str(packet.get('payload', ''))",
+                'severity': 'high'
+            },
+            {
+                'id': 'rule-104',
+                'name': 'SQL Injection Attempt',
+                'condition': "packet.get('dst_port', 0) == 80 and any(keyword in str(packet.get('payload', '')) for keyword in ['--', '1=1', 'union select'])",
+                'severity': 'high'
+            },
+            {
+                'id': 'rule-105',
+                'name': 'XSS Attempt',
+                'condition': "packet.get('dst_port', 0) == 80 and any(keyword in str(packet.get('payload', '')) for keyword in ['<script>', 'onerror=', 'javascript:'])",
+                'severity': 'medium'
+            },
+            {
+                'id': 'rule-106',
+                'name': 'Possible Malware C2 Traffic',
+                'condition': "packet.get('dst_ip', '') == '45.67.89.123' and packet.get('dst_port', 0) == 443",
+                'severity': 'critical'
+            },
+            {
+                'id': 'rule-107',
+                'name': 'DNS Tunneling Attempt',
+                'condition': "packet.get('dst_port', 0) == 53 and len(str(packet.get('payload', ''))) > 512",
+                'severity': 'medium'
+            },
+            {
+                'id': 'rule-108',
+                'name': 'HTTP Suspicious User Agent',
+                'condition': "packet.get('dst_port', 0) == 80 and any(keyword in str(packet.get('payload', '').lower()) for keyword in ['nmap', 'sqlmap', 'nikto', 'metasploit'])",
+                'severity': 'medium'
+            }
+        ]
 
+        for rule_data in default_rules:
+            self.add_rule(
+                rule_data['id'],
+                rule_data['name'],
+                rule_data['condition'],
+                rule_data['severity']
+            )
 
-def get_all_rules():
-    """Combine standard rules with database rules"""
-    standard_rules = STANDARD_RULES
-    db_rules = load_rules_from_db()
-    return standard_rules + db_rules
+    def add_rule(self, rule_id, name, condition, severity='medium'):
+        """Add a new detection rule"""
+        self.rules.append(NetworkRule(rule_id, name, condition, severity))
+
+    def remove_rule(self, rule_id):
+        """Remove a rule by ID"""
+        self.rules = [rule for rule in self.rules if rule.id != rule_id]
+
+    def get_rules(self):
+        """Return all rules"""
+        return self.rules
+
+    def check_packet(self, packet):
+        """Check packet against all rules"""
+        return [rule for rule in self.rules if rule.matches(packet)]

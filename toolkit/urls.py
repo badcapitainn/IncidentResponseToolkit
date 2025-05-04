@@ -12,15 +12,9 @@ urlpatterns = [
     path('malware-detection/', views.malware_detection, name='malware_detection'),
 
     # ------------------------------------------------------------------------
-    path('network-home/', views.network_home, name='network_home'),
-    path('network-home/start/', views.start_network_capture, name='start_network_capture'),
-    path('network-home/stop/', views.stop_network_capture, name='stop_network_capture'),
-    path('network-traffic/', views.network_traffic_list, name='network_traffic_list'),
-    path('network-alerts/', views.network_alerts_list, name='network_alerts_list'),
-    path('network-alerts/<int:alert_id>/update/', views.update_alert_status, name='update_alert_status'),
-    path('network-rules/', views.network_rules_list, name='network_rules_list'),
-    path('network-rules/add/', views.add_network_rule, name='add_network_rule'),
-    path('network-rules/<int:rule_id>/toggle/', views.toggle_network_rule, name='toggle_network_rule'),
-    path('network-dashboard-data/', views.network_dashboard_data, name='network_dashboard_data'),
+    path('network/', views.network_module, name='network_module'),
+    path('network/stats/<int:capture_id>/', views.network_stats, name='network_stats'),
+    path('network/packets/<int:capture_id>/', views.packet_details, name='packet_details'),
+    path('network/add-rule/', views.add_network_rule, name='add_network_rule'),
 ]
 

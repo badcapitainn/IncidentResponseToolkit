@@ -1,106 +1,47 @@
-import subprocess
-import platform
-from scapy.arch import get_if_list
+# config/toolkit/modules/network_analysis/utils.py
+from scapy.layers.inet import IP, TCP, UDP
+from datetime import datetime
 
 
-def get_network_interfaces():
-    """Get available network interfaces"""
-    return get_if_list()
-
-
-def get_interface_ip(interface):
-    """Get IP address of a specific interface"""
-    try:
-        if platform.system() == 'Windows':
-            cmd = ['ipconfig']
-            output = subprocess.check_output(cmd).decode('utf-8', errors='ignore')
-
-            # Parse output for the specific interface
-            for line in output.split('\n'):
-                if interface in line:
-                    next_lines = output.split('\n')[output.split('\n').index(line):]
-                    for next_line in next_lines:
-                        if 'IPv4 Address' in next_line or 'IP Address' in next_line:
-                            return next_line.split(':')[-1].strip()
-        else:
-            cmd = ['ifconfig', interface]
-            output = subprocess.check_output(cmd).decode('utf-8', errors='ignore')
-
-            # Parse output for IP address
-            for line in output.split('\n'):
-                if 'inet ' in line:
-                    return line.split()[1]
-    except Exception as e:
-        print(f"Error getting interface IP: {e}")
-    return None
-
-
-def get_network_stats(interface=None):
-    """Get network statistics for an interface"""
-    stats = {
-        'packets_sent': 0,
-        'packets_received': 0,
-        'bytes_sent': 0,
-        'bytes_received': 0,
-        'error_count': 0
+def packet_to_dict(packet):
+    """Convert Scapy packet to dictionary"""
+    pkt_dict = {
+        'timestamp': datetime.now().isoformat(),
+        'size': len(packet)
     }
 
-    try:
-        if platform.system() == 'Windows':
-            cmd = ['netstat', '-e']
-            output = subprocess.check_output(cmd).decode('utf-8', errors='ignore')
+    if IP in packet:
+        pkt_dict['src_ip'] = packet[IP].src
+        pkt_dict['dst_ip'] = packet[IP].dst
+        pkt_dict['protocol'] = packet[IP].proto
 
-            # Parse output for statistics
-            for line in output.split('\n'):
-                if 'Bytes' in line and 'Received' in line and 'Sent' in line:
-                    parts = line.split()
-                    if len(parts) >= 5:
-                        stats['bytes_received'] = int(parts[1].replace(',', ''))
-                        stats['bytes_sent'] = int(parts[3].replace(',', ''))
-                elif 'Unicast packets' in line:
-                    parts = line.split()
-                    if len(parts) >= 5:
-                        stats['packets_received'] = int(parts[1].replace(',', ''))
-                        stats['packets_sent'] = int(parts[3].replace(',', ''))
+        if TCP in packet:
+            pkt_dict['src_port'] = packet[TCP].sport
+            pkt_dict['dst_port'] = packet[TCP].dport
+            pkt_dict['protocol_name'] = 'TCP'
+            pkt_dict['flags'] = packet[TCP].flags
+        elif UDP in packet:
+            pkt_dict['src_port'] = packet[UDP].sport
+            pkt_dict['dst_port'] = packet[UDP].dport
+            pkt_dict['protocol_name'] = 'UDP'
         else:
-            if interface:
-                cmd = ['ifconfig', interface]
-            else:
-                cmd = ['ifconfig']
+            pkt_dict['protocol_name'] = 'Other'
 
-            output = subprocess.check_output(cmd).decode('utf-8', errors='ignore')
-
-            # Parse output for statistics
-            for line in output.split('\n'):
-                if 'RX packets' in line:
-                    parts = line.split()
-                    stats['packets_received'] = int(parts[2])
-                    stats['bytes_received'] = int(parts[5])
-                elif 'TX packets' in line:
-                    parts = line.split()
-                    stats['packets_sent'] = int(parts[2])
-                    stats['bytes_sent'] = int(parts[5])
-                elif 'errors' in line:
-                    parts = line.split()
-                    stats['error_count'] = int(parts[2])
-    except Exception as e:
-        print(f"Error getting network stats: {e}")
-
-    return stats
+    return pkt_dict
 
 
-def test_network_connection():
-    """Test basic network connectivity"""
-    try:
-        if platform.system() == 'Windows':
-            cmd = ['ping', '-n', '1', '8.8.8.8']
-        else:
-            cmd = ['ping', '-c', '1', '8.8.8.8']
+def format_size(size_bytes):
+    """Format size in human-readable format"""
+    for unit in ['B', 'KB', 'MB', 'GB']:
+        if size_bytes < 1024:
+            return f"{size_bytes:.2f} {unit}"
+        size_bytes /= 1024
+    return f"{size_bytes:.2f} TB"
 
-        subprocess.check_output(cmd)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-    except Exception as e:
-        print(f"Error testing network connection: {e}")
-        return False
+
+def format_timestamp(timestamp):
+    """Format timestamp to readable format"""
+    if isinstance(timestamp, (int, float)):
+        return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    return timestamp
+

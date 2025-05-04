@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Capture Statistics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+        }
+        .badge {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Network Capture Statistics</h2>
+    <p class="text-muted">Capture from {{ capture.start_time }} to {{ capture.end_time }}</p>
+
+    {% if error %}
+        <div class="alert alert-danger">
+            <strong>Error:</strong> {{ error }}
+        </div>
+    {% else %}
+        <!-- Rest of your template content -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Protocol Distribution</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.protocol_chart %}
+                    <img src="data:image/png;base64,{{ stats.protocol_chart }}" class="img-fluid" alt="Protocol Distribution">
+                    {% else %}
+                    <p>No protocol data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Traffic Timeline</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.timeline_chart %}
+                    <img src="data:image/png;base64,{{ stats.timeline_chart }}" class="img-fluid" alt="Traffic Timeline">
+                    {% else %}
+                    <p>No timeline data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Top Source IPs</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for ip, count in stats.top_source_ips.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ ip }}
+                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">No source IP data</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Top Destination IPs</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for ip, count in stats.top_dest_ips.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ ip }}
+                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">No destination IP data</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Top Ports</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for port, count in stats.top_ports.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ port }}
+                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">No port data</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'network_module' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Network Analysis
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
