@@ -220,6 +220,12 @@
             gap: 12px;
         }
 
+        .dashboard-layout > div:last-child {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         @media (max-width: 1200px) {
             .dashboard-layout {
                 grid-template-columns: 1fr;
@@ -231,9 +237,9 @@
             background: var(--surface);
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
-            padding: 14px;
+            padding: 12px;
             transition: var(--transition);
-            height: 100%;
+            height: auto;
             animation: fadeIn 0.5s ease-out forwards;
             opacity: 0;
         }
@@ -313,15 +319,15 @@
         .small-charts-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .small-chart-container {
             background: var(--surface);
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
-            padding: 10px;
+            padding: 8px;
             height: 100%;
             transition: var(--transition);
         }
@@ -333,22 +339,22 @@
 
         .small-chart-wrapper {
             position: relative;
-            height: 130px;
+            height: 120px;
             width: 100%;
         }
 
         /* Quick Actions */
         .quick-actions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .quick-action {
             background: var(--surface);
             border-radius: var(--radius);
-            padding: 12px 8px;
+            padding: 10px 6px;
             text-align: center;
             text-decoration: none;
             transition: var(--transition);
@@ -372,15 +378,15 @@
         }
 
         .quick-action i {
-            width: 36px;
-            height: 36px;
+            width: 30px;
+            height: 30px;
             border-radius: var(--radius-full);
             background: rgba(79, 70, 229, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary);
-            font-size: 16px;
+            font-size: 14px;
             margin-bottom: 6px;
             transition: var(--transition);
         }
@@ -391,7 +397,7 @@
         }
 
         .quick-action span {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             color: var(--text-primary);
         }
@@ -401,20 +407,20 @@
             background: var(--surface);
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
-            padding: 14px;
-            height: 100%;
+            padding: 12px;
+            height: auto;
             animation: fadeIn 0.5s ease-out forwards;
             opacity: 0;
         }
 
         .activity-list {
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .activity-item {
             display: flex;
             align-items: flex-start;
-            padding: 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid var(--border-light);
             transition: var(--transition);
             animation: fadeIn 0.5s ease-out forwards;
@@ -435,16 +441,16 @@
         }
 
         .activity-icon {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border-radius: var(--radius-full);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 10px;
+            margin-right: 8px;
             flex-shrink: 0;
             color: white;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .activity-icon.success {
@@ -468,13 +474,13 @@
         }
 
         .activity-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             margin-bottom: 2px;
         }
 
         .activity-time {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-tertiary);
         }
 
@@ -483,16 +489,15 @@
             background: var(--surface);
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
-            padding: 14px;
-            margin-top: 12px;
-            height: 100%;
+            padding: 12px;
+            height: auto;
             animation: fadeIn 0.5s ease-out forwards;
             opacity: 0;
         }
 
         .pie-chart-wrapper {
             position: relative;
-            height: 180px;
+            height: 160px;
             width: 100%;
         }
 
@@ -603,7 +608,7 @@
         <div class="dashboard-header">
             <h1 class="header-title">
                 <i class="fas fa-shield-alt"></i>
-                Security Dashboard
+                Sentry
             </h1>
             <div class="header-actions">
                 <button class="action-btn">
@@ -622,12 +627,12 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-header">
-                    <div class="stat-title">Critical Alerts</div>
+                    <div class="stat-title">Log Alerts</div>
                     <div class="stat-icon">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                 </div>
-                <div class="stat-value">12</div>
+                <div class="stat-value">{{ log_alert_count }}</div>
                 <div class="stat-change negative">
                     <i class="fas fa-arrow-up"></i>
                     <span>3 new today</span>
@@ -641,7 +646,7 @@
                         <i class="fas fa-network-wired"></i>
                     </div>
                 </div>
-                <div class="stat-value">24</div>
+                <div class="stat-value">{{ network_alert_count }}</div>
                 <div class="stat-change positive">
                     <i class="fas fa-arrow-down"></i>
                     <span>5 resolved</span>
@@ -655,7 +660,7 @@
                         <i class="fas fa-bug"></i>
                     </div>
                 </div>
-                <div class="stat-value">3</div>
+                <div class="stat-value">{{ malware_alert_count }}</div>
                 <div class="stat-change">
                     <span>No change</span>
                 </div>
@@ -663,12 +668,12 @@
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <div class="stat-title">Avg. Response Time</div>
+                    <div class="stat-title">All Alerts</div>
                     <div class="stat-icon">
                         <i class="fas fa-clock"></i>
                     </div>
                 </div>
-                <div class="stat-value">8m 42s</div>
+                <div class="stat-value">{{ all_alert_count }}</div>
                 <div class="stat-change positive">
                     <i class="fas fa-arrow-down"></i>
                     <span>12% faster</span>
@@ -738,7 +743,7 @@
                     <div class="chart-header">
                         <div class="chart-title">
                             <i class="fas fa-bolt"></i>
-                            <span>Quick Actions</span>
+                            <span>Modules</span>
                         </div>
                     </div>
                     <div class="quick-actions-grid">
@@ -1037,9 +1042,9 @@
             const threatPieChart = new Chart(threatPieCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Network Threats', 'Critical Alerts', 'Malware Detected'],
+                    labels: ['Network Threats', 'Log Alerts', 'Malware Detected'],
                     datasets: [{
-                        data: [24, 12, 3],
+                        data: ['{{network_percentage}}', '{{log_percentage}}', '{{malware_percentage}}'],
                         backgroundColor: [
                             '#3b82f6',
                             '#ef4444',
@@ -1088,7 +1093,7 @@
                                     const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
                                     const value = context.raw;
                                     const percentage = Math.round((value / total) * 100);
-                                    return `${context.label}: ${value} (${percentage}%)`;
+                                    return `${context.label}: ${value}%`;
                                 }
                             }
                         }

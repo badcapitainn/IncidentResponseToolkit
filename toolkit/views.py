@@ -32,8 +32,19 @@ import logging
 @csrf_exempt
 @login_required(login_url='login')
 def dashboard(request):
-    watch_list_logs = WatchlistLogs.objects.all()
     alert_logs = AlertLogs.objects.all()
+    network_alerts = NetworkAlert.objects.all()
+    malware_alerts = MalwareDetectionResult.objects.all().filter(is_malicious=True)
+
+    log_alert_count: int = len([a for a in alert_logs])
+    network_alert_count: int = len([a for a in network_alerts])
+    malware_alert_count: int = len([a for a in malware_alerts])
+
+    all_alert_count: int = log_alert_count + network_alert_count + malware_alert_count
+
+    log_percentage: float = round(log_alert_count / all_alert_count * 100, 1)
+    network_percentage: float = round(network_alert_count / all_alert_count * 100, 1)
+    malware_percentage: float = round(malware_alert_count / all_alert_count * 100, 1)
 
     # Get the latest application-specific resource usage data
     resource_data = SystemMetrics.objects.filter(is_application_only=True).order_by('-timestamp')[
@@ -50,7 +61,6 @@ def dashboard(request):
 
     context = {
         "alert_logs": alert_logs,
-        "watch_list_logs": watch_list_logs,
         "timestamps": json.dumps(timestamps[::-1]),  # Reverse to show oldest first
         "cpu_data": json.dumps(cpu_data[::-1]),
         "ram_data": json.dumps(ram_data[::-1]),
@@ -59,6 +69,13 @@ def dashboard(request):
         "latest_ram": resource_data[0].ram_used if resource_data else 0,
         "latest_disk_read": resource_data[0].disk_read if resource_data else 0,
         "latest_disk_write": resource_data[0].disk_write if resource_data else 0,
+        "log_alert_count": log_alert_count,
+        "network_alert_count": network_alert_count,
+        "malware_alert_count": malware_alert_count,
+        "all_alert_count": all_alert_count,
+        "log_percentage": log_percentage,
+        "network_percentage": network_percentage,
+        "malware_percentage": malware_percentage,
     }
     template = '../templates/toolkit/dashboard.html'
     return render(request, template, context)
@@ -118,7 +135,7 @@ def malware_detection(request):
 
     # Get recent scan results
     recent_scans = MalwareDetectionResult.objects.all().order_by('-scan_time')[:10]
-    return render(request, 'toolkit/malware_detection.html', {
+    return render(request, '../templates/toolkit/malware_detection.html', {
         'recent_scans': recent_scans
     })
 
