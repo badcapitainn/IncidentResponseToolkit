@@ -3,68 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Packet Details</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Packet Details | Sentry</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --bg-color: #f9fafb;
+            --surface: #ffffff;
+            --surface-hover: #f3f4f6;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            padding: 20px;
-            background-color: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 12px;
         }
-        .card {
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
         }
-        .table-responsive {
-            overflow-x: auto;
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-title i {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .header-subtitle i {
+            color: var(--primary-light);
+        }
+
+        .action-btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            height: 36px;
+            padding: 0 12px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 14px;
+        }
+
+        /* Packet Table */
+        .packet-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 14px;
+            transition: var(--transition);
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+            margin-bottom: 16px;
+        }
+
+        .packet-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .packet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .packet-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .packet-title i {
+            color: var(--primary);
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .packet-container:hover .packet-title i {
+            transform: rotate(15deg);
+        }
+
+        .packet-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 8px;
+        }
+
+        .packet-table th {
+            background: var(--surface-hover);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .packet-table td {
+            padding: 10px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+        .packet-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .packet-table tr:hover td {
+            background: var(--surface-hover);
+        }
+
+        .protocol-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+
+        .no-packets {
+            background: var(--surface-hover);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .no-packets i {
+            color: var(--text-tertiary);
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .no-packets p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .packet-table {
+                display: block;
+                overflow-x: auto;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container mt-4">
-    <h2>Packet Details</h2>
-    <p class="text-muted">Capture from {{ capture.start_time }} to {{ capture.end_time }}</p>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Captured Packets</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Source</th>
-                            <th>Destination</th>
-                            <th>Protocol</th>
-                            <th>Size</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for packet in packets %}
-                        <tr>
-                            <td>{{ packet.timestamp }}</td>
-                            <td>{{ packet.src_ip }}:{{ packet.src_port|default:"" }}</td>
-                            <td>{{ packet.dst_ip }}:{{ packet.dst_port|default:"" }}</td>
-                            <td>{{ packet.protocol_name }}</td>
-                            <td>{{ packet.size }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5">No packets captured</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div class="container">
+    <div class="header">
+        <div>
+            <h1 class="header-title">
+                <i class="fas fa-network-wired"></i>
+                Packet Details
+            </h1>
+            <div class="header-subtitle">
+                <i class="fas fa-clock"></i> Capture from {{ capture.start_time }} to {{ capture.end_time }}
             </div>
         </div>
+        <a href="{% url 'network_module' %}" class="action-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
     </div>
 
-    <div class="mt-4">
-        <a href="{% url 'network_module' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Network Analysis
-        </a>
+    <div class="packet-container">
+        <div class="packet-header">
+            <div class="packet-title">
+                <i class="fas fa-table"></i>
+                <span>Captured Packets</span>
+            </div>
+        </div>
+
+        {% if packets %}
+        <table class="packet-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Source</th>
+                    <th>Destination</th>
+                    <th>Protocol</th>
+                    <th>Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for packet in packets %}
+                <tr>
+                    <td>{{ packet.timestamp }}</td>
+                    <td>{{ packet.src_ip }}:{{ packet.src_port|default:"" }}</td>
+                    <td>{{ packet.dst_ip }}:{{ packet.dst_port|default:"" }}</td>
+                    <td><span class="protocol-badge">{{ packet.protocol_name }}</span></td>
+                    <td>{{ packet.size }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-packets">
+            <i class="fas fa-database"></i>
+            <p>No packets captured</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 

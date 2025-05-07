@@ -3,319 +3,875 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Capture Statistics</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Network Capture Statistics | Sentry</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --bg-color: #f9fafb;
+            --surface: #ffffff;
+            --surface-hover: #f3f4f6;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            padding: 20px;
-            background-color: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 12px;
         }
-        .card {
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
         }
-        .table-responsive {
-            overflow-x: auto;
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-title i {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .header-subtitle i {
+            color: var(--primary-light);
+        }
+
+        .action-btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            height: 36px;
+            padding: 0 12px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 14px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border-left: 3px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+            animation: cardEntrance 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes cardEntrance {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .stat-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .stat-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: rgba(79, 70, 229, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: rotate(15deg);
+            background: rgba(79, 70, 229, 0.2);
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 6px 0;
+        }
+
+        .stat-value.text-danger {
+            color: var(--danger);
+        }
+
+        .stat-value.text-warning {
+            color: var(--warning);
+        }
+
+        /* Main Layout */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Charts */
+        .chart-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 14px;
+            transition: var(--transition);
+            height: 100%;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .chart-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-title i {
+            color: var(--primary);
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .chart-container:hover .chart-title i {
+            transform: rotate(15deg);
+        }
+
+        .chart-img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+        }
+
+        /* IP Lists */
+        .ip-list-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 14px;
+            height: 100%;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .ip-list-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .ip-list {
+            margin-top: 8px;
+        }
+
+        .ip-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+
+        .ip-item:last-child {
+            border-bottom: none;
+        }
+
+        .ip-item:hover {
+            transform: translateX(4px);
+        }
+
+        .ip-address {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ip-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Alerts Table */
+        .alerts-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 14px;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .alerts-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .alerts-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 8px;
+        }
+
+        .alerts-table th {
+            background: var(--surface-hover);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .alerts-table td {
+            padding: 10px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+        .alerts-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .alerts-table tr:hover td {
+            background: var(--surface-hover);
+        }
+
+        .severity-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            text-transform: capitalize;
+        }
+
         .severity-critical {
-            background-color: #f8d7da;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
         }
+
         .severity-high {
-            background-color: #fff3cd;
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
         }
+
         .severity-medium {
-            background-color: #d1ecf1;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--info);
         }
+
         .severity-low {
-            background-color: #e2e3e5;
+            background-color: rgba(156, 163, 175, 0.1);
+            color: var(--text-secondary);
         }
-        .alert-count {
-            font-size: 1.5rem;
-            font-weight: bold;
+
+        .view-btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
         }
-        .img-fluid {
-            max-width: 100%;
-            height: auto;
+
+        .view-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* No Alerts Message */
+        .no-alerts {
+            background: var(--surface-hover);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .no-alerts i {
+            color: var(--secondary);
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .no-alerts p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: var(--radius-lg);
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+            padding: 14px 16px;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+        }
+
+        .modal-detail {
+            margin-bottom: 10px;
+        }
+
+        .modal-detail strong {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .modal-detail span {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .modal-severity {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .details-pre {
+            background: var(--surface-hover);
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            overflow-x: auto;
+            max-height: 300px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 8px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container mt-4">
+<div class="container">
     {% if error %}
-        <div class="alert alert-danger">
-            <h4>Error</h4>
+        <div class="chart-container" style="border-left-color: var(--danger);">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Error</span>
+                </div>
+            </div>
             <p>{{ error }}</p>
-            <a href="{% url 'network_analysis' %}" class="btn btn-secondary">
+            <a href="{% url 'network_module' %}" class="action-btn" style="margin-top: 12px;">
                 <i class="fas fa-arrow-left"></i> Back to Network Analysis
             </a>
         </div>
     {% else %}
-        <h2>Network Capture Statistics</h2>
-        <p class="text-muted">
-            Capture from {{ stats.start_time|date:"Y-m-d H:i:s" }} to {{ stats.end_time|date:"Y-m-d H:i:s" }} |
-            {{ stats.total_packets }} packets analyzed
-        </p>
+        <div class="header">
+            <div>
+                <h1 class="header-title">
+                    <i class="fas fa-network-wired"></i>
+                    Network Capture Statistics
+                </h1>
+                <div class="header-subtitle">
+                    <i class="fas fa-clock"></i> {{ stats.start_time|date:"Y-m-d H:i:s" }} to {{ stats.end_time|date:"Y-m-d H:i:s" }}
+                    <i class="fas fa-boxes"></i> {{ stats.total_packets }} packets analyzed
+                </div>
+            </div>
+            <a href="{% url 'network_module' %}" class="action-btn">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
 
-        <!-- Summary Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Packets</h5>
-                        <p class="alert-count">{{ stats.total_packets }}</p>
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Total Packets</div>
+                    <div class="stat-icon">
+                        <i class="fas fa-boxes"></i>
                     </div>
                 </div>
+                <div class="stat-value">{{ stats.total_packets }}</div>
             </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Critical Alerts</h5>
-                        <p class="alert-count text-danger">{{ stats.alerts_by_severity.critical }}</p>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Critical Alerts</div>
+                    <div class="stat-icon">
+                        <i class="fas fa-fire"></i>
                     </div>
                 </div>
+                <div class="stat-value text-danger">{{ stats.alerts_by_severity.critical }}</div>
             </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">High Alerts</h5>
-                        <p class="alert-count text-warning">{{ stats.alerts_by_severity.high }}</p>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">High Alerts</div>
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
                 </div>
+                <div class="stat-value text-warning">{{ stats.alerts_by_severity.high }}</div>
             </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Alerts</h5>
-                        <p class="alert-count">
-                            {{ stats.alerts_by_severity.critical|add:stats.alerts_by_severity.high|add:stats.alerts_by_severity.medium|add:stats.alerts_by_severity.low }}
-                        </p>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Total Alerts</div>
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
+                </div>
+                <div class="stat-value">
+                    {{ stats.alerts_by_severity.critical|add:stats.alerts_by_severity.high|add:stats.alerts_by_severity.medium|add:stats.alerts_by_severity.low }}
                 </div>
             </div>
         </div>
 
         <!-- Charts Row -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Protocol Distribution</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if stats.protocol_chart %}
-                            <img src="data:image/png;base64,{{ stats.protocol_chart }}" class="img-fluid">
-                        {% else %}
-                            <p>No protocol data available</p>
-                        {% endif %}
+        <div class="dashboard-layout">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Protocol Distribution</span>
                     </div>
                 </div>
+                {% if stats.protocol_chart %}
+                    <img src="data:image/png;base64,{{ stats.protocol_chart }}" class="chart-img">
+                {% else %}
+                    <p class="text-muted"><i class="fas fa-info-circle"></i> No protocol data available</p>
+                {% endif %}
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Traffic Timeline</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if stats.timeline_chart %}
-                            <img src="data:image/png;base64,{{ stats.timeline_chart }}" class="img-fluid">
-                        {% else %}
-                            <p>No timeline data available</p>
-                        {% endif %}
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Traffic Timeline</span>
                     </div>
                 </div>
+                {% if stats.timeline_chart %}
+                    <img src="data:image/png;base64,{{ stats.timeline_chart }}" class="chart-img">
+                {% else %}
+                    <p class="text-muted"><i class="fas fa-info-circle"></i> No timeline data available</p>
+                {% endif %}
             </div>
         </div>
 
         <!-- Top IPs and Ports -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Top Source IPs</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            {% for ip, count in stats.top_source_ips.items %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ ip }}
-                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
-                            </li>
-                            {% empty %}
-                            <li class="list-group-item">No source IP data</li>
-                            {% endfor %}
-                        </ul>
+        <div class="dashboard-layout">
+            <div class="ip-list-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-laptop"></i>
+                        <span>Top Source IPs</span>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Top Destination IPs</h5>
+                <div class="ip-list">
+                    {% for ip, count in stats.top_source_ips.items %}
+                    <div class="ip-item">
+                        <span class="ip-address">{{ ip }}</span>
+                        <span class="ip-count">{{ count }}</span>
                     </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            {% for ip, count in stats.top_dest_ips.items %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ ip }}
-                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
-                            </li>
-                            {% empty %}
-                            <li class="list-group-item">No destination IP data</li>
-                            {% endfor %}
-                        </ul>
+                    {% empty %}
+                    <div class="ip-item">
+                        <span class="ip-address">No source IP data</span>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Top Ports</h5>
+
+            <div class="ip-list-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-server"></i>
+                        <span>Top Destination IPs</span>
                     </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            {% for port, count in stats.top_ports.items %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ port }}
-                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
-                            </li>
-                            {% empty %}
-                            <li class="list-group-item">No port data</li>
-                            {% endfor %}
-                        </ul>
+                </div>
+                <div class="ip-list">
+                    {% for ip, count in stats.top_dest_ips.items %}
+                    <div class="ip-item">
+                        <span class="ip-address">{{ ip }}</span>
+                        <span class="ip-count">{{ count }}</span>
                     </div>
+                    {% empty %}
+                    <div class="ip-item">
+                        <span class="ip-address">No destination IP data</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ip-list-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-plug"></i>
+                        <span>Top Ports</span>
+                    </div>
+                </div>
+                <div class="ip-list">
+                    {% for port, count in stats.top_ports.items %}
+                    <div class="ip-item">
+                        <span class="ip-address">{{ port }}</span>
+                        <span class="ip-count">{{ count }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="ip-item">
+                        <span class="ip-address">No port data</span>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
 
         <!-- Security Alerts Section -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>Security Alerts</h5>
-            </div>
-            <div class="card-body">
-                {% if stats.alerts %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Alert Type</th>
-                                <th>Severity</th>
-                                <th>Source</th>
-                                <th>Destination</th>
-                                <th>Protocol</th>
-                                <th>Details</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for alert in stats.alerts %}
-                            <tr class="severity-{{ alert.severity }}">
-                                <td>{{ alert.timestamp|date:"H:i:s" }}</td>
-                                <td>{{ alert.rule_name }}</td>
-                                <td>
-                                    <span class="badge
-                                        {% if alert.severity == 'critical' %}bg-danger
-                                        {% elif alert.severity == 'high' %}bg-warning
-                                        {% elif alert.severity == 'medium' %}bg-info
-                                        {% else %}bg-secondary{% endif %}">
-                                        {{ alert.severity|title }}
-                                    </span>
-                                </td>
-                                <td>{{ alert.src_ip }}:{{ alert.src_port }}</td>
-                                <td>{{ alert.dst_ip }}:{{ alert.dst_port }}</td>
-                                <td>{{ alert.protocol }}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                        data-bs-target="#alertDetailsModal"
-                                        data-alert="{{ alert.rule_name }}"
-                                        data-src="{{ alert.src_ip }}:{{ alert.src_port }}"
-                                        data-dst="{{ alert.dst_ip }}:{{ alert.dst_port }}"
-                                        data-time="{{ alert.timestamp|date:'Y-m-d H:i:s' }}"
-                                        data-severity="{{ alert.severity }}"
-                                        data-details="{{ alert.details|escape }}">
-                                        <i class="fas fa-search"></i> View
-                                    </button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+        <div class="alerts-container">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <i class="fas fa-bell"></i>
+                    <span>Security Alerts</span>
                 </div>
-                {% else %}
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i> No security alerts detected in this capture.
-                </div>
-                {% endif %}
             </div>
+
+            {% if stats.alerts %}
+            <table class="alerts-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Alert Type</th>
+                        <th>Severity</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Protocol</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in stats.alerts %}
+                    <tr class="severity-{{ alert.severity }}">
+                        <td>{{ alert.timestamp|date:"H:i:s" }}</td>
+                        <td>{{ alert.rule_name }}</td>
+                        <td>
+                            <span class="severity-badge severity-{{ alert.severity }}">
+                                {{ alert.severity|title }}
+                            </span>
+                        </td>
+                        <td>{{ alert.src_ip }}:{{ alert.src_port }}</td>
+                        <td>{{ alert.dst_ip }}:{{ alert.dst_port }}</td>
+                        <td>{{ alert.protocol }}</td>
+                        <td>
+                            <button class="view-btn view-details"
+                                data-alert="{{ alert.rule_name }}"
+                                data-src="{{ alert.src_ip }}:{{ alert.src_port }}"
+                                data-dst="{{ alert.dst_ip }}:{{ alert.dst_port }}"
+                                data-time="{{ alert.timestamp|date:'Y-m-d H:i:s' }}"
+                                data-severity="{{ alert.severity }}"
+                                data-details="{{ alert.details|escape }}">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-alerts">
+                <i class="fas fa-check-circle"></i>
+                <p>No security alerts detected in this capture.</p>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Alert Details Modal -->
-        <div class="modal fade" id="alertDetailsModal" tabindex="-1" aria-labelledby="alertDetailsModalLabel" aria-hidden="true">
+        <div class="modal fade" id="alertDetailsModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="alertDetailsModalLabel">Alert Details</h5>
+                        <h5 class="modal-title"><i class="fas fa-bell"></i> Alert Details</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="row mb-3">
+                        <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Alert Type:</strong> <span id="modalAlertType"></span></p>
-                                <p><strong>Timestamp:</strong> <span id="modalTimestamp"></span></p>
-                                <p><strong>Severity:</strong> <span id="modalSeverity"></span></p>
+                                <div class="modal-detail">
+                                    <strong>Alert Type</strong>
+                                    <span id="modalAlertType"></span>
+                                </div>
+                                <div class="modal-detail">
+                                    <strong>Timestamp</strong>
+                                    <span id="modalTimestamp"></span>
+                                </div>
+                                <div class="modal-detail">
+                                    <strong>Severity</strong>
+                                    <span id="modalSeverity"></span>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Source:</strong> <span id="modalSrc"></span></p>
-                                <p><strong>Destination:</strong> <span id="modalDst"></span></p>
+                                <div class="modal-detail">
+                                    <strong>Source</strong>
+                                    <span id="modalSrc"></span>
+                                </div>
+                                <div class="modal-detail">
+                                    <strong>Destination</strong>
+                                    <span id="modalDst"></span>
+                                </div>
                             </div>
                         </div>
-                        <div class="card">
-                            <div class="card-header">
-                                <h6>Packet Details</h6>
-                            </div>
-                            <div class="card-body">
-                                <pre id="modalDetails" class="bg-light p-3"></pre>
-                            </div>
+                        <div class="modal-detail">
+                            <strong>Packet Details</strong>
+                            <pre id="modalDetails" class="details-pre"></pre>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="action-btn" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Close
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Back Button -->
-        <div class="mt-4">
-            <a href="{% url 'network_analysis' %}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Network Analysis
-            </a>
-        </div>
     {% endif %}
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Modal Script -->
-    <script>
-        $(document).ready(function() {
-            $('#alertDetailsModal').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget);
-                $('#modalAlertType').text(button.data('alert'));
-                $('#modalTimestamp').text(button.data('time'));
-                $('#modalSeverity').html('<span class="badge ' +
-                    (button.data('severity') == 'critical' ? 'bg-danger' :
-                     button.data('severity') == 'high' ? 'bg-warning' :
-                     button.data('severity') == 'medium' ? 'bg-info' : 'bg-secondary') + '">' +
-                    button.data('severity').charAt(0).toUpperCase() + button.data('severity').slice(1) + '</span>');
-                $('#modalSrc').text(button.data('src'));
-                $('#modalDst').text(button.data('dst'));
-                $('#modalDetails').text(JSON.stringify(JSON.parse(button.data('details')), null, 2));
-            });
-        });
-    </script>
 </div>
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Modal handling
+        $('.view-details').on('click', function() {
+            const button = $(this);
+            $('#modalAlertType').text(button.data('alert'));
+            $('#modalTimestamp').text(button.data('time'));
+
+            const severity = button.data('severity');
+            let badgeClass = 'severity-' + severity;
+            $('#modalSeverity').html(`<span class="severity-badge ${badgeClass}">${
+                severity.charAt(0).toUpperCase() + severity.slice(1)
+            }</span>`);
+
+            $('#modalSrc').text(button.data('src'));
+            $('#modalDst').text(button.data('dst'));
+
+            try {
+                const details = JSON.parse(button.data('details'));
+                $('#modalDetails').text(JSON.stringify(details, null, 2));
+            } catch (e) {
+                $('#modalDetails').text(button.data('details'));
+            }
+
+            $('#alertDetailsModal').modal('show');
+        });
+
+        // Add hover animations to all cards
+        $('.stat-card, .chart-container, .ip-list-container, .alerts-container').hover(
+            function() {
+                $(this).css('transform', 'translateY(-3px)');
+                $(this).css('box-shadow', 'var(--shadow)');
+            },
+            function() {
+                $(this).css('transform', '');
+                $(this).css('box-shadow', 'var(--shadow-sm)');
+            }
+        );
+    });
+</script>
 </body>
 </html>
