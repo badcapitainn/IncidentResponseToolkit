@@ -114,6 +114,20 @@ class MalwareDetectionResult(models.Model):
     def __str__(self):
         return f"{self.file_path} - {self.malware_type if self.is_malicious else 'Clean'}"
 
+    # Add to toolkit/models.py
+
+
+class Quarantine(models.Model):
+    original_path = models.CharField(max_length=512)
+    quarantine_path = models.CharField(max_length=512)
+    quarantine_time = models.DateTimeField(auto_now_add=True)
+    detection_result = models.ForeignKey(MalwareDetectionResult, on_delete=models.CASCADE)
+    restored = models.BooleanField(default=False)
+    restored_time = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.original_path} (Quarantined)"
+
 
 # ----------------------------------------------- network analysis test -----------------------------------------------
 

@@ -10,8 +10,8 @@ urlpatterns = [
     path("home/log_analysis/", views.log_analysis, name="log_analysis"),
     path("home/network_analysis/", views.network_analysis, name="network_analysis"),
     path('malware-detection/', views.malware_detection, name='malware_detection'),
-
-    # ------------------------------------------------------------------------
+    path('malware-detection/delete/', views.delete_file, name='delete_quarantined'),
+    path('malware-detection/restore/', views.restore_file, name='restore_quarantined'),
     path('network/', views.network_module, name='network_module'),
     path('network/stats/<int:capture_id>/', views.network_stats, name='network_stats'),
     path('network/packets/<int:capture_id>/', views.packet_details, name='packet_details'),

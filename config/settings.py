@@ -1,7 +1,7 @@
 from pathlib import Path
 from celery.schedules import crontab
 from datetime import timedelta
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,6 +12,11 @@ SECRET_KEY = 'django-insecure-sucza1fjk#&-$&$4gu+=wqdk$v=k$c-3gj2ix+91z_=h__gett
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# Add to settings.py
+
+# At the top with other MEDIA settings
+QUARANTINE_DIR = os.path.join(BASE_DIR, 'quarantine')
+os.makedirs(QUARANTINE_DIR, exist_ok=True)
 
 # Application definition
 
@@ -87,7 +92,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'collect-resource-metrics': {
         'task': 'toolkit.tasks.collect_resource_metrics',
-        'schedule': timedelta(seconds=5),  # Collect every 3 seconds
+        'schedule': timedelta(seconds=3),  # Collect every 3 seconds
     },
 }
 # Add this to suppress the warning

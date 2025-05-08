@@ -1,14 +1,17 @@
 import json
 import os
 import random
+import shutil
 import threading
 import time
 
+from django.db import transaction
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from .forms import RegisterForm
 from django.contrib import messages
@@ -17,12 +20,10 @@ from django.contrib.auth.decorators import login_required
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, MaliciousPackets, SuspiciousPackets, SystemMetrics, \
-    MalwareDetectionResult
+    MalwareDetectionResult, Quarantine, NetworkCapture, NetworkAlert, NetworkRule
 from modules.malware_detection.scanner import MalwareScanner
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-# -------------------------------network test imports --------------------------------------------
-from .models import NetworkCapture, NetworkAlert, NetworkRule
 from modules.network.capture import NetworkCapture as NetCapture
 from modules.network.analysis import NetworkAnalyzer
 from modules.network.rules import NetworkRuleManager
@@ -81,6 +82,8 @@ def dashboard(request):
     return render(request, template, context)
 
 
+# ------------------------------------------- log analysis views -------------------------------------------------------
+
 @csrf_exempt
 @login_required(login_url='login')
 def log_analysis(request):
@@ -108,52 +111,41 @@ def log_analysis(request):
     return render(request, template, context)
 
 
-@csrf_exempt
-@login_required(login_url='login')
-def network_analysis(request):
-    suspicious_packets = SuspiciousPackets.objects.all().order_by('-timeStamp')
-    malicious_packets = MaliciousPackets.objects.all().order_by('-timeStamp')
-
-    context = {
-        "suspicious_packets": suspicious_packets,
-        "malicious_packets": malicious_packets,
-    }
-    template = '../templates/toolkit/network_analysis.html'
-    return render(request, template, context)
-
+# -------------------------------------------- Malware Views -----------------------------------------------------------
 
 @csrf_exempt
 @login_required(login_url='login')
 def malware_detection(request):
     if request.method == 'POST':
-        # Handle file upload
         if 'file_scan' in request.FILES:
             return handle_file_scan(request)
-        # Handle directory scan
         elif 'directory_path' in request.POST:
             return handle_directory_scan(request)
 
-    # Get recent scan results
+    quarantined_files = Quarantine.objects.filter(restored=False).select_related('detection_result')
     recent_scans = MalwareDetectionResult.objects.all().order_by('-scan_time')[:10]
     return render(request, '../templates/toolkit/malware_detection.html', {
-        'recent_scans': recent_scans
+        'recent_scans': recent_scans,
+        'quarantined_files': quarantined_files
     })
 
 
+@transaction.atomic
 def handle_file_scan(request):
     uploaded_file = request.FILES['file_scan']
     fs = FileSystemStorage()
 
-    # Save the uploaded file temporarily
-    filename = fs.save(uploaded_file.name, uploaded_file)
-    file_path = os.path.join(settings.MEDIA_ROOT, filename)
-
-    # Scan the file
-    scanner = MalwareScanner()
     try:
+        # Save the uploaded file temporarily
+        filename = fs.save(uploaded_file.name, uploaded_file)
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+
+        # Scan the file
+        scanner = MalwareScanner()
         matches = scanner.scan_file(file_path)
 
         if matches:
+            # Create detection record
             result = MalwareDetectionResult.objects.create(
                 file_path=file_path,
                 scan_time=datetime.now(),
@@ -162,7 +154,22 @@ def handle_file_scan(request):
                 details=str(matches),
                 detected_by=request.user
             )
-            messages.warning(request, f"Malware detected: {result.malware_type}")
+
+            # Quarantine the file
+            try:
+                quarantine_record = scanner.quarantine_file(file_path, result)
+                messages.warning(request,
+                                 f"Malware detected and quarantined: {result.malware_type}\n"
+                                 f"File moved to: {quarantine_record.quarantine_path}"
+                                 )
+                logger.info(f"Quarantined file: {file_path} to {quarantine_record.quarantine_path}")
+            except Exception as quarantine_error:
+                logger.error(f"Quarantine failed: {str(quarantine_error)}")
+                messages.error(request, f"Malware detected but quarantine failed: {str(quarantine_error)}")
+                # Delete the temp file if quarantine failed
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                raise quarantine_error
         else:
             result = MalwareDetectionResult.objects.create(
                 file_path=file_path,
@@ -171,17 +178,21 @@ def handle_file_scan(request):
                 detected_by=request.user
             )
             messages.success(request, "No malware detected in the file.")
+            # Clean up the temporary file
+            if os.path.exists(file_path):
+                os.remove(file_path)
 
     except Exception as e:
+        logger.error(f"Scan error: {str(e)}")
         messages.error(request, f"Scanning error: {str(e)}")
-    finally:
-        # Clean up the temporary file
-        if os.path.exists(file_path):
+        # Clean up if something went wrong
+        if 'file_path' in locals() and os.path.exists(file_path):
             os.remove(file_path)
 
     return redirect('malware_detection')
 
 
+@transaction.atomic
 def handle_directory_scan(request):
     directory_path = request.POST['directory_path']
 
@@ -194,15 +205,68 @@ def handle_directory_scan(request):
         results = scanner.scan_directory(directory_path)
 
         if results:
-            messages.warning(request, f"Found {len(results)} malicious files in the directory.")
+            quarantined_count = len(results)
+            messages.warning(request,
+                             f"Found {quarantined_count} malicious files in the directory.\n"
+                             f"All detected files have been quarantined."
+                             )
+            logger.info(f"Directory scan quarantined {quarantined_count} files from {directory_path}")
         else:
             messages.success(request, "No malware detected in the directory.")
 
     except Exception as e:
-        messages.error(request, f"Scanning error: {str(e)}")
+        logger.error(f"Directory scan error: {str(e)}")
+        messages.error(request, f"Directory scanning error: {str(e)}")
 
     return redirect('malware_detection')
 
+
+@csrf_exempt
+@require_POST
+@login_required(login_url='login')
+def delete_file(request):
+    """Permanently delete a quarantined file"""
+    file_id = request.POST.get('file_id')
+    try:
+        quarantine = Quarantine.objects.get(id=file_id)
+        if os.path.exists(quarantine.quarantine_path):
+            os.remove(quarantine.quarantine_path)
+        quarantine.delete()
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@csrf_exempt
+@require_POST
+@login_required(login_url='login')
+def restore_file(request):
+    """Restore a file from quarantine"""
+    file_id = request.POST.get('file_id')
+    try:
+        quarantine = Quarantine.objects.get(id=file_id)
+
+        # Check if original location is available
+        if os.path.exists(quarantine.original_path):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Original file already exists'
+            }, status=400)
+
+        # Move file back
+        shutil.move(quarantine.quarantine_path, quarantine.original_path)
+
+        # Update record
+        quarantine.restored = True
+        quarantine.restored_time = datetime.now()
+        quarantine.save()
+
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+# --------------------------------------------- Auth Views -------------------------------------------------------------
 
 @csrf_exempt
 def user_login(request):
@@ -244,7 +308,7 @@ def user_logout(request):
     return redirect('login')
 
 
-# -------------------------------- network test views -----------------------------------------------------------
+# -------------------------------------------- network views -----------------------------------------------------------
 
 @csrf_exempt
 @login_required(login_url='login')
@@ -504,3 +568,17 @@ def add_network_rule(request):
         return redirect('network_module')
 
     return render(request, '../templates/toolkit/add_rule.html')
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def network_analysis(request):
+    suspicious_packets = SuspiciousPackets.objects.all().order_by('-timeStamp')
+    malicious_packets = MaliciousPackets.objects.all().order_by('-timeStamp')
+
+    context = {
+        "suspicious_packets": suspicious_packets,
+        "malicious_packets": malicious_packets,
+    }
+    template = '../templates/toolkit/network_analysis.html'
+    return render(request, template, context)
