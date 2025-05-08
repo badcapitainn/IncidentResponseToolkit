@@ -3,61 +3,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Network Rule</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Add Network Rule | Sentry</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            padding: 20px;
-            background-color: #f8f9fa;
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --bg-color: #f9fafb;
+            --surface: #ffffff;
+            --surface-hover: #f3f4f6;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .card {
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 12px;
+        }
+
+        .container {
             max-width: 800px;
             margin: 0 auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.6s ease-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-title i {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            animation: cardEntrance 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes cardEntrance {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-card:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .form-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .form-header i {
+            color: var(--primary);
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .form-card:hover .form-header i {
+            transform: rotate(15deg);
+        }
+
+        .form-body {
+            padding: 16px;
+        }
+
+        /* Form Elements */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 12px;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            height: 36px;
+            padding: 0 16px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn i {
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Severity Indicator */
+        .severity-indicator {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .severity-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .severity-option input {
+            display: none;
+        }
+
+        .severity-option span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .severity-option i {
+            font-size: 12px;
+        }
+
+        .severity-option:hover {
+            background: var(--surface-hover);
+        }
+
+        .severity-option input:checked + span {
+            color: white;
+        }
+
+        .severity-low {
+            background: rgba(156, 163, 175, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .severity-low input:checked + span {
+            background: var(--text-secondary);
+        }
+
+        .severity-medium {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+
+        .severity-medium input:checked + span {
+            background: var(--info);
+        }
+
+        .severity-high {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .severity-high input:checked + span {
+            background: var(--warning);
+        }
+
+        .severity-critical {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .severity-critical input:checked + span {
+            background: var(--danger);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .severity-indicator {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h2>Add New Network Rule</h2>
+<div class="container">
+    <div class="header">
+        <h1 class="header-title">
+            <i class="fas fa-shield-alt"></i>
+            Add Network Rule
+        </h1>
+    </div>
+
+    <div class="form-card">
+        <div class="form-header">
+            <h2><i class="fas fa-plus-circle"></i> Create New Detection Rule</h2>
         </div>
-        <div class="card-body">
+        <div class="form-body">
             <form method="post">
                 {% csrf_token %}
 
                 <div class="form-group">
-                    <label for="name">Rule Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <label class="form-label">Rule Name</label>
+                    <input type="text" class="form-control" name="name" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="3" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="condition">Condition (Python expression)</label>
-                    <textarea class="form-control" id="condition" name="condition" rows="5" required></textarea>
-                    <small class="text-muted">Example: packet.get('dst_port', 0) in range(1, 1024)</small>
+                    <label class="form-label">Condition (Python expression)</label>
+                    <textarea class="form-control" name="condition" rows="5" required></textarea>
+                    <div class="form-help">
+                        Example: packet.get('dst_port', 0) in range(1, 1024)
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="severity">Severity</label>
-                    <select class="form-control" id="severity" name="severity">
+                    <label class="form-label">Severity</label>
+                    <select class="form-control" name="severity">
                         <option value="low">Low</option>
                         <option value="medium" selected>Medium</option>
                         <option value="high">High</option>
                         <option value="critical">Critical</option>
                     </select>
+
+                    <!-- Visual severity indicator -->
+                    <div class="severity-indicator">
+                        <label class="severity-option severity-low">
+                            <input type="radio" name="severity" value="low">
+                            <span><i class="fas fa-info-circle"></i> Low</span>
+                        </label>
+                        <label class="severity-option severity-medium">
+                            <input type="radio" name="severity" value="medium" checked>
+                            <span><i class="fas fa-exclamation-circle"></i> Medium</span>
+                        </label>
+                        <label class="severity-option severity-high">
+                            <input type="radio" name="severity" value="high">
+                            <span><i class="fas fa-exclamation-triangle"></i> High</span>
+                        </label>
+                        <label class="severity-option severity-critical">
+                            <input type="radio" name="severity" value="critical">
+                            <span><i class="fas fa-skull-crossbones"></i> Critical</span>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="mt-4">
+                <div class="btn-group">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Save Rule
                     </button>
@@ -70,6 +405,36 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sync radio buttons with select dropdown
+    const select = document.querySelector('select[name="severity"]');
+    const radios = document.querySelectorAll('input[type="radio"][name="severity"]');
+
+    select.addEventListener('change', function() {
+        radios.forEach(radio => {
+            if (radio.value === this.value) {
+                radio.checked = true;
+            }
+        });
+    });
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            select.value = this.value;
+        });
+    });
+
+    // Add hover animations to buttons
+    document.querySelectorAll('.btn').forEach(button => {
+        button.addEventListener('mouseenter', () => {
+            button.style.transform = 'translateY(-2px)';
+        });
+        button.addEventListener('mouseleave', () => {
+            button.style.transform = '';
+        });
+    });
+});
+</script>
 </body>
 </html>
