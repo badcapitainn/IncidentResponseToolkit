@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Alerts | Sentry</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --bg-color: #f9fafb;
+            --surface: #ffffff;
+            --surface-hover: #f3f4f6;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 12px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-title i {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Alerts Card */
+        .alerts-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+            transition: var(--transition);
+            animation: cardEntrance 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes cardEntrance {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alerts-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .card-header h5 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .card-header i {
+            color: var(--primary);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .alerts-card:hover .card-header i {
+            transform: rotate(15deg);
+        }
+
+        .filter-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-toggle label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: var(--transition);
+            border-radius: var(--radius-full);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(16px);
+        }
+
+        /* Alerts Table */
+        .table-container {
+            margin-top: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .alerts-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+        }
+
+        .alerts-table th {
+            background: var(--surface-hover);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .alerts-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+
+        .alerts-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .alerts-table tr:hover td {
+            background: var(--surface-hover);
+        }
+
+        .alerts-table tr.critical td {
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .alerts-table tr.warning td {
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .alerts-table tr.secondary td {
+            background-color: rgba(156, 163, 175, 0.05);
+        }
+
+        /* Badges */
+        .status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .status-active {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .status-resolved {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        .level-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            text-transform: uppercase;
+        }
+
+        .level-critical {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .level-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .level-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .level-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            height: 28px;
+            padding: 0 12px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0d9f6e;
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #2563eb;
+        }
+
+        .btn-sm {
+            height: 26px;
+            padding: 0 10px;
+            font-size: 11px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .page-link {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            height: 32px;
+            min-width: 32px;
+            padding: 0 8px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .page-link:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-link.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-link.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: var(--radius-lg);
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+            padding: 14px 16px;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+        }
+
+        .modal-section {
+            margin-bottom: 12px;
+        }
+
+        .modal-section h6 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .modal-section p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        .modal-pre {
+            background: var(--surface-hover);
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            overflow-x: auto;
+            max-height: 300px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .filter-toggle {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .alerts-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="header-title">
+            <i class="fas fa-exclamation-triangle"></i>
+            Log Alerts
+        </h1>
+    </div>
+
+    <!-- Alerts Card -->
+    <div class="alerts-card">
+        <div class="card-header">
+            <h5><i class="fas fa-bell"></i> Alerts</h5>
+            <div class="filter-toggle">
+                <label for="showResolved">Show Resolved Alerts</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="showResolved" {% if resolved_filter %}checked{% endif %}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="alerts-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Level</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alert in page_obj %}
+                        <tr class="{% if not alert.resolved %}{% if alert.level == 'CRITICAL' %}critical{% elif alert.level == 'ERROR' %}critical{% elif alert.level == 'WARNING' %}warning{% endif %}{% else %}secondary{% endif %}">
+                            <td>{{ alert.timestamp|date:"Y-m-d H:i:s" }}</td>
+                            <td>
+                                <span class="level-badge level-{{ alert.level|lower }}">
+                                    {{ alert.get_level_display }}
+                                </span>
+                            </td>
+                            <td>{{ alert.message|truncatechars:100 }}</td>
+                            <td>
+                                {% if alert.resolved %}
+                                    <span class="status-badge status-resolved">
+                                        <i class="fas fa-check-circle"></i> Resolved
+                                    </span>
+                                    <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">
+                                        by {{ alert.resolved_by }}<br>
+                                        {{ alert.resolved_at|date:"Y-m-d H:i" }}
+                                    </div>
+                                {% else %}
+                                    <span class="status-badge status-active">
+                                        <i class="fas fa-exclamation-circle"></i> Active
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    {% if not alert.resolved %}
+                                        <button class="btn btn-success btn-sm resolve-btn" data-alert-id="{{ alert.id }}">
+                                            <i class="fas fa-check"></i> Resolve
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#alertDetailsModal"
+                                        data-message="{{ alert.message }}" data-details="{{ alert.details }}">
+                                        <i class="fas fa-eye"></i> Details
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if resolved_filter %}&resolved=true{% endif %}" class="page-link">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if resolved_filter %}&resolved=true{% endif %}" class="page-link">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                {% else %}
+                    <span class="page-link disabled">
+                        <i class="fas fa-angle-double-left"></i>
+                    </span>
+                    <span class="page-link disabled">
+                        <i class="fas fa-angle-left"></i>
+                    </span>
+                {% endif %}
+
+                <span class="page-link active">
+                    {{ page_obj.number }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if resolved_filter %}&resolved=true{% endif %}" class="page-link">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if resolved_filter %}&resolved=true{% endif %}" class="page-link">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                {% else %}
+                    <span class="page-link disabled">
+                        <i class="fas fa-angle-right"></i>
+                    </span>
+                    <span class="page-link disabled">
+                        <i class="fas fa-angle-double-right"></i>
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Details Modal -->
+<div class="modal fade" id="alertDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle"></i> Alert Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h6>Message</h6>
+                    <p id="alertMessage"></p>
+                </div>
+                <div class="modal-section">
+                    <h6>Details</h6>
+                    <pre id="alertDetails" class="modal-pre"></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Alert Details Modal
+    $('#alertDetailsModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var message = button.data('message');
+        var details = button.data('details');
+
+        var modal = $(this);
+        modal.find('#alertMessage').text(message);
+        modal.find('#alertDetails').text(details);
+    });
+
+    // Resolve Alert Button
+    $('.resolve-btn').click(function() {
+        var alertId = $(this).data('alert-id');
+        var row = $(this).closest('tr');
+        var button = $(this);
+
+        button.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+
+        $.ajax({
+            url: "{% url 'resolve_alert' 0 %}".replace('0', alertId),
+            method: 'POST',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    row.fadeOut(300, function() {
+                        row.remove();
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                button.html('<i class="fas fa-check"></i> Resolve').prop('disabled', false);
+                alert('Error resolving alert: ' + error);
+            }
+        });
+    });
+
+    // Show Resolved Toggle
+    $('#showResolved').change(function() {
+        var showResolved = $(this).is(':checked');
+        window.location.href = "{% url 'log_alerts' %}?resolved=" + showResolved;
+    });
+
+    // Add hover animations to buttons
+    $('.btn, .page-link').hover(
+        function() {
+            if (!$(this).hasClass('disabled') && !$(this).prop('disabled')) {
+                $(this).css('transform', 'translateY(-2px)');
+            }
+        },
+        function() {
+            $(this).css('transform', '');
+        }
+    );
+});
+</script>
+</body>
+</html>

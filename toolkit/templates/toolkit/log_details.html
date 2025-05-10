@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Details | Sentry</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --bg-color: #f9fafb;
+            --surface: #ffffff;
+            --surface-hover: #f3f4f6;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 12px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-title i {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Filter Card */
+        .filter-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: var(--transition);
+            animation: cardEntrance 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes cardEntrance {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-title i {
+            color: var(--primary);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .filter-card:hover .filter-title i {
+            transform: rotate(15deg);
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-select, .form-input {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 12px;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .form-select:focus, .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            height: 36px;
+            padding: 0 16px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Logs Table */
+        .logs-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+            transition: var(--transition);
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .logs-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logs-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logs-title i {
+            color: var(--primary);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .logs-container:hover .logs-title i {
+            transform: rotate(15deg);
+        }
+
+        .table-container {
+            margin-top: 8px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+        }
+
+        .logs-table th {
+            background: var(--surface-hover);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logs-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+
+        .logs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .logs-table tr:hover td {
+            background: var(--surface-hover);
+        }
+
+        .level-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .level-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .level-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .level-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+
+        .level-debug {
+            background: rgba(156, 163, 175, 0.1);
+            color: var(--text-secondary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .page-btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+        }
+
+        .page-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                grid-column: 1 / -1;
+                justify-content: flex-start;
+            }
+
+            .logs-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="header-title">
+            <i class="fas fa-scroll"></i>
+            Log Details
+        </h1>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="filter-card">
+        <div class="filter-header">
+            <div class="filter-title">
+                <i class="fas fa-filter"></i>
+                <span>Filter Logs</span>
+            </div>
+        </div>
+        <form method="get" class="filter-form">
+            <div class="form-group">
+                <label class="form-label">Level:</label>
+                <select class="form-select" name="level">
+                    <option value="">All Levels</option>
+                    {% for level in LEVEL_CHOICES %}
+                    <option value="{{ level.0 }}" {% if level_filter == level.0 %}selected{% endif %}>{{ level.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Source:</label>
+                <select class="form-select" name="source">
+                    <option value="">All Sources</option>
+                    {% for source in log_sources %}
+                    <option value="{{ source.name }}" {% if source_filter == source.name %}selected{% endif %}>{{ source.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Search:</label>
+                <input type="text" class="form-input" name="search" value="{{ search_query }}" placeholder="Search messages...">
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Apply
+                </button>
+                <a href="{% url 'log_details' %}" class="btn btn-secondary">
+                    <i class="fas fa-undo"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="logs-container">
+        <div class="logs-header">
+            <div class="logs-title">
+                <i class="fas fa-list"></i>
+                <span>Log Entries</span>
+            </div>
+        </div>
+
+        {% if page_obj %}
+        <div class="table-container">
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Level</th>
+                        <th>Source</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in page_obj %}
+                    <tr>
+                        <td>{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            <span class="level-badge level-{{ log.level|lower }}">
+                                {{ log.get_level_display }}
+                            </span>
+                        </td>
+                        <td>{{ log.source }}</td>
+                        <td>{{ log.message }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if level_filter %}&level={{ level_filter }}{% endif %}{% if source_filter %}&source={{ source_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" class="page-btn">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if level_filter %}&level={{ level_filter }}{% endif %}{% if source_filter %}&source={{ source_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" class="page-btn">
+                    <i class="fas fa-angle-left"></i>
+                </a>
+            {% else %}
+                <span class="page-btn disabled">
+                    <i class="fas fa-angle-double-left"></i>
+                </span>
+                <span class="page-btn disabled">
+                    <i class="fas fa-angle-left"></i>
+                </span>
+            {% endif %}
+
+            <span class="page-info">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if level_filter %}&level={{ level_filter }}{% endif %}{% if source_filter %}&source={{ source_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" class="page-btn">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if level_filter %}&level={{ level_filter }}{% endif %}{% if source_filter %}&source={{ source_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" class="page-btn">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% else %}
+                <span class="page-btn disabled">
+                    <i class="fas fa-angle-right"></i>
+                </span>
+                <span class="page-btn disabled">
+                    <i class="fas fa-angle-double-right"></i>
+                </span>
+            {% endif %}
+        </div>
+        {% else %}
+        <div style="background: var(--surface-hover); border-radius: var(--radius); padding: 16px; text-align: center;">
+            <i class="fas fa-info-circle" style="color: var(--text-tertiary); font-size: 24px; margin-bottom: 8px;"></i>
+            <p style="color: var(--text-secondary);">No log entries found matching your filters.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Add hover animations to buttons
+    $('.btn, .page-btn').hover(
+        function() {
+            if (!$(this).hasClass('disabled')) {
+                $(this).css('transform', 'translateY(-2px)');
+            }
+        },
+        function() {
+            $(this).css('transform', '');
+        }
+    );
+</script>
+</body>
+</html>

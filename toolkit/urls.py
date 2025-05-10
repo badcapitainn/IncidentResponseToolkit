@@ -16,5 +16,15 @@ urlpatterns = [
     path('network/stats/<int:capture_id>/', views.network_stats, name='network_stats'),
     path('network/packets/<int:capture_id>/', views.packet_details, name='packet_details'),
     path('network/add-rule/', views.add_network_rule, name='add_network_rule'),
+
+    path('logs/', views.log_module, name='log_module'),
+    path('logs/details/', views.log_details, name='log_details'),
+    path('logs/alerts/', views.log_alerts, name='log_alerts'),
+    path('logs/alerts/<int:alert_id>/resolve/', views.resolve_alert, name='resolve_alert'),
+    path('logs/upload/', views.upload_log_file, name='upload_log_file'),
+    path('logs/stats/', views.log_stats_api, name='log_stats_api'),
+    path('logs/monitor/start/', views.start_monitoring, name='start_monitoring'),
+    path('logs/monitor/stop/', views.stop_monitoring, name='stop_monitoring'),
+    path('logs/monitor/status/', views.monitoring_status, name='monitoring_status'),
 ]
 

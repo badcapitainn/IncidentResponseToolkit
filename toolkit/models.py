@@ -1,3 +1,6 @@
+from datetime import timedelta
+from time import timezone
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db import models
@@ -179,3 +182,85 @@ class NetworkRule(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# ---------------------------------------------------log analysis models -----------------------------------------------
+
+class LogSource(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class LogEntry(models.Model):
+    LEVEL_CHOICES = [
+        ('DEBUG', 'Debug'),
+        ('INFO', 'Info'),
+        ('WARNING', 'Warning'),
+        ('ERROR', 'Error'),
+        ('CRITICAL', 'Critical'),
+    ]
+
+    timestamp = models.DateTimeField()
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES)
+    message = models.TextField()
+    source = models.ForeignKey(LogSource, on_delete=models.CASCADE)
+    compressed = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['timestamp']),
+            models.Index(fields=['level']),
+        ]
+
+    def __str__(self):
+        return f"{self.timestamp} [{self.level}] {self.message[:50]}..."
+
+
+class LogAlert(models.Model):
+    LEVEL_CHOICES = LogEntry.LEVEL_CHOICES
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES)
+    message = models.TextField()
+    details = models.TextField(blank=True)
+    resolved = models.BooleanField(default=False)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.timestamp} [{self.level}] {self.message[:50]}..."
+
+    def resolve(self, user):
+        self.resolved = True
+        self.resolved_at = timezone.now()
+        self.resolved_by = user
+        self.save()
+
+
+class BlockedIP(models.Model):
+    ip_address = models.GenericIPAddressField(unique=True)
+    blocked_at = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField()
+    duration_minutes = models.IntegerField(default=60)
+    unblocked = models.BooleanField(default=False)
+    unblocked_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-blocked_at']
+
+    def __str__(self):
+        return f"{self.ip_address} (blocked at {self.blocked_at})"
+
+    def is_active(self):
+        if self.unblocked:
+            return False
+        expiry = self.blocked_at + timedelta(minutes=self.duration_minutes)
+        return timezone.now() < expiry

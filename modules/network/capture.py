@@ -29,6 +29,7 @@ class NetworkCapture:
         self.rules = []
         self.alerts = []
         self.capture_file = os.path.join(settings.BASE_DIR, 'network_capture.pcap')
+        self.blocked_ips = set()
 
     def start_capture(self, interface=None, filter_rule=None, timeout=60):
         """Start packet capture"""

@@ -18,6 +18,14 @@ ALLOWED_HOSTS = []
 QUARANTINE_DIR = os.path.join(BASE_DIR, 'quarantine')
 os.makedirs(QUARANTINE_DIR, exist_ok=True)
 
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Create directories if they don't exist
+os.makedirs(LOGS_DIR, exist_ok=True)
+os.makedirs(MEDIA_ROOT, exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'temp_logs'), exist_ok=True)
 # Application definition
 
 INSTALLED_APPS = [

@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Analysis | Sentry</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --bg-color: #f9fafb;
+            --surface: #ffffff;
+            --surface-hover: #f3f4f6;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 12px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-title i {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border-left: 3px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+            animation: cardEntrance 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes cardEntrance {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .stat-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: rgba(79, 70, 229, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: rotate(15deg);
+            background: rgba(79, 70, 229, 0.2);
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 6px 0;
+        }
+
+        /* Charts Layout */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .chart-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-title i {
+            color: var(--primary);
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .chart-container:hover .chart-title i {
+            transform: rotate(15deg);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .table-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .table-title i {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .view-all-btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            height: 30px;
+            padding: 0 12px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            gap: 6px;
+        }
+
+        .view-all-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .table-responsive {
+            margin-top: 8px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+        }
+
+        .table th {
+            background: var(--surface-hover);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover td {
+            background: var(--surface-hover);
+        }
+
+        .level-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            text-transform: capitalize;
+        }
+
+        .level-debug {
+            background: rgba(156, 163, 175, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .level-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+
+        .level-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .level-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .level-critical {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+        }
+
+        /* Upload Form */
+        .upload-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .upload-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .upload-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .upload-title i {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 12px;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            background: var(--surface-hover);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-label:hover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .file-label i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .file-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .upload-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .upload-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .upload-status {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: var(--radius);
+            font-size: 13px;
+        }
+
+        .upload-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .upload-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .upload-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Monitoring Card */
+        .monitor-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+            transition: var(--transition);
+        }
+
+        .monitor-container:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .monitor-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .monitor-title i {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .monitor-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .monitor-btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            height: 30px;
+            padding: 0 12px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            gap: 6px;
+        }
+
+        .monitor-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .monitor-btn.start {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .monitor-btn.stop {
+            background: var(--danger);
+            color: white;
+        }
+
+        .monitor-status {
+            background: var(--surface-hover);
+            border-radius: var(--radius);
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .monitor-progress {
+            height: 6px;
+            background: var(--surface-hover);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .monitor-progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .monitor-stats {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: var(--radius-lg);
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+            padding: 14px 16px;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+        }
+
+        .modal-detail {
+            margin-bottom: 12px;
+        }
+
+        .modal-detail h6 {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .modal-detail pre {
+            background: var(--surface-hover);
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="header-title">
+            <i class="fas fa-file-alt"></i>
+            Log Analysis
+        </h1>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-title">Total Logs</div>
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ stats.total_logs }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-title">Active Alerts (24h)</div>
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ stats.recent_alerts }}</div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Log Level Distribution</span>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="logLevelChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Log Sources</span>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="logSourceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Logs Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fas fa-history"></i>
+                <span>Recent Logs</span>
+            </div>
+            <a href="{% url 'log_details' %}" class="view-all-btn">
+                <i class="fas fa-eye"></i> View All
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Level</th>
+                        <th>Source</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in recent_logs %}
+                    <tr>
+                        <td>{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            <span class="level-badge level-{{ log.level|lower }}">
+                                {{ log.get_level_display }}
+                            </span>
+                        </td>
+                        <td>{{ log.source }}</td>
+                        <td>{{ log.message|truncatechars:100 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Active Alerts Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">
+                <i class="fas fa-bell"></i>
+                <span>Active Alerts</span>
+            </div>
+            <a href="{% url 'log_alerts' %}" class="view-all-btn">
+                <i class="fas fa-eye"></i> View All
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Level</th>
+                        <th>Message</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in active_alerts %}
+                    <tr>
+                        <td>{{ alert.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            <span class="level-badge level-{{ alert.level|lower }}">
+                                {{ alert.get_level_display }}
+                            </span>
+                        </td>
+                        <td>{{ alert.message|truncatechars:100 }}</td>
+                        <td>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="monitor-btn resolve-btn" data-alert-id="{{ alert.id }}">
+                                    <i class="fas fa-check"></i> Resolve
+                                </button>
+                                <button class="monitor-btn" data-bs-toggle="modal" data-bs-target="#alertDetailsModal"
+                                    data-message="{{ alert.message }}" data-details="{{ alert.details }}">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Log Upload Card -->
+    <div class="upload-container">
+        <div class="upload-header">
+            <div class="upload-title">
+                <i class="fas fa-upload"></i>
+                <span>Upload Log File</span>
+            </div>
+        </div>
+        <form id="logUploadForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="upload-form">
+                <div class="form-group">
+                    <label class="form-label">Log File</label>
+                    <input type="file" class="file-input" id="logFile" name="log_file" required>
+                    <label for="logFile" class="file-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span class="file-text">Click to browse or drag & drop files</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Source Name</label>
+                    <input type="text" class="form-input" id="sourceName" name="source_name"
+                           placeholder="e.g., firewall, server" required>
+                </div>
+                <button type="submit" class="upload-btn">
+                    <i class="fas fa-upload"></i> Upload and Analyze
+                </button>
+            </div>
+            <div id="uploadStatus" class="upload-status"></div>
+        </form>
+    </div>
+
+    <!-- Real-Time Monitoring Card -->
+    <div class="monitor-container">
+        <div class="monitor-header">
+            <div class="monitor-title">
+                <i class="fas fa-sync-alt"></i>
+                <span>Real-Time Monitoring</span>
+            </div>
+            <div class="monitor-controls">
+                <button id="startMonitorBtn" class="monitor-btn start">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button id="stopMonitorBtn" class="monitor-btn stop">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
+        </div>
+        <div class="monitor-status">
+            Monitoring status: <span id="statusText">Unknown</span>
+        </div>
+        <div class="monitor-progress">
+            <div id="monitorProgress" class="monitor-progress-bar"></div>
+        </div>
+        <div class="monitor-stats">
+            Watching directories: <span id="watchDirs"></span>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Details Modal -->
+<div class="modal fade" id="alertDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle"></i> Alert Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-detail">
+                    <h6>Message:</h6>
+                    <p id="alertMessage"></p>
+                </div>
+                <div class="modal-detail">
+                    <h6>Details:</h6>
+                    <pre id="alertDetails"></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="upload-btn" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize charts
+const logLevelChart = new Chart(
+    document.getElementById('logLevelChart'),
+    {
+        type: 'doughnut',
+        data: {
+            labels: ['Debug', 'Info', 'Warning', 'Error', 'Critical'],
+            datasets: [{
+                data: [
+                    {{ stats.levels.DEBUG|default:0 }},
+                    {{ stats.levels.INFO|default:0 }},
+                    {{ stats.levels.WARNING|default:0 }},
+                    {{ stats.levels.ERROR|default:0 }},
+                    {{ stats.levels.CRITICAL|default:0 }}
+                ],
+                backgroundColor: [
+                    'rgba(156, 163, 175, 0.7)',
+                    'rgba(59, 130, 246, 0.7)',
+                    'rgba(245, 158, 11, 0.7)',
+                    'rgba(239, 68, 68, 0.7)',
+                    'rgba(220, 38, 38, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(156, 163, 175, 1)',
+                    'rgba(59, 130, 246, 1)',
+                    'rgba(245, 158, 11, 1)',
+                    'rgba(239, 68, 68, 1)',
+                    'rgba(220, 38, 38, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    }
+);
+
+const logSourceChart = new Chart(
+    document.getElementById('logSourceChart'),
+    {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for source, count in stats.sources.items %}
+                    "{{ source }}"{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Log Count',
+                data: [
+                    {% for source, count in stats.sources.items %}
+                        {{ count }}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                borderColor: 'rgba(79, 70, 229, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    }
+);
+
+// Alert Details Modal
+$('#alertDetailsModal').on('show.bs.modal', function (event) {
+    const button = $(event.relatedTarget);
+    const message = button.data('message');
+    const details = button.data('details');
+
+    const modal = $(this);
+    modal.find('#alertMessage').text(message);
+    modal.find('#alertDetails').text(details);
+});
+
+// Resolve Alert Button
+$('.resolve-btn').click(function() {
+    const alertId = $(this).data('alert-id');
+    const row = $(this).closest('tr');
+
+    $.ajax({
+        url: "{% url 'resolve_alert' 0 %}".replace('0', alertId),
+        method: 'POST',
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.status === 'success') {
+                row.fadeOut(300, function() {
+                    row.remove();
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('Error resolving alert: ' + error);
+        }
+    });
+});
+
+// Log Upload Form
+$('#logUploadForm').submit(function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const statusDiv = $('#uploadStatus');
+
+    statusDiv.html('<div class="upload-info">Uploading and processing log file...</div>');
+
+    $.ajax({
+        url: "{% url 'upload_log_file' %}",
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.status === 'success') {
+                statusDiv.html('<div class="upload-success">Log file processed successfully! Page will refresh in 3 seconds...</div>');
+                setTimeout(function() {
+                    location.reload();
+                }, 3000);
+            } else {
+                statusDiv.html('<div class="upload-error">Error: ' + response.message + '</div>');
+            }
+        },
+        error: function(xhr, status, error) {
+            statusDiv.html('<div class="upload-error">Error: ' + error + '</div>');
+        }
+    });
+});
+
+// File input display
+document.querySelectorAll('.file-input').forEach(input => {
+    input.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (this.files.length > 0) {
+            label.querySelector('.file-text').textContent = this.files[0].name;
+            label.style.borderColor = 'var(--primary)';
+            label.style.backgroundColor = 'rgba(79, 70, 229, 0.05)';
+        } else {
+            label.querySelector('.file-text').textContent = 'Click to browse or drag & drop files';
+            label.style.borderColor = 'var(--border)';
+            label.style.backgroundColor = 'var(--surface-hover)';
+        }
+    });
+});
+
+// Drag and drop for file input
+document.querySelectorAll('.file-label').forEach(label => {
+    label.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        label.style.borderColor = 'var(--primary)';
+        label.style.backgroundColor = 'rgba(79, 70, 229, 0.1)';
+    });
+
+    label.addEventListener('dragleave', () => {
+        label.style.borderColor = 'var(--border)';
+        label.style.backgroundColor = 'var(--surface-hover)';
+    });
+
+    label.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const input = label.previousElementSibling;
+        input.files = e.dataTransfer.files;
+        const event = new Event('change');
+        input.dispatchEvent(event);
+    });
+});
+
+// Monitor controls
+function updateMonitorStatus() {
+    $.get("{% url 'monitoring_status' %}", function(data) {
+        $('#statusText').text(data.status);
+        $('#watchDirs').text(data.watch_dirs.join(', '));
+
+        if (data.status === 'running') {
+            $('#startMonitorBtn').prop('disabled', true);
+            $('#stopMonitorBtn').prop('disabled', false);
+            $('#monitorProgress').css('width', '100%');
+        } else {
+            $('#startMonitorBtn').prop('disabled', false);
+            $('#stopMonitorBtn').prop('disabled', true);
+            $('#monitorProgress').css('width', '0%');
+        }
+    });
+}
+
+$('#startMonitorBtn').click(function() {
+    $.post("{% url 'start_monitoring' %}", function() {
+        updateMonitorStatus();
+        // Refresh logs to show new entries
+        setTimeout(function() {
+            location.reload();
+        }, 2000);
+    });
+});
+
+$('#stopMonitorBtn').click(function() {
+    $.post("{% url 'stop_monitoring' %}", function() {
+        updateMonitorStatus();
+    });
+});
+
+// Initial status check
+updateMonitorStatus();
+
+// Refresh stats every 30 seconds
+setInterval(function() {
+    $.get("{% url 'log_stats_api' %}", function(data) {
+        // Update total logs
+        $('.stat-card:nth-child(1) .stat-value').text(data.total_logs);
+
+        // Update recent alerts
+        $('.stat-card:nth-child(2) .stat-value').text(data.recent_alerts);
+
+        // Update pie chart
+        logLevelChart.data.datasets[0].data = [
+            data.levels.DEBUG || 0,
+            data.levels.INFO || 0,
+            data.levels.WARNING || 0,
+            data.levels.ERROR || 0,
+            data.levels.CRITICAL || 0
+        ];
+        logLevelChart.update();
+
+        // Update bar chart if sources changed
+        const newLabels = Object.keys(data.sources);
+        const newData = Object.values(data.sources);
+
+        if (JSON.stringify(logSourceChart.data.labels) !== JSON.stringify(newLabels)) {
+            logSourceChart.data.labels = newLabels;
+            logSourceChart.data.datasets[0].data = newData;
+            logSourceChart.update();
+        } else {
+            logSourceChart.data.datasets[0].data = newData;
+            logSourceChart.update();
+        }
+    });
+}, 30000);
+</script>
+</body>
+</html>

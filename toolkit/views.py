@@ -5,6 +5,7 @@ import shutil
 import threading
 import time
 
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -13,6 +14,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from modules.log_module.utils import RealTimeLogMonitor
 from .forms import RegisterForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -28,6 +30,8 @@ from modules.network.capture import NetworkCapture as NetCapture
 from modules.network.analysis import NetworkAnalyzer
 from modules.network.rules import NetworkRuleManager
 import logging
+from .models import LogEntry, LogSource, LogAlert
+from modules.log_module.core import LogAnalyzer
 
 
 @csrf_exempt
@@ -109,6 +113,181 @@ def log_analysis(request):
     )
 
     return render(request, template, context)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def log_module(request):
+    # Initialize analyzer
+    analyzer = LogAnalyzer()
+
+    # Get statistics
+    stats = analyzer.get_log_statistics()
+
+    # Get recent logs
+    recent_logs = LogEntry.objects.all().order_by('-timestamp')[:50]
+
+    # Get active alerts
+    active_alerts = LogAlert.objects.filter(resolved=False).order_by('-timestamp')[:10]
+
+    context = {
+        'stats': stats,
+        'recent_logs': recent_logs,
+        'active_alerts': active_alerts,
+        'log_sources': LogSource.objects.all(),
+    }
+
+    return render(request, '../templates/toolkit/log_analysis_module.html', context)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def log_details(request):
+    # Get filter parameters
+    level_filter = request.GET.get('level', '')
+    source_filter = request.GET.get('source', '')
+    search_query = request.GET.get('search', '')
+
+    # Build query
+    logs = LogEntry.objects.all().order_by('-timestamp')
+
+    if level_filter:
+        logs = logs.filter(level=level_filter)
+    if source_filter:
+        logs = logs.filter(source__name=source_filter)
+    if search_query:
+        logs = logs.filter(message__icontains=search_query)
+
+    # Pagination
+    paginator = Paginator(logs, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'level_filter': level_filter,
+        'source_filter': source_filter,
+        'search_query': search_query,
+    }
+
+    return render(request, '../templates/toolkit/log_details.html', context)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def log_alerts(request):
+    # Get filter parameters
+    resolved_filter = request.GET.get('resolved', 'false') == 'true'
+
+    alerts = LogAlert.objects.all().order_by('-timestamp')
+
+    if not resolved_filter:
+        alerts = alerts.filter(resolved=False)
+
+    # Pagination
+    paginator = Paginator(alerts, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'resolved_filter': resolved_filter,
+    }
+
+    return render(request, '../templates/toolkit/log_alerts.html', context)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def resolve_alert(request, alert_id):
+    if request.method == 'POST':
+        try:
+            alert = LogAlert.objects.get(id=alert_id)
+            alert.resolve(request.user)
+            return JsonResponse({'status': 'success'})
+        except LogAlert.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Alert not found'}, status=404)
+    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=400)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def upload_log_file(request):
+    if request.method == 'POST' and request.FILES.get('log_file'):
+        log_file = request.FILES['log_file']
+        source_name = request.POST.get('source_name', 'uploaded')
+
+        # Save to temp location
+        temp_path = os.path.join(settings.MEDIA_ROOT, 'temp_logs', log_file.name)
+        os.makedirs(os.path.dirname(temp_path), exist_ok=True)
+
+        with open(temp_path, 'wb+') as destination:
+            for chunk in log_file.chunks():
+                destination.write(chunk)
+
+        # Process the file
+        analyzer = LogAnalyzer()
+        success = analyzer.process_log_file(temp_path, source_name)
+
+        # Clean up
+        os.remove(temp_path)
+
+        if success:
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Failed to process log file'}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def log_stats_api(request):
+    analyzer = LogAnalyzer()
+    stats = analyzer.get_log_statistics()
+    return JsonResponse(stats)
+
+
+# Global monitor instance
+_monitor_instance = None
+
+
+def get_log_monitor():
+    global _monitor_instance
+    if _monitor_instance is None:
+        from modules.log_module.utils import RealTimeLogMonitor
+        _monitor_instance = RealTimeLogMonitor()
+    return _monitor_instance
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def start_monitoring(request):
+    monitor = get_log_monitor()
+    if request.method == 'POST':
+        monitor.start()
+        return JsonResponse({'status': 'started'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def stop_monitoring(request):
+    monitor = get_log_monitor()
+    if request.method == 'POST':
+        monitor.stop()
+        return JsonResponse({'status': 'stopped'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+@login_required(login_url='login')
+def monitoring_status(request):
+    monitor = get_log_monitor()
+    return JsonResponse({
+        'status': 'running' if monitor.running else 'stopped',
+        'watch_dirs': monitor.watch_dirs
+    })
 
 
 # -------------------------------------------- Malware Views -----------------------------------------------------------
