@@ -27,7 +27,6 @@ class LogAnalyzer:
     @property
     def firewall(self):
         if self._firewall is None:
-            from modules.firewall.blocker import FirewallBlocker
             self._firewall = FirewallBlocker()
         return self._firewall
 
