@@ -408,9 +408,11 @@
                 <label class="form-label">Level:</label>
                 <select class="form-select" name="level">
                     <option value="">All Levels</option>
-                    {% for level in LEVEL_CHOICES %}
-                    <option value="{{ level.0 }}" {% if level_filter == level.0 %}selected{% endif %}>{{ level.1 }}</option>
-                    {% endfor %}
+                    <option value="DEBUG" {% if level_filter == 'DEBUG' %}selected{% endif %}>Debug</option>
+                    <option value="INFO" {% if level_filter == 'INFO' %}selected{% endif %}>Info</option>
+                    <option value="WARNING" {% if level_filter == 'WARNING' %}selected{% endif %}>Warning</option>
+                    <option value="ERROR" {% if level_filter == 'ERROR' %}selected{% endif %}>Error</option>
+                    <option value="CRITICAL" {% if level_filter == 'CRITICAL' %}selected{% endif %}>Critical</option>
                 </select>
             </div>
 

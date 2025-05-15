@@ -1025,39 +1025,58 @@ const logSourceChart = new Chart(
     }
 );
 
+// Replace the existing resolve button and modal code with this:
+
 // Alert Details Modal
 $('#alertDetailsModal').on('show.bs.modal', function (event) {
-    const button = $(event.relatedTarget);
-    const message = button.data('message');
-    const details = button.data('details');
+    var button = $(event.relatedTarget);
+    var message = button.data('message');
+    var details = button.data('details');
 
-    const modal = $(this);
+    var modal = $(this);
+    modal.find('.modal-title').text('Alert Details');
     modal.find('#alertMessage').text(message);
     modal.find('#alertDetails').text(details);
 });
 
-// Resolve Alert Button
-$('.resolve-btn').click(function() {
-    const alertId = $(this).data('alert-id');
-    const row = $(this).closest('tr');
+// Resolve Alert Button with Confirmation
+$(document).on('click', '.resolve-btn', function() {
+    var alertId = $(this).data('alert-id');
+    var row = $(this).closest('tr');
 
-    $.ajax({
-        url: "{% url 'resolve_alert' 0 %}".replace('0', alertId),
-        method: 'POST',
-        data: {
-            csrfmiddlewaretoken: '{{ csrf_token }}'
-        },
-        success: function(response) {
-            if (response.status === 'success') {
-                row.fadeOut(300, function() {
-                    row.remove();
-                });
+    // Show confirmation dialog
+    if (confirm('Are you sure you want to resolve this alert?')) {
+        $.ajax({
+            url: "{% url 'resolve_alert' 0 %}".replace('0', alertId),
+            method: 'POST',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    // Show success modal
+                    $('#alertDetailsModal .modal-title').text('Alert Resolved');
+                    $('#alertDetailsModal #alertMessage').text('The alert has been successfully resolved.');
+                    $('#alertDetailsModal #alertDetails').text('');
+                    $('#alertDetailsModal').modal('show');
+
+                    // Remove the row after a delay
+                    setTimeout(function() {
+                        row.fadeOut(300, function() {
+                            row.remove();
+                        });
+                    }, 2000);
+                }
+            },
+            error: function(xhr, status, error) {
+                // Show error modal
+                $('#alertDetailsModal .modal-title').text('Error');
+                $('#alertDetailsModal #alertMessage').text('Failed to resolve alert: ' + error);
+                $('#alertDetailsModal #alertDetails').text(xhr.responseText);
+                $('#alertDetailsModal').modal('show');
             }
-        },
-        error: function(xhr, status, error) {
-            alert('Error resolving alert: ' + error);
-        }
-    });
+        });
+    }
 });
 
 // Log Upload Form

@@ -6,6 +6,7 @@
     <title>Log Alerts | Sentry</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
             --primary: #4f46e5;
@@ -540,12 +541,17 @@
                                             <i class="fas fa-check"></i> Resolve
                                         </button>
                                     {% endif %}
-                                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#alertDetailsModal"
-                                        data-message="{{ alert.message }}" data-details="{{ alert.details }}">
+                                    <button class="btn btn-info btn-sm details-btn"
+                                        data-message="{{ alert.message }}"
+                                        data-details="{{ alert.details }}">
                                         <i class="fas fa-eye"></i> Details
                                     </button>
                                 </div>
                             </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No alerts found</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -625,17 +631,19 @@
 
 <!-- Bootstrap JS Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
     // Alert Details Modal
-    $('#alertDetailsModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var message = button.data('message');
-        var details = button.data('details');
+    $('.details-btn').click(function() {
+        var message = $(this).data('message');
+        var details = $(this).data('details');
 
-        var modal = $(this);
-        modal.find('#alertMessage').text(message);
-        modal.find('#alertDetails').text(details);
+        $('#alertMessage').text(message);
+        $('#alertDetails').text(details);
+
+        var modal = new bootstrap.Modal(document.getElementById('alertDetailsModal'));
+        modal.show();
     });
 
     // Resolve Alert Button

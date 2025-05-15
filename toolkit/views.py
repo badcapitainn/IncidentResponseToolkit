@@ -14,6 +14,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from modules.firewall.blocker import FirewallBlocker
 from modules.log_module.utils import RealTimeLogMonitor
 from .forms import RegisterForm
 from django.contrib import messages
@@ -22,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, MaliciousPackets, SuspiciousPackets, SystemMetrics, \
-    MalwareDetectionResult, Quarantine, NetworkCapture, NetworkAlert, NetworkRule
+    MalwareDetectionResult, Quarantine, NetworkCapture, NetworkAlert, NetworkRule, BlockedIP
 from modules.malware_detection.scanner import MalwareScanner
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -150,6 +151,7 @@ def log_details(request):
 
     # Build query
     logs = LogEntry.objects.all().order_by('-timestamp')
+    sources = LogSource.objects.all()  # Get all sources for the filter dropdown
 
     if level_filter:
         logs = logs.filter(level=level_filter)
@@ -159,7 +161,7 @@ def log_details(request):
         logs = logs.filter(message__icontains=search_query)
 
     # Pagination
-    paginator = Paginator(logs, 50)
+    paginator = Paginator(logs, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -168,6 +170,8 @@ def log_details(request):
         'level_filter': level_filter,
         'source_filter': source_filter,
         'search_query': search_query,
+        'log_sources': sources,
+        'LEVEL_CHOICES': LogEntry.LEVEL_CHOICES
     }
 
     return render(request, '../templates/toolkit/log_details.html', context)
@@ -185,7 +189,7 @@ def log_alerts(request):
         alerts = alerts.filter(resolved=False)
 
     # Pagination
-    paginator = Paginator(alerts, 20)
+    paginator = Paginator(alerts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -287,6 +291,29 @@ def monitoring_status(request):
     return JsonResponse({
         'status': 'running' if monitor.running else 'stopped',
         'watch_dirs': monitor.watch_dirs
+    })
+
+
+@login_required
+def blocked_ips(request):
+    active_blocks = BlockedIP.objects.filter(unblocked=False)
+    inactive_blocks = BlockedIP.objects.filter(unblocked=True)
+
+    if request.method == 'POST' and 'unblock_ip' in request.POST:
+        ip_address = request.POST.get('ip_address')
+        try:
+            blocker = FirewallBlocker()
+            if blocker.unblock_ip(ip_address):
+                messages.success(request, f"IP {ip_address} has been unblocked")
+            else:
+                messages.error(request, f"Failed to unblock IP {ip_address}")
+        except Exception as e:
+            messages.error(request, f"Error: {str(e)}")
+        return redirect('blocked_ips')
+
+    return render(request, '../templates/toolkit/blocked_ips.html', {
+        'active_blocks': active_blocks,
+        'inactive_blocks': inactive_blocks
     })
 
 
