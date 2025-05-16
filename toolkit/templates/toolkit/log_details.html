@@ -357,6 +357,32 @@
             color: white;
         }
 
+        .action-btn {
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-secondary);
+            height: 36px;
+            padding: 0 12px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 14px;
+        }
+
         .page-btn.disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -393,6 +419,9 @@
             <i class="fas fa-scroll"></i>
             Log Details
         </h1>
+        <a href="{% url 'log_module' %}" class="action-btn" style="margin-top: 12px;">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
     </div>
 
     <!-- Filter Card -->

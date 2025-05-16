@@ -808,7 +808,7 @@
                         <th>Timestamp</th>
                         <th>Level</th>
                         <th>Message</th>
-                        <th>Actions</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -821,17 +821,7 @@
                             </span>
                         </td>
                         <td>{{ alert.message|truncatechars:100 }}</td>
-                        <td>
-                            <div style="display: flex; gap: 6px;">
-                                <button class="monitor-btn resolve-btn" data-alert-id="{{ alert.id }}">
-                                    <i class="fas fa-check"></i> Resolve
-                                </button>
-                                <button class="monitor-btn" data-bs-toggle="modal" data-bs-target="#alertDetailsModal"
-                                    data-message="{{ alert.message }}" data-details="{{ alert.details }}">
-                                    <i class="fas fa-info-circle"></i> Details
-                                </button>
-                            </div>
-                        </td>
+
                     </tr>
                     {% endfor %}
                 </tbody>
