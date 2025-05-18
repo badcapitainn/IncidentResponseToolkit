@@ -60,6 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # other middleware 
+    'toolkit.middleware.BlockedIPMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

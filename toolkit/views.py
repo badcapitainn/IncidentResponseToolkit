@@ -317,6 +317,16 @@ def blocked_ips(request):
     })
 
 
+def check_blocked_ip(view_func):
+    def wrapper(request, *args, **kwargs):
+        blocker = FirewallBlocker()
+        client_ip = request.META.get('REMOTE_ADDR')
+        
+        if client_ip and blocker.is_blocked(client_ip):
+            return HttpResponseForbidden("IP blocked")
+            
+        return view_func(request, *args, **kwargs)
+    return wrapper
 # -------------------------------------------- Malware Views -----------------------------------------------------------
 
 @csrf_exempt

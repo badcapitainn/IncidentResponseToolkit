@@ -76,6 +76,12 @@ class LogAnalyzer:
                 level = "INFO"
                 message = line
 
+            # Extract IP address from message if present
+            ip_address = None
+            ip_match = re.search(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b', message)
+            if ip_match:
+                ip_address = ip_match.group(0)
+
             # Save to database
             log_entry = LogEntry.objects.create(
                 timestamp=timestamp,
@@ -86,17 +92,21 @@ class LogAnalyzer:
 
             # Check for immediate alerts
             if level in ['ERROR', 'CRITICAL']:
-                self.current_alerts.append({
+                alert_data = {
                     'timestamp': timestamp,
                     'level': level,
                     'message': message,
                     'source': source_name
-                })
+                }
+                if ip_address:
+                    alert_data['ip'] = ip_address
+                self.current_alerts.append(alert_data)
 
             return log_entry
         except Exception as e:
             self.logger.error(f"Error processing log line: {line}. Error: {str(e)}")
             return None
+
 
     def check_for_alerts(self):
         """Check collected logs for alert conditions and block IPs if needed"""
@@ -106,7 +116,7 @@ class LogAnalyzer:
 
         for alert in self.current_alerts:
             alert_counts[alert['level']] += 1
-            if 'ip' in alert:  # Extract IP from alert if available
+            if 'ip' in alert:  # Only count alerts that have IPs
                 ip_alert_counts[alert['ip']][alert['level']] += 1
 
         # Check against thresholds
@@ -121,19 +131,28 @@ class LogAnalyzer:
         # Check for IPs to block
         for ip, counts in ip_alert_counts.items():
             if counts.get('CRITICAL', 0) >= 3 or counts.get('ERROR', 0) >= 10:
-                self.firewall.block_ip(
-                    ip_address=ip,
-                    reason=f"Excessive {level} events from this IP",
-                    duration_minutes=120
-                )
-                self.create_alert(
-                    level='CRITICAL',
-                    message=f"Blocked IP {ip} due to malicious activity",
-                    details=f"Blocked after {counts} suspicious events"
-                )
+                try:
+                    if self.firewall.block_ip(
+                        ip_address=ip,
+                        reason=f"Excessive malicious events ({counts})",
+                        duration_minutes=120
+                    ):
+                        self.create_alert(
+                            level='CRITICAL',
+                            message=f"Blocked IP {ip} due to malicious activity",
+                            details=f"Blocked after detecting: {counts}"
+                        )
+                except Exception as e:
+                    self.logger.error(f"Failed to block IP {ip}: {str(e)}")
+                    self.create_alert(
+                        level='ERROR',
+                        message=f"Failed to block IP {ip}",
+                        details=str(e)
+                    )
 
         self.current_alerts = []
 
+        
     def create_alert(self, level, message, details=""):
         """Create a new alert in the database"""
         LogAlert.objects.create(
