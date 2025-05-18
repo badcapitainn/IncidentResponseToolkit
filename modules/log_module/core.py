@@ -163,9 +163,7 @@ class LogAnalyzer:
             'total_logs': LogEntry.objects.count(),
             'levels': {},
             'sources': {},
-            'recent_alerts': LogAlert.objects.filter(
-                timestamp__gte=datetime.now() - timedelta(hours=24)
-            ).count()
+            'recent_alerts': LogAlert.objects.filter(resolved=False).count()
         }
 
         # Count by level
