@@ -690,9 +690,9 @@
                             <span>System Resources</span>
                         </div>
                         <div class="chart-actions">
-                            <button class="chart-action-btn active">1h</button>
-                            <button class="chart-action-btn">24h</button>
-                            <button class="chart-action-btn">7d</button>
+                            <button class="chart-action-btn active"></button>
+                            <button class="chart-action-btn"></button>
+                            <button class="chart-action-btn"></button>
                         </div>
                     </div>
                     <div class="small-charts-grid">
@@ -776,51 +776,59 @@
                             <i class="fas fa-history"></i>
                             <span>Recent Activity</span>
                         </div>
-                        <button class="chart-action-btn">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
                     </div>
+                    {% for activity in recent_activity %}
                     <div class="activity-list">
+                        
+                        {% if activity.module == "Log" %}
                         <div class="activity-item">
                             <div class="activity-icon success">
                                 <i class="fas fa-check"></i>
                             </div>
                             <div class="activity-content">
-                                <div class="activity-title">Malware scan completed</div>
-                                <div class="activity-time">2 minutes ago</div>
+                                <div class="activity-title">{{activity.activity}}</div>
+                                <div class="activity-time">{{activity.timestamp}}</div>
                             </div>
                         </div>
+                        {% endif %}
 
+                        {% if activity.module == "User" %}
                         <div class="activity-item">
                             <div class="activity-icon info">
                                 <i class="fas fa-user"></i>
                             </div>
                             <div class="activity-content">
-                                <div class="activity-title">User login detected</div>
-                                <div class="activity-time">15 minutes ago</div>
+                                <div class="activity-title">{{activity.activity}}</div>
+                                <div class="activity-time">{{activity.timestamp}}</div>
                             </div>
                         </div>
+                        {% endif %}
 
+                        {% if activity.module == "Malware" %}
                         <div class="activity-item">
                             <div class="activity-icon danger">
                                 <i class="fas fa-exclamation"></i>
                             </div>
                             <div class="activity-content">
-                                <div class="activity-title">Critical alert triggered</div>
-                                <div class="activity-time">1 hour ago</div>
+                                <div class="activity-title">{{activity.activity}}</div>
+                                <div class="activity-time">{{activity.timestamp}}</div>
                             </div>
                         </div>
+                        {% endif %}
 
+                        {% if activity.module == "Network" %}
                         <div class="activity-item">
                             <div class="activity-icon warning">
                                 <i class="fas fa-cog"></i>
                             </div>
                             <div class="activity-content">
-                                <div class="activity-title">System settings updated</div>
-                                <div class="activity-time">3 hours ago</div>
+                                <div class="activity-title">{{activity.activity}}</div>
+                                <div class="activity-time">{{activity.timestamp}}</div>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
+                    {% endfor %}
                 </div>
 
                 <!-- Threat Distribution Pie Chart -->

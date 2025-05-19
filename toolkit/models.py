@@ -264,3 +264,16 @@ class BlockedIP(models.Model):
             return False
         expiry = self.blocked_at + timedelta(minutes=self.duration_minutes)
         return timezone.now() < expiry
+
+#------------------------------------------------------other models------------------------------------------------------
+
+class RecentActivity(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    activity = models.CharField(max_length=1000)
+    module = models.CharField(max_length = 500)
+    
+    class Meta:
+        ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['timestamp']),
+        ]

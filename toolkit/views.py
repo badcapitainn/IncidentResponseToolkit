@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .models import AlertLogs, SuspiciousLogs, WatchlistLogs, MaliciousPackets, SuspiciousPackets, SystemMetrics, \
-    MalwareDetectionResult, Quarantine, NetworkCapture, NetworkAlert, NetworkRule, BlockedIP
+    MalwareDetectionResult, Quarantine, NetworkCapture, NetworkAlert, NetworkRule, BlockedIP, RecentActivity
 from modules.malware_detection.scanner import MalwareScanner
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -41,7 +41,9 @@ def dashboard(request):
     alert_logs = AlertLogs.objects.all()
     network_alerts = NetworkAlert.objects.all()
     malware_alerts = MalwareDetectionResult.objects.all().filter(is_malicious=True)
+    recent_activity = RecentActivity.objects.all().order_by('-timestamp')
 
+    
     log_alert_count: int = len([a for a in alert_logs])
     network_alert_count: int = len([a for a in network_alerts])
     malware_alert_count: int = len([a for a in malware_alerts])
@@ -82,6 +84,7 @@ def dashboard(request):
         "log_percentage": log_percentage,
         "network_percentage": network_percentage,
         "malware_percentage": malware_percentage,
+        "recent_activity": recent_activity
     }
     template = '../templates/toolkit/dashboard.html'
     return render(request, template, context)
@@ -208,6 +211,8 @@ def resolve_alert(request, alert_id):
         try:
             alert = LogAlert.objects.get(id=alert_id)
             alert.resolve(request.user)
+            # Update Recent activities
+            add_recent_activity(request, activity = "Log Alert Resolved", module = "Log")
             return JsonResponse({'status': 'success'})
         except LogAlert.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Alert not found'}, status=404)
@@ -237,6 +242,8 @@ def upload_log_file(request):
         os.remove(temp_path)
 
         if success:
+            # Update Recent activities
+            add_recent_activity(activity = "Log File Analysed", module = "Log")
             return JsonResponse({'status': 'success'})
         else:
             return JsonResponse({'status': 'error', 'message': 'Failed to process log file'}, status=500)
@@ -270,6 +277,8 @@ def start_monitoring(request):
     monitor = get_log_monitor()
     if request.method == 'POST':
         monitor.start()
+        # Update Recent activities
+        add_recent_activity(request, activity = "Log Monitoring Started", module = "Log")
         return JsonResponse({'status': 'started'})
     return JsonResponse({'status': 'error'}, status=400)
 
@@ -280,6 +289,8 @@ def stop_monitoring(request):
     monitor = get_log_monitor()
     if request.method == 'POST':
         monitor.stop()
+        # Update Recent activities
+        add_recent_activity(request, activity = "Log Monitoring Stopped", module = "Log")
         return JsonResponse({'status': 'stopped'})
     return JsonResponse({'status': 'error'}, status=400)
 
@@ -304,6 +315,8 @@ def blocked_ips(request):
         try:
             blocker = FirewallBlocker()
             if blocker.unblock_ip(ip_address):
+                # Update Recent activities
+                add_recent_activity(activity = "IP unblocked", module = "Log")
                 messages.success(request, f"IP {ip_address} has been unblocked")
             else:
                 messages.error(request, f"Failed to unblock IP {ip_address}")
@@ -334,8 +347,12 @@ def check_blocked_ip(view_func):
 def malware_detection(request):
     if request.method == 'POST':
         if 'file_scan' in request.FILES:
+            # Update Recent activities
+            add_recent_activity(request, activity = "Malware Scan Completed", module = "Malware")
             return handle_file_scan(request)
         elif 'directory_path' in request.POST:
+            # Update Recent activities
+            add_recent_activity(request, activity = "Malware Scan Completed", module = "Malware")
             return handle_directory_scan(request)
 
     quarantined_files = Quarantine.objects.filter(restored=False).select_related('detection_result')
@@ -448,6 +465,8 @@ def delete_file(request):
         if os.path.exists(quarantine.quarantine_path):
             os.remove(quarantine.quarantine_path)
         quarantine.delete()
+         # Update Recent activities
+        add_recent_activity(request, activity = "Quarantined File Deleted", module = "Malware")
         return JsonResponse({'status': 'success'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
@@ -476,6 +495,8 @@ def restore_file(request):
         quarantine.restored = True
         quarantine.restored_time = datetime.now()
         quarantine.save()
+        # Update Recent activities
+        add_recent_activity(request, activity = "Quarantined File Restored", module = "Malware")
 
         return JsonResponse({'status': 'success'})
     except Exception as e:
@@ -512,6 +533,8 @@ def registration(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Your account has been created!')
+             # Update Recent activities
+            add_recent_activity(request, activity = "New User Added", module = "User")
             return redirect('dashboard')
 
     context = {'form': form}
@@ -571,6 +594,10 @@ def network_module(request):
                 user=request.user,
                 is_active=True
             )
+             # Update Recent activities
+            add_recent_activity(request, activity = "Network Scan Started", module = "Network")
+
+            
 
             # Start actual capture (in a real implementation, you'd start a background task)
             try:
@@ -613,6 +640,9 @@ def network_module(request):
                         packet_size=alert['packet'].get('size'),
                         details=alert['packet']
                     )
+                
+                # Update Recent activities
+                add_recent_activity(request, activity = "Network Scan Stop", module = "Network")
 
                 request.session['network_capture'] = False
                 return JsonResponse({'status': 'stopped'})
@@ -798,3 +828,14 @@ def network_analysis(request):
     }
     template = '../templates/toolkit/network_analysis.html'
     return render(request, template, context)
+
+
+#------------------------- other views --------------------------------------------
+@login_required(login_url = 'login')
+def add_recent_activity(request, activity: str, module: str) -> None:
+    recent_activity = RecentActivity.objects.create(
+                timestamp = datetime.now(),
+                activity = activity,
+                module = module,
+            )
+    
