@@ -135,6 +135,12 @@
             font-size: 14px;
         }
 
+        .btn-sm {
+            height: 28px;
+            padding: 0 10px;
+            font-size: 12px;
+        }
+
         /* Stats Grid */
         .stats-grid {
             display: grid;
@@ -414,25 +420,24 @@
             color: var(--text-secondary);
         }
 
-        .view-btn {
-            background: var(--surface-hover);
-            border: none;
-            color: var(--text-secondary);
-            width: 28px;
-            height: 28px;
+        .status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
             border-radius: var(--radius-sm);
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 12px;
+            gap: 4px;
         }
 
-        .view-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.1);
+        .status-resolved {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
         }
 
         /* No Alerts Message */
@@ -455,57 +460,111 @@
             font-size: 14px;
         }
 
-        /* Modal */
-        .modal-content {
+        /* Popup styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-container {
+            background: var(--surface);
             border-radius: var(--radius-lg);
-            border: none;
             box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: var(--transition);
         }
 
-        .modal-header {
+        .popup-overlay.active .popup-container {
+            transform: translateY(0);
+        }
+
+        .popup-header {
+            padding: 16px;
             border-bottom: 1px solid var(--border);
-            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .modal-title {
-            font-size: 16px;
+        .popup-title {
+            font-size: 18px;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .modal-body {
+        .popup-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .popup-close:hover {
+            color: var(--danger);
+            transform: scale(1.1);
+        }
+
+        .popup-body {
             padding: 16px;
         }
 
-        .modal-footer {
-            border-top: 1px solid var(--border);
+        .popup-footer {
             padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
         }
 
-        .modal-detail {
-            margin-bottom: 10px;
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
-        .modal-detail strong {
+        .detail-item {
+            margin-bottom: 12px;
+        }
+
+        .detail-item strong {
+            display: block;
             font-size: 13px;
             color: var(--text-secondary);
-            display: block;
             margin-bottom: 4px;
         }
 
-        .modal-detail span {
+        .detail-item span {
             font-size: 14px;
             color: var(--text-primary);
         }
 
-        .modal-severity {
-            display: inline-block;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: var(--radius-sm);
+        .detail-item.full-width {
+            grid-column: 1 / -1;
         }
 
         .details-pre {
@@ -516,6 +575,50 @@
             font-size: 13px;
             overflow-x: auto;
             max-height: 300px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-select, .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+            background-color: var(--surface);
+        }
+
+        .form-select:focus, .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
         }
 
         /* Responsive Adjustments */
@@ -533,6 +636,10 @@
                 align-items: flex-start;
                 gap: 12px;
             }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 576px) {
@@ -542,6 +649,10 @@
 
             body {
                 padding: 8px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
             }
         }
     </style>
@@ -739,7 +850,7 @@
                         <th>Source</th>
                         <th>Destination</th>
                         <th>Protocol</th>
-                        <th>Details</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -756,15 +867,32 @@
                         <td>{{ alert.dst_ip }}:{{ alert.dst_port }}</td>
                         <td>{{ alert.protocol }}</td>
                         <td>
-                            <button class="view-btn view-details"
-                                data-alert="{{ alert.rule_name }}"
-                                data-src="{{ alert.src_ip }}:{{ alert.src_port }}"
-                                data-dst="{{ alert.dst_ip }}:{{ alert.dst_port }}"
-                                data-time="{{ alert.timestamp|date:'Y-m-d H:i:s' }}"
-                                data-severity="{{ alert.severity }}"
-                                data-details="{{ alert.details|escape }}">
-                                <i class="fas fa-search"></i>
-                            </button>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-sm view-details"
+                                    data-alert="{{ alert.rule_name }}"
+                                    data-src="{{ alert.src_ip }}:{{ alert.src_port }}"
+                                    data-dst="{{ alert.dst_ip }}:{{ alert.dst_port }}"
+                                    data-time="{{ alert.timestamp|date:'Y-m-d H:i:s' }}"
+                                    data-severity="{{ alert.severity }}"
+                                    data-details="{{ alert.details|escape }}">
+                                    <i class="fas fa-search"></i> Details
+                                </button>
+                                
+                                {% if alert.status != 'resolved' %}
+                                <button class="action-btn btn-sm resolve-btn" 
+                                    data-alert-id="{{ alert.id }}"
+                                    data-src-ip="{{ alert.src_ip }}"
+                                    data-dst-ip="{{ alert.dst_ip }}"
+                                    data-dst-port="{{ alert.dst_port }}"
+                                    data-alert-type="{{ alert.rule_name }}">
+                                    <i class="fas fa-shield-alt"></i> Resolve
+                                </button>
+                                {% else %}
+                                <span class="status-badge status-resolved">
+                                    <i class="fas fa-check"></i> Resolved
+                                </span>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -778,51 +906,103 @@
             {% endif %}
         </div>
 
-        <!-- Alert Details Modal -->
-        <div class="modal fade" id="alertDetailsModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><i class="fas fa-bell"></i> Alert Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="modal-detail">
-                                    <strong>Alert Type</strong>
-                                    <span id="modalAlertType"></span>
-                                </div>
-                                <div class="modal-detail">
-                                    <strong>Timestamp</strong>
-                                    <span id="modalTimestamp"></span>
-                                </div>
-                                <div class="modal-detail">
-                                    <strong>Severity</strong>
-                                    <span id="modalSeverity"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="modal-detail">
-                                    <strong>Source</strong>
-                                    <span id="modalSrc"></span>
-                                </div>
-                                <div class="modal-detail">
-                                    <strong>Destination</strong>
-                                    <span id="modalDst"></span>
-                                </div>
-                            </div>
+        <!-- Alert Details Popup -->
+        <div class="popup-overlay" id="alertDetailsPopup">
+            <div class="popup-container">
+                <div class="popup-header">
+                    <h3 class="popup-title"><i class="fas fa-bell"></i> Alert Details</h3>
+                    <button class="popup-close" onclick="closePopup('alertDetailsPopup')">&times;</button>
+                </div>
+                <div class="popup-body">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <strong>Alert Type</strong>
+                            <span id="popupAlertType"></span>
                         </div>
-                        <div class="modal-detail">
-                            <strong>Packet Details</strong>
-                            <pre id="modalDetails" class="details-pre"></pre>
+                        <div class="detail-item">
+                            <strong>Timestamp</strong>
+                            <span id="popupTimestamp"></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Severity</strong>
+                            <span id="popupSeverity"></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Source</strong>
+                            <span id="popupSrc"></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Destination</strong>
+                            <span id="popupDst"></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Protocol</strong>
+                            <span id="popupProtocol"></span>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="action-btn" data-bs-dismiss="modal">
-                            <i class="fas fa-times"></i> Close
-                        </button>
+                    <div class="detail-item full-width">
+                        <strong>Packet Details</strong>
+                        <pre id="popupDetails" class="details-pre"></pre>
                     </div>
+                </div>
+                <div class="popup-footer">
+                    <button class="action-btn" onclick="closePopup('alertDetailsPopup')">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resolution Popup -->
+        <div class="popup-overlay" id="resolutionPopup">
+            <div class="popup-container">
+                <div class="popup-header">
+                    <h3 class="popup-title"><i class="fas fa-shield-alt"></i> Resolve Alert</h3>
+                    <button class="popup-close" onclick="closePopup('resolutionPopup')">&times;</button>
+                </div>
+                <div class="popup-body">
+                    <div id="resolutionForm">
+                        <input type="hidden" id="alertId">
+                        <div class="form-group">
+                            <label class="form-label">Response Action</label>
+                            <select class="form-select" id="responseAction">
+                                <option value="block_ip">Block Source IP</option>
+                                <option value="quarantine_host">Quarantine Host</option>
+                                <option value="disable_port">Disable Target Port</option>
+                                <option value="alert_only">Create Ticket Only</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="blockOptions">
+                            <label class="form-label">Block Duration</label>
+                            <select class="form-select" id="blockDuration">
+                                <option value="1h">1 Hour</option>
+                                <option value="6h">6 Hours</option>
+                                <option value="24h">24 Hours</option>
+                                <option value="permanent">Permanent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="resolutionNotes" rows="3" placeholder="Add response notes..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div id="resolutionResult" style="display: none;">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> 
+                            <span id="resultMessage"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <button class="action-btn" id="executeResponse">
+                        <i class="fas fa-bolt"></i> Execute Response
+                    </button>
+                    <button class="action-btn" onclick="closePopup('resolutionPopup')">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
                 </div>
             </div>
         </div>
@@ -831,47 +1011,150 @@
 
 <!-- JavaScript -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    $(document).ready(function() {
-        // Modal handling
-        $('.view-details').on('click', function() {
-            const button = $(this);
-            $('#modalAlertType').text(button.data('alert'));
-            $('#modalTimestamp').text(button.data('time'));
+// Popup functions
+function openPopup(id) {
+    document.getElementById(id).classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
-            const severity = button.data('severity');
-            let badgeClass = 'severity-' + severity;
-            $('#modalSeverity').html(`<span class="severity-badge ${badgeClass}">${
-                severity.charAt(0).toUpperCase() + severity.slice(1)
-            }</span>`);
+function closePopup(id) {
+    document.getElementById(id).classList.remove('active');
+    document.body.style.overflow = '';
+}
 
-            $('#modalSrc').text(button.data('src'));
-            $('#modalDst').text(button.data('dst'));
-
-            try {
-                const details = JSON.parse(button.data('details'));
-                $('#modalDetails').text(JSON.stringify(details, null, 2));
-            } catch (e) {
-                $('#modalDetails').text(button.data('details'));
-            }
-
-            $('#alertDetailsModal').modal('show');
-        });
-
-        // Add hover animations to all cards
-        $('.stat-card, .chart-container, .ip-list-container, .alerts-container').hover(
-            function() {
-                $(this).css('transform', 'translateY(-3px)');
-                $(this).css('box-shadow', 'var(--shadow)');
-            },
-            function() {
-                $(this).css('transform', '');
-                $(this).css('box-shadow', 'var(--shadow-sm)');
-            }
-        );
+// Alert details handling
+document.querySelectorAll('.view-details').forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('popupAlertType').textContent = this.dataset.alert;
+        document.getElementById('popupTimestamp').textContent = this.dataset.time;
+        document.getElementById('popupSrc').textContent = this.dataset.src;
+        document.getElementById('popupDst').textContent = this.dataset.dst;
+        
+        // Set severity badge
+        const severity = this.dataset.severity;
+        const severityElement = document.getElementById('popupSeverity');
+        severityElement.innerHTML = `<span class="severity-badge severity-${severity}">${
+            severity.charAt(0).toUpperCase() + severity.slice(1)
+        }</span>`;
+        
+        // Set protocol if available
+        const protocol = this.closest('tr').querySelector('td:nth-child(6)').textContent;
+        document.getElementById('popupProtocol').textContent = protocol;
+        
+        // Set details
+        try {
+            const details = JSON.parse(this.dataset.details);
+            document.getElementById('popupDetails').textContent = JSON.stringify(details, null, 2);
+        } catch (e) {
+            document.getElementById('popupDetails').textContent = this.dataset.details;
+        }
+        
+        openPopup('alertDetailsPopup');
     });
+});
+
+// Resolution handling
+let currentAlertRow = null;
+
+document.querySelectorAll('.resolve-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        currentAlertRow = this.closest('tr');
+        const alertId = this.dataset.alertId;
+        
+        // Set form values
+        document.getElementById('alertId').value = alertId;
+        document.getElementById('resolutionNotes').value = '';
+        document.getElementById('responseAction').value = 'block_ip';
+        document.getElementById('blockDuration').value = '1h';
+        
+        // Show form and hide result
+        document.getElementById('resolutionForm').style.display = 'block';
+        document.getElementById('resolutionResult').style.display = 'none';
+        
+        openPopup('resolutionPopup');
+    });
+});
+
+// Execute response
+document.getElementById('executeResponse').addEventListener('click', function() {
+    const alertId = document.getElementById('alertId').value;
+    const action = document.getElementById('responseAction').value;
+    const notes = document.getElementById('resolutionNotes').value;
+    const blockDuration = document.getElementById('blockDuration').value;
+    
+    // Show loading state
+    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    this.disabled = true;
+    
+    // Prepare data
+    const formData = new FormData();
+    formData.append('alert_id', alertId);
+    formData.append('action', action);
+    formData.append('notes', notes);
+    formData.append('block_duration', blockDuration);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    
+    // Send request
+    fetch('{% url "resolve_alert" 0 %}'.replace('0', alertId), {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Update UI
+            document.getElementById('resolutionForm').style.display = 'none';
+            document.getElementById('resultMessage').textContent = data.message;
+            document.getElementById('resolutionResult').style.display = 'block';
+            
+            // Update the alert row
+            if (currentAlertRow) {
+                const actionsCell = currentAlertRow.querySelector('td:last-child');
+                actionsCell.innerHTML = `
+                    <span class="status-badge status-resolved">
+                        <i class="fas fa-check"></i> Resolved
+                    </span>
+                `;
+            }
+            
+            // Reset button after delay
+            setTimeout(() => {
+                closePopup('resolutionPopup');
+                this.innerHTML = '<i class="fas fa-bolt"></i> Execute Response';
+                this.disabled = false;
+            }, 1500);
+        } else {
+            alert('Error: ' + data.message);
+            this.innerHTML = '<i class="fas fa-bolt"></i> Execute Response';
+            this.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while processing your request');
+        this.innerHTML = '<i class="fas fa-bolt"></i> Execute Response';
+        this.disabled = false;
+    });
+});
+
+// Toggle block options based on action
+document.getElementById('responseAction').addEventListener('change', function() {
+    const blockOptions = document.getElementById('blockOptions');
+    blockOptions.style.display = this.value === 'block_ip' ? 'block' : 'none';
+});
+
+// Add hover animations to all cards
+$('.stat-card, .chart-container, .ip-list-container, .alerts-container').hover(
+    function() {
+        $(this).css('transform', 'translateY(-3px)');
+        $(this).css('box-shadow', 'var(--shadow)');
+    },
+    function() {
+        $(this).css('transform', '');
+        $(this).css('box-shadow', 'var(--shadow-sm)');
+    }
+);
 </script>
 </body>
 </html>

@@ -153,6 +153,13 @@ class NetworkAlert(models.Model):
         ('high', 'High'),
         ('critical', 'Critical'),
     ]
+    
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('in_progress', 'In Progress'),
+        ('resolved', 'Resolved'),
+        ('false_positive', 'False Positive')
+    ]
 
     capture = models.ForeignKey(NetworkCapture, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -166,6 +173,10 @@ class NetworkAlert(models.Model):
     dst_port = models.IntegerField(null=True, blank=True)
     packet_size = models.IntegerField(null=True, blank=True)
     details = models.JSONField(default=dict)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    resolution = models.TextField(blank=True, null=True)
+    resolved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    resolved_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.rule_name} alert at {self.timestamp}"

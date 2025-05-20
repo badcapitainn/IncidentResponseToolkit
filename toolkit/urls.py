@@ -27,5 +27,6 @@ urlpatterns = [
     path('logs/monitor/stop/', views.stop_monitoring, name='stop_monitoring'),
     path('logs/monitor/status/', views.monitoring_status, name='monitoring_status'),
     path('blocked-ips/', views.blocked_ips, name='blocked_ips'),
+    path('alerts/<int:alert_id>/resolve/', views.resolve_alert, name='resolve_alert'),
 ]
 

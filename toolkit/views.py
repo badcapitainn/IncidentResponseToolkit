@@ -4,6 +4,7 @@ import random
 import shutil
 import threading
 import time
+import requests
 
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -828,6 +829,108 @@ def network_analysis(request):
     }
     template = '../templates/toolkit/network_analysis.html'
     return render(request, template, context)
+
+@require_POST
+@csrf_exempt
+@login_required(login_url='login')
+def resolve_alert(request, alert_id):
+    try:
+        alert = NetworkAlert.objects.get(id=alert_id, capture__user=request.user)
+        action = request.POST.get('action')
+        notes = request.POST.get('notes', '')
+        block_duration = request.POST.get('block_duration', '1h')
+        
+        result = ""
+        success = True
+        
+        # Implement actual response actions
+        if action == 'block_ip':
+            # Call firewall API to block the IP
+            try:
+                response = requests.post(
+                    'https://your-firewall-api/block',
+                    json={
+                        'ip': alert.src_ip,
+                        'duration': block_duration,
+                        'reason': f"Security alert: {alert.rule_name}"
+                    },
+                    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+                )
+                if response.status_code == 200:
+                    result = f"Blocked {alert.src_ip} for {block_duration}"
+                else:
+                    result = f"Failed to block {alert.src_ip}: {response.text}"
+                    success = False
+            except Exception as e:
+                result = f"Error blocking IP: {str(e)}"
+                success = False
+                
+        elif action == 'quarantine_host':
+            # Call endpoint management system
+            try:
+                response = requests.post(
+                    'https://your-endpoint-api/quarantine',
+                    json={
+                        'host': alert.src_ip,
+                        'reason': f"Security alert: {alert.rule_name}"
+                    }
+                )
+                if response.status_code == 200:
+                    result = f"Quarantined host {alert.src_ip}"
+                else:
+                    result = f"Failed to quarantine host: {response.text}"
+                    success = False
+            except Exception as e:
+                result = f"Error quarantining host: {str(e)}"
+                success = False
+                
+        elif action == 'disable_port':
+            # Call network device API
+            try:
+                response = requests.post(
+                    'https://your-network-api/disable_port',
+                    json={
+                        'ip': alert.dst_ip,
+                        'port': alert.dst_port,
+                        'reason': f"Security alert: {alert.rule_name}"
+                    }
+                )
+                if response.status_code == 200:
+                    result = f"Disabled port {alert.dst_port} on {alert.dst_ip}"
+                else:
+                    result = f"Failed to disable port: {response.text}"
+                    success = False
+            except Exception as e:
+                result = f"Error disabling port: {str(e)}"
+                success = False
+                
+        else:  # alert_only
+            result = "Created ticket for manual investigation"
+        
+        # Update alert status
+        if success:
+            alert.status = 'resolved'
+            alert.resolution = f"{action}: {result}\nNotes: {notes}"
+            alert.resolved_by = request.user
+            alert.resolved_at = timezone.now()
+            alert.save()
+        
+        return JsonResponse({
+            'status': 'success' if success else 'error',
+            'message': result,
+            'alert_id': alert_id
+        })
+        
+    except NetworkAlert.DoesNotExist:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Alert not found'
+        }, status=404)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
 
 
 #------------------------- other views --------------------------------------------
