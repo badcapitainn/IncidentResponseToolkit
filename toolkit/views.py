@@ -42,7 +42,7 @@ def dashboard(request):
     alert_logs = AlertLogs.objects.all()
     network_alerts = NetworkAlert.objects.all()
     malware_alerts = MalwareDetectionResult.objects.all().filter(is_malicious=True)
-    recent_activity = RecentActivity.objects.all().order_by('-timestamp')
+    recent_activity = RecentActivity.objects.all().order_by('-timestamp')[:5]
 
     
     log_alert_count: int = len([a for a in alert_logs])
@@ -728,17 +728,19 @@ def network_stats(request, capture_id):
                         }
                     })
 
+        # Get analysis summary from analyzer
+        analysis_summary = analyzer.get_analysis_summary()
+
         # Prepare statistics
         stats = {
-            'total_packets': analyzer.stats.get('total_packets', 0),
-            'start_time': datetime.fromtimestamp(analyzer.stats.get('start_time', time.time())),
-            'end_time': datetime.fromtimestamp(analyzer.stats.get('end_time', time.time())),
-            'protocol_distribution': analyzer.get_protocol_distribution(),
-            'top_source_ips': analyzer.get_top_ips(type='source'),
-            'top_dest_ips': analyzer.get_top_ips(type='dest'),
-            'top_ports': analyzer.get_top_ports(),
-            'protocol_chart': analyzer.generate_protocol_chart(),
-            'timeline_chart': analyzer.generate_timeline_chart(),
+            'total_packets': analysis_summary['total_packets'],
+            'start_time': datetime.fromtimestamp(analysis_summary['start_time']),
+            'end_time': datetime.fromtimestamp(analysis_summary['end_time']),
+            'protocol_distribution': analysis_summary['protocol_distribution'],
+            'timeline': analysis_summary['timeline'],
+            'top_source_ips': analysis_summary['top_source_ips'],
+            'top_dest_ips': analysis_summary['top_dest_ips'],
+            'top_ports': analysis_summary['top_ports'],
             'alerts': alerts[:100],  # Limit to 100 most recent alerts
             'alerts_by_severity': {
                 'critical': len([a for a in alerts if a['severity'] == 'critical']),
@@ -747,6 +749,15 @@ def network_stats(request, capture_id):
                 'low': len([a for a in alerts if a['severity'] == 'low'])
             }
         }
+
+        # Prepare data for JavaScript charts
+        protocol_labels = list(stats['protocol_distribution'].keys())
+        protocol_data = list(stats['protocol_distribution'].values())
+        
+        # Sort timeline data by time
+        sorted_timeline = sorted(stats['timeline'].items())
+        timeline_labels = [item[0] for item in sorted_timeline]
+        timeline_data = [item[1] for item in sorted_timeline]
 
         # Save alerts to database
         for alert in alerts[:100]:  # Save only first 100 alerts
@@ -766,6 +777,10 @@ def network_stats(request, capture_id):
         return render(request, 'toolkit/network_stats.html', {
             'capture': capture,
             'stats': stats,
+            'protocol_labels': protocol_labels,
+            'protocol_data': protocol_data,
+            'timeline_labels': timeline_labels,
+            'timeline_data': timeline_data,
             'alerts': alerts[:50]  # Only show 50 most recent in template
         })
 
@@ -779,7 +794,6 @@ def network_stats(request, capture_id):
         return render(request, 'toolkit/network_stats.html', {
             'error': f'Error analyzing capture: {str(e)}'
         })
-
 
 @csrf_exempt
 @login_required(login_url='login')

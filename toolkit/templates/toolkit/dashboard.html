@@ -91,12 +91,6 @@
             100% { transform: translateY(0px); }
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-
         .header-title {
             font-size: 18px;
             font-weight: 600;
@@ -141,18 +135,53 @@
         }
 
         @keyframes cardEntrance {
-            to { opacity: 1; transform: translateY(0); }
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:nth-child(1) { 
+            animation-delay: 0.1s; 
+            border-left-color: var(--danger);
+        }
+        .stat-card:nth-child(2) { 
+            animation-delay: 0.2s; 
+            border-left-color: var(--info);
+        }
+        .stat-card:nth-child(3) { 
+            animation-delay: 0.3s; 
+            border-left-color: var(--warning);
+        }
+        .stat-card:nth-child(4) { 
+            animation-delay: 0.4s; 
+            border-left-color: var(--secondary);
+        }
 
         .stat-card:hover {
-            transform: translateY(-3px) scale(1.02);
+            transform: translateY(-5px);
             box-shadow: var(--shadow);
-            animation: pulse 1.5s ease-in-out infinite;
         }
 
         .stat-header {
@@ -183,19 +212,52 @@
             transition: var(--transition);
         }
 
+        .stat-card:nth-child(1) .stat-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .stat-card:nth-child(2) .stat-icon {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+        
+        .stat-card:nth-child(3) .stat-icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .stat-card:nth-child(4) .stat-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
         .stat-card:hover .stat-icon {
-            transform: rotate(15deg);
-            background: rgba(79, 70, 229, 0.2);
+            transform: rotate(15deg) scale(1.1);
         }
 
         .stat-value {
             font-size: 20px;
             font-weight: 700;
             margin: 4px 0;
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: var(--text-primary);
+            transition: all 0.5s ease-out;
+        }
+
+        .stat-card:nth-child(1) .stat-value {
+            color: var(--danger);
+        }
+        
+        .stat-card:nth-child(2) .stat-value {
+            color: var(--info);
+        }
+        
+        .stat-card:nth-child(3) .stat-value {
+            color: var(--warning);
+        }
+        
+        .stat-card:nth-child(4) .stat-value {
+            color: var(--secondary);
         }
 
         .stat-change {
@@ -211,6 +273,134 @@
 
         .stat-change.negative {
             color: var(--danger);
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+            margin-left: 12px;
+        }
+
+        .status-indicator.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-indicator.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .status-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Time Filter */
+        .time-filter {
+            display: flex;
+            gap: 6px;
+            background: var(--surface-hover);
+            padding: 4px;
+            border-radius: var(--radius);
+        }
+
+        .time-filter-btn {
+            border: none;
+            background: transparent;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+        }
+
+        .time-filter-btn.active {
+            background: var(--surface);
+            color: var(--primary);
+            font-weight: 500;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Incident Severity Chart */
+        .severity-chart-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 12px;
+            height: auto;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .severity-chart-wrapper {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* Alert Type Distribution */
+        .alert-type-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 12px;
+            height: auto;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .alert-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .alert-type-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            background: var(--surface-hover);
+        }
+
+        .alert-type-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+
+        .alert-type-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .alert-type-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
         }
 
         /* Main Layout */
@@ -546,6 +736,11 @@
             .dashboard {
                 padding: 10px;
             }
+
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
         }
 
         @media (max-width: 576px) {
@@ -609,9 +804,17 @@
             <h1 class="header-title">
                 <i class="fas fa-shield-alt"></i>
                 Sentry
+                <span class="status-indicator">
+                    All systems normal
+                </span>
             </h1>
             <div class="header-actions">
-                <a  href="{% url 'registration' %}" class="action-btn" >
+                <div class="time-filter">
+                    <button class="time-filter-btn active">24h</button>
+                    <button class="time-filter-btn">7d</button>
+                    <button class="time-filter-btn">30d</button>
+                </div>
+                <a href="{% url 'registration' %}" class="action-btn">
                     <i class="fas fa-user-plus"></i>
                 </a>
                 <a href="{% url 'logout' %}" class="action-btn logout-btn">
@@ -629,10 +832,10 @@
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                 </div>
-                <div class="stat-value">{{ log_alert_count }}</div>
+                <div class="stat-value" id="logAlertCount">{{ log_alert_count }}</div>
                 <div class="stat-change negative">
                     <i class="fas fa-arrow-up"></i>
-                    <span></span>
+                    <span>12% from yesterday</span>
                 </div>
             </div>
 
@@ -643,10 +846,10 @@
                         <i class="fas fa-network-wired"></i>
                     </div>
                 </div>
-                <div class="stat-value">{{ network_alert_count }}</div>
+                <div class="stat-value" id="networkAlertCount">{{ network_alert_count }}</div>
                 <div class="stat-change positive">
                     <i class="fas fa-arrow-down"></i>
-                    <span></span>
+                    <span>5% from yesterday</span>
                 </div>
             </div>
 
@@ -657,9 +860,9 @@
                         <i class="fas fa-bug"></i>
                     </div>
                 </div>
-                <div class="stat-value">{{ malware_alert_count }}</div>
+                <div class="stat-value" id="malwareAlertCount">{{ malware_alert_count }}</div>
                 <div class="stat-change">
-                    <span></span>
+                    <span>No change</span>
                 </div>
             </div>
 
@@ -670,10 +873,10 @@
                         <i class="fas fa-clock"></i>
                     </div>
                 </div>
-                <div class="stat-value">{{ all_alert_count }}</div>
+                <div class="stat-value" id="allAlertCount">{{ all_alert_count }}</div>
                 <div class="stat-change positive">
                     <i class="fas fa-arrow-down"></i>
-                    <span></span>
+                    <span>8% from yesterday</span>
                 </div>
             </div>
         </div>
@@ -690,9 +893,9 @@
                             <span>System Resources</span>
                         </div>
                         <div class="chart-actions">
-                            <button class="chart-action-btn active"></button>
-                            <button class="chart-action-btn"></button>
-                            <button class="chart-action-btn"></button>
+                            <button class="chart-action-btn active">1h</button>
+                            <button class="chart-action-btn">6h</button>
+                            <button class="chart-action-btn">24h</button>
                         </div>
                     </div>
                     <div class="small-charts-grid">
@@ -735,6 +938,19 @@
                     </div>
                 </div>
 
+                <!-- Incident Severity Chart -->
+                <div class="severity-chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Incident Severity</span>
+                        </div>
+                    </div>
+                    <div class="severity-chart-wrapper">
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                </div>
+
                 <!-- Quick Actions -->
                 <div class="chart-container">
                     <div class="chart-header">
@@ -769,6 +985,38 @@
 
             <!-- Right Column -->
             <div>
+                <!-- Alert Type Distribution -->
+                <div class="alert-type-container">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Alert Type Distribution</span>
+                        </div>
+                    </div>
+                    <div class="alert-type-grid">
+                        <div class="alert-type-item">
+                            <div class="alert-type-color" style="background: var(--danger);"></div>
+                            <div class="alert-type-label">Critical</div>
+                            <div class="alert-type-value">42</div>
+                        </div>
+                        <div class="alert-type-item">
+                            <div class="alert-type-color" style="background: var(--warning);"></div>
+                            <div class="alert-type-label">High</div>
+                            <div class="alert-type-value">28</div>
+                        </div>
+                        <div class="alert-type-item">
+                            <div class="alert-type-color" style="background: var(--info);"></div>
+                            <div class="alert-type-label">Medium</div>
+                            <div class="alert-type-value">15</div>
+                        </div>
+                        <div class="alert-type-item">
+                            <div class="alert-type-color" style="background: var(--secondary);"></div>
+                            <div class="alert-type-label">Low</div>
+                            <div class="alert-type-value">5</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Activity Feed -->
                 <div class="activity-feed">
                     <div class="chart-header">
@@ -776,6 +1024,9 @@
                             <i class="fas fa-history"></i>
                             <span>Recent Activity</span>
                         </div>
+                        <button class="chart-action-btn">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
                     </div>
                     {% for activity in recent_activity %}
                     <div class="activity-list">
@@ -859,6 +1110,55 @@
     <script>
         // Initialize all charts
         document.addEventListener('DOMContentLoaded', function() {
+            // Animate stat card values
+            function animateValue(id, start, end, duration) {
+                const obj = document.getElementById(id);
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const value = Math.floor(progress * (end - start) + start);
+                    obj.innerHTML = value;
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            // Animate each stat card value
+            animateValue('logAlertCount', 0, {{ log_alert_count }}, 1000);
+            animateValue('networkAlertCount', 0, {{ network_alert_count }}, 1000);
+            animateValue('malwareAlertCount', 0, {{ malware_alert_count }}, 1000);
+            animateValue('allAlertCount', 0, {{ all_alert_count }}, 1000);
+
+            // Time filter functionality
+            document.querySelectorAll('.time-filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.time-filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    // Here you would fetch data for the selected time period
+                    console.log(`Time period selected: ${this.textContent}`);
+                });
+            });
+
+            // Simulate system status changes
+            setInterval(() => {
+                const statusIndicator = document.querySelector('.status-indicator');
+                const randomStatus = Math.random();
+                
+                if (randomStatus > 0.9) {
+                    statusIndicator.textContent = 'Critical issues detected';
+                    statusIndicator.className = 'status-indicator danger';
+                } else if (randomStatus > 0.7) {
+                    statusIndicator.textContent = 'Minor issues detected';
+                    statusIndicator.className = 'status-indicator warning';
+                } else {
+                    statusIndicator.textContent = 'All systems normal';
+                    statusIndicator.className = 'status-indicator';
+                }
+            }, 10000);
+
             // Custom tooltip handling
             const tooltip = document.getElementById('chartTooltip');
             const tooltipTitle = document.getElementById('tooltipTitle');
@@ -1039,6 +1339,75 @@
                         backgroundColor: 'rgba(245, 158, 11, 0.1)',
                         fill: true
                     }]
+                }
+            });
+
+            // Initialize Severity Chart
+            const severityCtx = document.getElementById('severityChart').getContext('2d');
+            const severityChart = new Chart(severityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        label: 'Incidents by Severity',
+                        data: [12, 8, 15, 5],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(16, 185, 129, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(16, 185, 129, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: '#ffffff',
+                            titleColor: '#111827',
+                            bodyColor: '#6b7280',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.parsed.y} incidents`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                color: '#9ca3af',
+                                stepSize: 5
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    }
                 }
             });
 

@@ -6,6 +6,10 @@
     <title>Network Capture Statistics | Sentry</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
     <style>
         :root {
             --primary: #4f46e5;
@@ -248,6 +252,7 @@
             height: 100%;
             animation: fadeIn 0.5s ease-out forwards;
             opacity: 0;
+            position: relative;
         }
 
         .chart-container:hover {
@@ -281,11 +286,15 @@
             transform: rotate(15deg);
         }
 
-        .chart-img {
+        .chart-wrapper {
             width: 100%;
-            height: 200px;
-            object-fit: contain;
-            border-radius: var(--radius-sm);
+            height: 300px;
+            position: relative;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
         }
 
         /* IP Lists */
@@ -743,11 +752,11 @@
                         <span>Protocol Distribution</span>
                     </div>
                 </div>
-                {% if stats.protocol_chart %}
-                    <img src="data:image/png;base64,{{ stats.protocol_chart }}" class="chart-img">
-                {% else %}
-                    <p class="text-muted"><i class="fas fa-info-circle"></i> No protocol data available</p>
-                {% endif %}
+                <div class="chart-wrapper">
+                    <canvas id="protocolChart" 
+                            data-labels="{% for k in stats.protocol_distribution.keys %}{{ k }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                            data-data="{% for v in stats.protocol_distribution.values %}{{ v }}{% if not forloop.last %},{% endif %}{% endfor %}"></canvas>
+                </div>
             </div>
 
             <div class="chart-container">
@@ -757,11 +766,11 @@
                         <span>Traffic Timeline</span>
                     </div>
                 </div>
-                {% if stats.timeline_chart %}
-                    <img src="data:image/png;base64,{{ stats.timeline_chart }}" class="chart-img">
-                {% else %}
-                    <p class="text-muted"><i class="fas fa-info-circle"></i> No timeline data available</p>
-                {% endif %}
+                <div class="chart-wrapper">
+                    <canvas id="timelineChart" 
+                            data-labels="{% for k, v in stats.timeline.items %}{{ k }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                            data-data="{% for k, v in stats.timeline.items %}{{ v }}{% if not forloop.last %},{% endif %}{% endfor %}"></canvas>
+                </div>
             </div>
         </div>
 
@@ -1155,6 +1164,138 @@ $('.stat-card, .chart-container, .ip-list-container, .alerts-container').hover(
         $(this).css('box-shadow', 'var(--shadow-sm)');
     }
 );
+
+// Initialize charts when DOM is loaded - UPDATED VERSION
+document.addEventListener('DOMContentLoaded', function() {
+    // Protocol Distribution Chart (Doughnut)
+    const protocolCanvas = document.getElementById('protocolChart');
+    if (protocolCanvas) {
+        try {
+            const ctx = protocolCanvas.getContext('2d');
+            const labels = protocolCanvas.dataset.labels.split(',');
+            const data = protocolCanvas.dataset.data.split(',').map(Number);
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#4f46e5', '#10b981', '#f59e0b',
+                            '#ef4444', '#3b82f6', '#ec4899'
+                        ],
+                        borderWidth: 1,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.raw || 0;
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Error initializing protocol chart:', e);
+        }
+    }
+
+    // Traffic Timeline Chart (Line)
+    const timelineCanvas = document.getElementById('timelineChart');
+    if (timelineCanvas) {
+        try {
+            const ctx = timelineCanvas.getContext('2d');
+            const labels = timelineCanvas.dataset.labels.split(',');
+            const data = timelineCanvas.dataset.data.split(',').map(Number);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Packets per minute',
+                        data: data,
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        borderColor: '#4f46e5',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                parser: 'YYYY-MM-DD HH:mm',
+                                tooltipFormat: 'MMM D, HH:mm',
+                                displayFormats: {
+                                    minute: 'HH:mm'
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function(context) {
+                                    return 'Packets: ' + context.raw;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Error initializing timeline chart:', e);
+        }
+    }
+});
 </script>
 </body>
 </html>
