@@ -35,7 +35,6 @@ import logging
 from .models import LogEntry, LogSource, LogAlert
 from modules.log_module.core import LogAnalyzer
 
-
 @csrf_exempt
 @login_required(login_url='login')
 def dashboard(request):
@@ -955,4 +954,4 @@ def add_recent_activity(request, activity: str, module: str) -> None:
                 activity = activity,
                 module = module,
             )
-    
+            

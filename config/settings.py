@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # custom apps
     'toolkit',
     'channels',
+    
 ]
 # Set ASGI application
 ASGI_APPLICATION = 'config.asgi.application'
