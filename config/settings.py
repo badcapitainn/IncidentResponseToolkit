@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # custom apps
     'toolkit',
     'channels',
+    'xhtml2pdf',
     
 ]
 # Set ASGI application

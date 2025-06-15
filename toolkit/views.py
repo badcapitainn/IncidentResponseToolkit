@@ -35,6 +35,17 @@ import logging
 from .models import LogEntry, LogSource, LogAlert
 from modules.log_module.core import LogAnalyzer
 
+
+from django.template.loader import get_template
+from .reports import ReportGenerator
+from .models import Report
+import pdfkit
+import os
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.template.loader import render_to_string
+from django.core.files.base import ContentFile
+
 @csrf_exempt
 @login_required(login_url='login')
 def dashboard(request):
@@ -955,3 +966,103 @@ def add_recent_activity(request, activity: str, module: str) -> None:
                 module = module,
             )
             
+
+#--------------------------report views---------------------------------------------
+
+@csrf_exempt
+@login_required(login_url='login')
+def reports_dashboard(request):
+    recent_reports = Report.objects.all().order_by('-generated_at')[:5]
+    return render(request, '../templates/toolkit/reports_dashboard.html', {
+        'recent_reports': recent_reports
+    })
+
+@csrf_exempt
+@login_required(login_url='login')
+def generate_report(request):
+    if request.method == 'POST':
+        report_type = request.POST.get('report_type')
+        date_range = request.POST.get('date_range', '7d')
+        
+        # Calculate date range
+        end_date = datetime.now()
+        if date_range == '24h':
+            start_date = end_date - timedelta(hours=24)
+        elif date_range == '7d':
+            start_date = end_date - timedelta(days=7)
+        elif date_range == '30d':
+            start_date = end_date - timedelta(days=30)
+        elif date_range == 'custom':
+            start_date = datetime.strptime(request.POST.get('start_date'), '%Y-%m-%d')
+            end_date = datetime.strptime(request.POST.get('end_date'), '%Y-%m-%d')
+        else:
+            start_date = end_date - timedelta(days=7)
+        
+        generator = ReportGenerator(report_type, request.user, start_date, end_date)
+        report = generator.generate_report()
+        
+        return redirect('view_report', report_id=report.id)
+    
+    return render(request, '../templates/toolkit/generate_report.html')
+
+@csrf_exempt
+@login_required(login_url='login')
+def view_report(request, report_id):
+    report = Report.objects.get(id=report_id)
+    # Use DjangoJSONEncoder to properly serialize datetime objects
+    report_data = json.dumps(report.data, cls=DjangoJSONEncoder)
+    return render(request, '../templates/toolkit/view_report.html', {
+        'report': report,
+        'report_data': report_data
+    })
+
+@csrf_exempt
+@login_required(login_url='login')
+def download_report(request, report_id):
+    try:
+        report = Report.objects.get(id=report_id)
+        
+        # Configure pdfkit - adjust the path as needed for your system
+        config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+        
+        if not report.pdf_file:
+            # Prepare the HTML content
+            report_data = json.dumps(report.data, cls=DjangoJSONEncoder)
+            html = render_to_string('toolkit/report_pdf_template.html', {
+                'report': report,
+                'report_data': report_data
+            })
+            
+            # PDF generation options
+            options = {
+                'page-size': 'A4',
+                'margin-top': '0.75in',
+                'margin-right': '0.75in',
+                'margin-bottom': '0.75in',
+                'margin-left': '0.75in',
+                'encoding': 'UTF-8',
+                'quiet': '',
+            }
+            
+            # Generate PDF
+            pdf = pdfkit.from_string(html, False, options=options, configuration=config)
+            
+            # Save to model
+            filename = f"report_{report.id}_{report.generated_at.strftime('%Y%m%d_%H%M%S')}.pdf"
+            report.pdf_file.save(filename, ContentFile(pdf))
+            report.save()
+        
+        # Serve the PDF
+        with open(report.pdf_file.path, 'rb') as pdf:
+            response = HttpResponse(pdf.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(report.pdf_file.name)}"'
+            return response
+            
+    except Exception as e:
+        return HttpResponse(f"Failed to generate PDF: {str(e)}", status=500)
+
+@csrf_exempt
+@login_required(login_url='login')
+def report_data(request, report_id):
+    report = Report.objects.get(id=report_id)
+    return JsonResponse(report.data)

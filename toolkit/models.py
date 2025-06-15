@@ -288,3 +288,34 @@ class RecentActivity(models.Model):
         indexes = [
             models.Index(fields=['timestamp']),
         ]
+
+
+#-----------------------------------------------------report models -------------------------------------------------------
+
+# Add to your models.py
+class Report(models.Model):
+    REPORT_TYPES = (
+        ('THREAT_SUMMARY', 'Periodic Threat Summary'),
+        ('THREAT_INTEL', 'Threat Intelligence Report'),
+        ('SYSTEM_SAFETY', 'System Safety Summary'),
+    )
+    
+    report_type = models.CharField(max_length=20, choices=REPORT_TYPES)
+    title = models.CharField(max_length=255)
+    generated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    generated_at = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+    data = models.JSONField(default=dict)
+    pdf_file = models.FileField(upload_to='reports/', null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-generated_at']
+    
+    def __str__(self):
+        return f"{self.get_report_type_display()} - {self.generated_at.strftime('%Y-%m-%d %H:%M')}"
+    
+    def save_pdf(self, pdf_content):
+        filename = f"report_{self.id}_{self.generated_at.strftime('%Y%m%d_%H%M%S')}.pdf"
+        self.pdf_file.save(filename, ContentFile(pdf_content))
+        self.save()
