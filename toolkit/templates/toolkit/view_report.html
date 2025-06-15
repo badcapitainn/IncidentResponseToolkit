@@ -1,627 +1,873 @@
-<!-- toolkit/templates/toolkit/view_report.html -->
+{% load percentage_filters %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ report.title }}</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
-      rel="stylesheet"
-    />
+    <title>{{ report.title }} | Sentry</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-      .report-header {
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-      }
-      .stat-card {
-        border-radius: 8px;
-        overflow: hidden;
-        transition: transform 0.3s;
-      }
-      .stat-card:hover {
-        transform: translateY(-3px);
-      }
-      .chart-container {
-        position: relative;
-        height: 300px;
-        margin-bottom: 2rem;
-      }
-      .threat-item {
-        border-left: 4px solid transparent;
-        transition: all 0.3s;
-      }
-      .threat-item:hover {
-        background-color: #f8f9fa;
-      }
-      .severity-badge {
-        font-size: 0.8rem;
-        padding: 0.35em 0.65em;
-      }
-      .severity-critical {
-        background-color: #dc3545;
-        border-left-color: #dc3545;
-      }
-      .severity-high {
-        background-color: #fd7e14;
-        border-left-color: #fd7e14;
-      }
-      .severity-medium {
-        background-color: #ffc107;
-        border-left-color: #ffc107;
-        color: #212529;
-      }
-      .severity-low {
-        background-color: #6c757d;
-        border-left-color: #6c757d;
-      }
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --bg-color: #f9fafb;
+            --surface: #ffffff;
+            --surface-hover: #f3f4f6;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 12px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-title i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .report-header {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .report-header p {
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .report-header strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            border-left: 3px solid var(--primary);
+            transition: var(--transition);
+            animation: cardEntrance 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes cardEntrance {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .stat-card:nth-child(1) { 
+            animation-delay: 0.1s; 
+            border-left-color: var(--danger);
+        }
+        .stat-card:nth-child(2) { 
+            animation-delay: 0.2s; 
+            border-left-color: var(--secondary);
+        }
+        .stat-card:nth-child(3) { 
+            animation-delay: 0.3s; 
+            border-left-color: var(--info);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        .stat-card:nth-child(1) .stat-value { color: var(--danger); }
+        .stat-card:nth-child(2) .stat-value { color: var(--secondary); }
+        .stat-card:nth-child(3) .stat-value { color: var(--info); }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 16px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-light);
+            transition: var(--transition);
+            background: var(--surface);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            transform: translateX(4px);
+            background: var(--surface-hover);
+        }
+
+        .activity-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            color: white;
+            font-size: 12px;
+        }
+
+        .activity-icon.threat {
+            background: var(--danger);
+        }
+
+        .activity-icon.network {
+            background: var(--info);
+        }
+
+        .activity-icon.system {
+            background: var(--secondary);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            color: white;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            border-radius: var(--radius-full);
+        }
+
+        .severity-critical {
+            background-color: var(--danger);
+        }
+
+        .severity-high {
+            background-color: var(--warning);
+            color: var(--text-primary);
+        }
+
+        .severity-medium {
+            background-color: var(--info);
+        }
+
+        .severity-low {
+            background-color: var(--secondary);
+        }
+
+        .recommendation {
+            margin-bottom: 16px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            background-color: var(--bg-color);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--border);
+        }
+
+        .recommendation.critical {
+            border-left-color: var(--danger);
+        }
+
+        .recommendation.high {
+            border-left-color: var(--warning);
+        }
+
+        .recommendation.medium {
+            border-left-color: var(--info);
+        }
+
+        .recommendation.low {
+            border-left-color: var(--secondary);
+        }
+
+        .recommendation h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .table-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 12px;
+        }
+
+        .table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .table tr:nth-child(even) {
+            background-color: var(--bg-color);
+        }
+
+        .table tr:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-outline-secondary {
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .subsection-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 20px 0 12px 0;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: var(--radius-full);
+            background-color: var(--border-light);
+        }
+
+        .progress-bar {
+            border-radius: var(--radius-full);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <div class="container py-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">{{ report.title }}</h1>
-        <div>
-          <a
-            href="{% url 'reports_dashboard' %}"
-            class="btn btn-outline-secondary me-2"
-          >
-            <i class="bi bi-arrow-left"></i> Back to Reports
-          </a>
-          <a
-            href="{% url 'download_report' report.id %}"
-            class="btn btn-primary"
-          >
-            <i class="bi bi-download"></i> Download PDF
-          </a>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1 class="header-title">
+                <i class="fas fa-clipboard-list"></i>
+                {{ report.title }}
+            </h1>
+            <div class="header-actions">
+                <a href="{% url 'reports_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Reports
+                </a>
+                <a href="{% url 'download_report' report.id %}" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download PDF
+                </a>
+            </div>
         </div>
-      </div>
 
-      <div class="report-header">
+        <div class="report-header">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Report Type:</strong> {{ report.get_report_type_display }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Date Range:</strong> {{ report.start_date|date:"M d, Y" }} - {{ report.end_date|date:"M d, Y" }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Generated By:</strong> {{ report.generated_by.username }} on {{ report.generated_at|date:"M d, Y H:i" }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% if report.report_type == 'THREAT_SUMMARY' %}
+        <!-- Threat Summary Report Content -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Total Threats Detected</div>
+                <div class="stat-value">
+                    {{ report.data.malware.malicious_count|add:report.data.network.total_alerts|add:report.data.logs.total_alerts }}
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Malware Detected</div>
+                <div class="stat-value">{{ report.data.malware.malicious_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Network Alerts</div>
+                <div class="stat-value">{{ report.data.network.total_alerts }}</div>
+            </div>
+        </div>
+
         <div class="row">
-          <div class="col-md-4">
-            <p class="mb-1"><strong>Report Type:</strong></p>
-            <p>{{ report.get_report_type_display }}</p>
-          </div>
-          <div class="col-md-4">
-            <p class="mb-1"><strong>Date Range:</strong></p>
-            <p>
-              {{ report.start_date|date:"M d, Y" }} - {{ report.end_date|date:"M
-              d, Y" }}
-            </p>
-          </div>
-          <div class="col-md-4">
-            <p class="mb-1"><strong>Generated By:</strong></p>
-            <p>
-              {{ report.generated_by.username }} on {{
-              report.generated_at|date:"M d, Y H:i" }}
-            </p>
-          </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Malware Detection by Type</div>
+                    </div>
+                    <canvas id="malwareTypeChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Network Alerts by Severity</div>
+                    </div>
+                    <canvas id="networkSeverityChart"></canvas>
+                </div>
+            </div>
         </div>
-      </div>
 
-      {% if report.report_type == 'THREAT_SUMMARY' %}
-      <!-- Threat Summary Report Content -->
-      <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-primary text-white">
-            <div class="card-body">
-              <h5 class="card-title">Total Threats Detected</h5>
-              <p class="display-4">
-                {{
-                report.data.malware.malicious_count|add:report.data.network.total_alerts|add:report.data.logs.total_alerts
-                }}
-              </p>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Top Malicious Sources</div>
+                    </div>
+                    <canvas id="sourceIpChart"></canvas>
+                </div>
             </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-success text-white">
-            <div class="card-body">
-              <h5 class="card-title">Malware Detected</h5>
-              <p class="display-4">{{ report.data.malware.malicious_count }}</p>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Log Alerts by Level</div>
+                    </div>
+                    <canvas id="logLevelChart"></canvas>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-danger text-white">
-            <div class="card-body">
-              <h5 class="card-title">Network Alerts</h5>
-              <p class="display-4">{{ report.data.network.total_alerts }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Malware Detection by Type</h5>
+        <div class="table-container">
+            <div class="chart-header" style="padding: 12px 16px 0 16px;">
+                <div class="chart-title">Recent Security Activities</div>
             </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="malwareTypeChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Network Alerts by Severity</h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="networkSeverityChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Top Malicious Sources</h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="sourceIpChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Log Alerts by Level</h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="logLevelChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Recent Security Activities</h5>
-        </div>
-        <div class="card-body p-0">
-          <div class="list-group list-group-flush">
-            {% for activity in report.data.activities %}
-            <div class="list-group-item threat-item">
-              <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">{{ activity.activity }}</h6>
-                <small>{{ activity.timestamp|date:"M d, H:i" }}</small>
-              </div>
-              <p class="mb-1 text-muted">{{ activity.module }}</p>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-
-      {% elif report.report_type == 'THREAT_INTEL' %}
-      <!-- Threat Intelligence Report Content -->
-      <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-danger text-white">
-            <div class="card-body">
-              <h5 class="card-title">Malware Variants</h5>
-              <p class="display-4">
-                {{ report.data.malware_intel.emerging_threats|length }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-warning text-dark">
-            <div class="card-body">
-              <h5 class="card-title">Critical Alerts</h5>
-              <p class="display-4">
-                {{ report.data.network_intel.critical_alerts|length }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-info text-white">
-            <div class="card-body">
-              <h5 class="card-title">Threat Correlations</h5>
-              <p class="display-4">
-                {{ report.data.threat_correlation|length }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Emerging Threat Types</h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="emergingThreatsChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Common Attack Patterns</h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="attackPatternsChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Recent Malware Detections</h5>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>File Path</th>
-                  <th>Malware Type</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for malware in report.data.malware_intel.recent_malware %}
-                <tr>
-                  <td>{{ malware.scan_time|date:"M d, H:i" }}</td>
-                  <td>{{ malware.file_path|truncatechars:30 }}</td>
-                  <td>
-                    <span class="badge bg-danger"
-                      >{{ malware.malware_type }}</span
-                    >
-                  </td>
-                  <td>{{ malware.details|truncatechars:50 }}</td>
-                </tr>
+            <div style="padding: 0 16px 16px 16px;">
+                {% for activity in report.data.activities %}
+                <div class="activity-item">
+                    <div class="activity-icon {% if activity.module == 'Malware' %}threat{% elif activity.module == 'Network' %}network{% else %}system{% endif %}">
+                        <i class="fas 
+                            {% if activity.module == 'Malware' %}fa-bug
+                            {% elif activity.module == 'Network' %}fa-network-wired
+                            {% else %}fa-shield-alt{% endif %}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">{{ activity.activity }}</div>
+                        <div class="activity-time">{{ activity.timestamp|date:"M d, Y H:i" }}</div>
+                    </div>
+                    <div class="badge bg-secondary">{{ activity.module }}</div>
+                </div>
                 {% endfor %}
-              </tbody>
-            </table>
-          </div>
+            </div>
         </div>
-      </div>
 
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Critical Network Alerts</h5>
+        {% elif report.report_type == 'THREAT_INTEL' %}
+        <!-- Threat Intelligence Report Content -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Malware Variants</div>
+                <div class="stat-value">
+                    {{ report.data.malware_intel.emerging_threats|length }}
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Critical Alerts</div>
+                <div class="stat-value">
+                    {{ report.data.network_intel.critical_alerts|length }}
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Threat Correlations</div>
+                <div class="stat-value">
+                    {{ report.data.threat_correlation|length }}
+                </div>
+            </div>
         </div>
-        <div class="card-body p-0">
-          <div class="list-group list-group-flush">
-            {% for alert in report.data.network_intel.critical_alerts %}
-            <div class="list-group-item threat-item">
-              <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">{{ alert.rule_name }}</h6>
-                <small>{{ alert.timestamp|date:"M d, H:i" }}</small>
-              </div>
-              <div class="d-flex justify-content-between mb-1">
-                <span class="text-muted"
-                  >{{ alert.src_ip }} → {{ alert.dst_ip }}</span
-                >
-                <span class="badge bg-secondary">{{ alert.protocol }}</span>
-              </div>
-              <p class="mb-0">{{ alert.details }}</p>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Emerging Threat Types</div>
+                    </div>
+                    <canvas id="emergingThreatsChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Common Attack Patterns</div>
+                    </div>
+                    <canvas id="attackPatternsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="chart-header" style="padding: 12px 16px 0 16px;">
+                <div class="chart-title">Recent Malware Detections</div>
+            </div>
+            <div style="padding: 0 16px;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>File Path</th>
+                            <th>Malware Type</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for malware in report.data.malware_intel.recent_malware %}
+                        <tr>
+                            <td>{{ malware.scan_time|date:"M d, H:i" }}</td>
+                            <td>{{ malware.file_path|truncatechars:30 }}</td>
+                            <td>
+                                <span class="badge severity-critical">{{ malware.malware_type }}</span>
+                            </td>
+                            <td>{{ malware.details|truncatechars:50 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="chart-header" style="padding: 12px 16px 0 16px;">
+                <div class="chart-title">Critical Network Alerts</div>
+            </div>
+            <div style="padding: 0 16px 16px 16px;">
+                {% for alert in report.data.network_intel.critical_alerts %}
+                <div class="activity-item">
+                    <div class="activity-icon network">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">{{ alert.rule_name }}</div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span class="activity-time">{{ alert.timestamp|date:"M d, Y H:i" }}</span>
+                            <span class="badge bg-secondary">{{ alert.protocol }}</span>
+                        </div>
+                        <div class="text-muted" style="font-size: 12px;">
+                            {{ alert.src_ip }} → {{ alert.dst_ip }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% elif report.report_type == 'SYSTEM_SAFETY' %}
+        <!-- System Safety Report Content -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">System Health Score</div>
+                <div class="stat-value">
+                    {% widthratio 100 report.data.system_health.error_rate
+                    report.data.system_health.log_volume as health_score %} {{
+                    health_score|floatformat:0 }}%
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Protected Assets</div>
+                <div class="stat-value">
+                    {{ report.data.protection_status.malware_detection_rate }}
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Network Sessions</div>
+                <div class="stat-value">
+                    {{ report.data.network_health.capture_sessions }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">System Log Levels</div>
+                    </div>
+                    <canvas id="logLevelsChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Protection Status</div>
+                    </div>
+                    <canvas id="protectionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        {% if report.data.recommendations %}
+        <div class="table-container" style="padding: 16px;">
+            <h3 class="subsection-title">Security Recommendations</h3>
+            {% for rec in report.data.recommendations %}
+            <div class="recommendation {{ rec.severity }}">
+                <h3>{{ rec.category }}</h3>
+                <p>{{ rec.message }}</p>
+                <p>
+                    <strong>Severity:</strong>
+                    <span class="badge severity-{{ rec.severity }}">{{ rec.severity|upper }}</span>
+                </p>
             </div>
             {% endfor %}
-          </div>
         </div>
-      </div>
+        {% endif %}
 
-      {% elif report.report_type == 'SYSTEM_SAFETY' %}
-      <!-- System Safety Report Content -->
-      <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-info text-white">
-            <div class="card-body">
-              <h5 class="card-title">System Health Score</h5>
-              <p class="display-4">
-                {% widthratio 100 report.data.system_health.error_rate
-                report.data.system_health.log_volume as health_score %} {{
-                health_score|floatformat:0 }}%
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-success text-white">
-            <div class="card-body">
-              <h5 class="card-title">Protected Assets</h5>
-              <p class="display-4">
-                {{ report.data.protection_status.malware_detection_rate }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <div class="card stat-card h-100 bg-primary text-white">
-            <div class="card-body">
-              <h5 class="card-title">Network Sessions</h5>
-              <p class="display-4">
-                {{ report.data.network_health.capture_sessions }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">System Log Levels</h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="logLevelsChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Protection Status</h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container">
-                <canvas id="protectionChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {% if report.data.recommendations %}
-      <div class="section">
-        <h2 class="section-title">Security Recommendations</h2>
-
-        {% for rec in report.data.recommendations %}
-        <div
-          class="recommendation {% if rec.severity == 'critical' %}critical{% else %}high{% endif %}"
-        >
-          <h3>{{ rec.category }}</h3>
-          <p>{{ rec.message }}</p>
-          <p>
-            <strong>Severity:</strong>
-            <span class="badge severity-{{ rec.severity }}"
-              >{{ rec.severity|upper }}</span
-            >
-          </p>
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">System Metrics</h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <h6>Log Statistics</h6>
-                <div class="progress mb-2" style="height: 20px">
-                  <div
-                    class="progress-bar bg-success"
-                    role="progressbar"
-                    style="width: {% widthratio report.data.system_health.compression_rate report.data.system_health.log_volume 100 %}%"
-                  >
-                    Compressed: {{ report.data.system_health.compression_rate }}
-                  </div>
+        <div class="table-container" style="padding: 16px;">
+            <h3 class="subsection-title">System Metrics</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="subsection-title">Log Statistics</h4>
+                    <p>Total log entries: {{ report.data.system_health.log_volume }}</p>
+                    <p>Error logs: {{ report.data.system_health.error_rate }} ({{ report.data.system_health.error_rate|percentage:report.data.system_health.log_volume }}%)</p>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-danger" role="progressbar" 
+                             style="width: {% widthratio report.data.system_health.error_rate report.data.system_health.log_volume 100 %}%">
+                        </div>
+                    </div>
+                    <p>Compressed logs: {{ report.data.system_health.compression_rate }} ({{ report.data.system_health.compression_rate|percentage:report.data.system_health.log_volume }}%)</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {% widthratio report.data.system_health.compression_rate report.data.system_health.log_volume 100 %}%">
+                        </div>
+                    </div>
                 </div>
-                <div class="progress" style="height: 20px">
-                  <div
-                    class="progress-bar bg-danger"
-                    role="progressbar"
-                    style="width: {% widthratio report.data.system_health.error_rate report.data.system_health.log_volume 100 %}%"
-                  >
-                    Errors: {{ report.data.system_health.error_rate }}
-                  </div>
+                <div class="col-md-6">
+                    <h4 class="subsection-title">Network Statistics</h4>
+                    <p>Capture sessions: {{ report.data.network_health.capture_sessions }}</p>
+                    <p>Average packets per session: {{ report.data.network_health.average_packets|floatformat:0 }}</p>
+                    <p>Active capture sessions: {{ report.data.network_health.active_captures }}</p>
                 </div>
-              </div>
             </div>
-            <div class="col-md-6">
-              <div class="mb-3">
-                <h6>Network Statistics</h6>
-                <p>
-                  Average packets per session: {{
-                  report.data.network_health.average_packets|floatformat:0 }}
-                </p>
-                <p>
-                  Active capture sessions: {{
-                  report.data.network_health.active_captures }}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
-      {% endif %}
+        {% endif %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          const reportData = JSON.parse('{{ report_data|escapejs }}');
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportData = JSON.parse('{{ report_data|escapejs }}');
 
-          // Common chart configuration
-          const chartOptions = {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                  legend: {
-                      position: 'bottom',
-                  }
-              }
-          };
+            // Common chart configuration
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            };
 
-          {% if report.report_type == 'THREAT_SUMMARY' %}
-              // Malware by type chart
-              const malwareTypeCtx = document.getElementById('malwareTypeChart').getContext('2d');
-              new Chart(malwareTypeCtx, {
-                  type: 'doughnut',
-                  data: {
-                      labels: reportData.malware.by_type.map(item => item.malware_type || 'Unknown'),
-                      datasets: [{
-                          data: reportData.malware.by_type.map(item => item.count),
-                          backgroundColor: [
-                              '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff',
-                              '#ff9f40', '#8ac24a', '#607d8b', '#e91e63', '#00bcd4'
-                          ]
-                      }]
-                  },
-                  options: chartOptions
-              });
+            {% if report.report_type == 'THREAT_SUMMARY' %}
+                // Malware by type chart
+                const malwareTypeCtx = document.getElementById('malwareTypeChart').getContext('2d');
+                new Chart(malwareTypeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: reportData.malware.by_type.map(item => item.malware_type || 'Unknown'),
+                        datasets: [{
+                            data: reportData.malware.by_type.map(item => item.count),
+                            backgroundColor: [
+                                '#ef4444', '#3b82f6', '#f59e0b', '#10b981', '#8b5cf6',
+                                '#ec4899', '#84cc16', '#64748b', '#f97316', '#06b6d4'
+                            ]
+                        }]
+                    },
+                    options: chartOptions
+                });
 
-              // Network alerts by severity
-              const networkSeverityCtx = document.getElementById('networkSeverityChart').getContext('2d');
-              new Chart(networkSeverityCtx, {
-                  type: 'bar',
-                  data: {
-                      labels: reportData.network.by_severity.map(item => item.severity.toUpperCase()),
-                      datasets: [{
-                          label: 'Alerts',
-                          data: reportData.network.by_severity.map(item => item.count),
-                          backgroundColor: [
-                              '#4bc0c0', '#ffce56', '#ff9f40', '#ff6384'
-                          ]
-                      }]
-                  },
-                  options: chartOptions
-              });
+                // Network alerts by severity
+                const networkSeverityCtx = document.getElementById('networkSeverityChart').getContext('2d');
+                new Chart(networkSeverityCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: reportData.network.by_severity.map(item => item.severity.toUpperCase()),
+                        datasets: [{
+                            label: 'Alerts',
+                            data: reportData.network.by_severity.map(item => item.count),
+                            backgroundColor: [
+                                '#ef4444', '#f59e0b', '#3b82f6', '#10b981'
+                            ]
+                        }]
+                    },
+                    options: chartOptions
+                });
 
-              // Source IP chart
-              const sourceIpCtx = document.getElementById('sourceIpChart').getContext('2d');
-              new Chart(sourceIpCtx, {
-                  type: 'horizontalBar',
-                  data: {
-                      labels: reportData.network.top_src_ips.map(item => item.src_ip),
-                      datasets: [{
-                          label: 'Alerts',
-                          data: reportData.network.top_src_ips.map(item => item.count),
-                          backgroundColor: '#36a2eb'
-                      }]
-                  },
-                  options: chartOptions
-              });
+                // Source IP chart
+                const sourceIpCtx = document.getElementById('sourceIpChart').getContext('2d');
+                new Chart(sourceIpCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: reportData.network.top_src_ips.map(item => item.src_ip),
+                        datasets: [{
+                            label: 'Alerts',
+                            data: reportData.network.top_src_ips.map(item => item.count),
+                            backgroundColor: '#3b82f6'
+                        }]
+                    },
+                    options: chartOptions
+                });
 
-              // Log levels chart
-              const logLevelCtx = document.getElementById('logLevelChart').getContext('2d');
-              new Chart(logLevelCtx, {
-                  type: 'pie',
-                  data: {
-                      labels: reportData.logs.by_level.map(item => item.level),
-                      datasets: [{
-                          data: reportData.logs.by_level.map(item => item.count),
-                          backgroundColor: [
-                              '#8ac24a', '#36a2eb', '#ffce56', '#ff9f40', '#ff6384'
-                          ]
-                      }]
-                  },
-                  options: chartOptions
-              });
+                // Log levels chart
+                const logLevelCtx = document.getElementById('logLevelChart').getContext('2d');
+                new Chart(logLevelCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: reportData.logs.by_level.map(item => item.level),
+                        datasets: [{
+                            data: reportData.logs.by_level.map(item => item.count),
+                            backgroundColor: [
+                                '#10b981', '#3b82f6', '#f59e0b', '#f97316', '#ef4444'
+                            ]
+                        }]
+                    },
+                    options: chartOptions
+                });
 
-          {% elif report.report_type == 'THREAT_INTEL' %}
-              // Emerging threats chart
-              const emergingThreatsCtx = document.getElementById('emergingThreatsChart').getContext('2d');
-              new Chart(emergingThreatsCtx, {
-                  type: 'polarArea',
-                  data: {
-                      labels: reportData.malware_intel.emerging_threats.map(item => item.malware_type),
-                      datasets: [{
-                          data: reportData.malware_intel.emerging_threats.map(item => item.count),
-                          backgroundColor: [
-                              '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff'
-                          ]
-                      }]
-                  },
-                  options: chartOptions
-              });
+            {% elif report.report_type == 'THREAT_INTEL' %}
+                // Emerging threats chart
+                const emergingThreatsCtx = document.getElementById('emergingThreatsChart').getContext('2d');
+                new Chart(emergingThreatsCtx, {
+                    type: 'polarArea',
+                    data: {
+                        labels: reportData.malware_intel.emerging_threats.map(item => item.malware_type),
+                        datasets: [{
+                            data: reportData.malware_intel.emerging_threats.map(item => item.count),
+                            backgroundColor: [
+                                '#ef4444', '#3b82f6', '#f59e0b', '#10b981', '#8b5cf6'
+                            ]
+                        }]
+                    },
+                    options: chartOptions
+                });
 
-              // Attack patterns chart
-              const attackPatternsCtx = document.getElementById('attackPatternsChart').getContext('2d');
-              new Chart(attackPatternsCtx, {
-                  type: 'radar',
-                  data: {
-                      labels: reportData.network_intel.common_attack_patterns.map(item => item.rule_name),
-                      datasets: [{
-                          label: 'Frequency',
-                          data: reportData.network_intel.common_attack_patterns.map(item => item.count),
-                          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                          borderColor: 'rgba(255, 99, 132, 1)',
-                          pointBackgroundColor: 'rgba(255, 99, 132, 1)'
-                      }]
-                  },
-                  options: chartOptions
-              });
+                // Attack patterns chart
+                const attackPatternsCtx = document.getElementById('attackPatternsChart').getContext('2d');
+                new Chart(attackPatternsCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: reportData.network_intel.common_attack_patterns.map(item => item.rule_name),
+                        datasets: [{
+                            label: 'Frequency',
+                            data: reportData.network_intel.common_attack_patterns.map(item => item.count),
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            pointBackgroundColor: 'rgba(239, 68, 68, 1)'
+                        }]
+                    },
+                    options: chartOptions
+                });
 
-          {% elif report.report_type == 'SYSTEM_SAFETY' %}
-              // Log levels chart
-              const logLevelsCtx = document.getElementById('logLevelsChart').getContext('2d');
-              new Chart(logLevelsCtx, {
-                  type: 'pie',
-                  data: {
-                      labels: reportData.system_health.log_levels.map(item => item.level),
-                      datasets: [{
-                          data: reportData.system_health.log_levels.map(item => item.count),
-                          backgroundColor: [
-                              '#8ac24a', '#36a2eb', '#ffce56', '#ff9f40', '#ff6384'
-                          ]
-                      }]
-                  },
-                  options: chartOptions
-              });
+            {% elif report.report_type == 'SYSTEM_SAFETY' %}
+                // Log levels chart
+                const logLevelsCtx = document.getElementById('logLevelsChart').getContext('2d');
+                new Chart(logLevelsCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: reportData.system_health.log_levels.map(item => item.level),
+                        datasets: [{
+                            data: reportData.system_health.log_levels.map(item => item.count),
+                            backgroundColor: [
+                                '#10b981', '#3b82f6', '#f59e0b', '#f97316', '#ef4444'
+                            ]
+                        }]
+                    },
+                    options: chartOptions
+                });
 
-              // Protection chart
-              const protectionCtx = document.getElementById('protectionChart').getContext('2d');
-              new Chart(protectionCtx, {
-                  type: 'bar',
-                  data: {
-                      labels: ['Malware Detected', 'IPs Blocked', 'Quarantined Files'],
-                      datasets: [{
-                          label: 'Count',
-                          data: [
-                              reportData.protection_status.malware_detection_rate,
-                              reportData.protection_status.blocked_threats,
-                              reportData.protection_status.quarantine_success
-                          ],
-                          backgroundColor: [
-                              '#4bc0c0', '#9966ff', '#ffce56'
-                          ]
-                      }]
-                  },
-                  options: chartOptions
-              });
-          {% endif %}
-      });
+                // Protection chart
+                const protectionCtx = document.getElementById('protectionChart').getContext('2d');
+                new Chart(protectionCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Malware Detected', 'IPs Blocked', 'Quarantined Files'],
+                        datasets: [{
+                            label: 'Count',
+                            data: [
+                                reportData.protection_status.malware_detection_rate,
+                                reportData.protection_status.blocked_threats,
+                                reportData.protection_status.quarantine_success
+                            ],
+                            backgroundColor: [
+                                '#10b981', '#3b82f6', '#f59e0b'
+                            ]
+                        }]
+                    },
+                    options: chartOptions
+                });
+            {% endif %}
+        });
     </script>
-  </body>
+</body>
 </html>

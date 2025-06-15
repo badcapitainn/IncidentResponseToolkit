@@ -1,38 +1,239 @@
-<!-- toolkit/templates/toolkit/generate_report.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Report</title>
+    <title>Generate Report | Sentry</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #ec4899;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            --bg-color: #f9fafb;
+            --surface: #ffffff;
+            --surface-hover: #f3f4f6;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 12px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-title i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
         .form-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
             max-width: 800px;
             margin: 0 auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: var(--transition);
         }
+
+        .form-card:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .form-header {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+        }
+
+        .form-header h5 {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-body {
+            padding: 24px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-select, .form-control {
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            transition: var(--transition);
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-group {
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--border);
+        }
+
+        .btn-outline-primary:hover, .btn-check:checked + .btn-outline-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .btn-outline-secondary {
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--surface-hover);
+            border-color: var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            font-weight: 500;
+            padding: 10px 16px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
         .date-picker-container {
             display: none;
+            background: var(--surface-hover);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .form-body {
+                padding: 16px;
+            }
+            
+            .btn-group {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .btn-group label {
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3">Generate New Report</h1>
-            <a href="{% url 'reports_dashboard' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Reports
-            </a>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1 class="header-title">
+                <i class="fas fa-file-alt"></i>
+                Generate New Report
+            </h1>
+            <div class="header-actions">
+                <a href="{% url 'reports_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Reports
+                </a>
+            </div>
         </div>
         
-        <div class="card form-card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Report Configuration</h5>
+        <div class="form-card">
+            <div class="form-header">
+                <h5>Report Configuration</h5>
             </div>
-            <div class="card-body">
+            <div class="form-body">
                 <form method="post">
                     {% csrf_token %}
                     
@@ -48,7 +249,7 @@
                     
                     <div class="mb-4">
                         <label class="form-label">Date Range</label>
-                        <div class="btn-group w-100" role="group">
+                        <div class="btn-group" role="group">
                             <input type="radio" class="btn-check" name="date_range" id="24h" value="24h" autocomplete="off" checked>
                             <label class="btn btn-outline-primary" for="24h">Last 24 Hours</label>
                             
@@ -61,24 +262,24 @@
                             <input type="radio" class="btn-check" name="date_range" id="custom" value="custom" autocomplete="off">
                             <label class="btn btn-outline-primary" for="custom">Custom Range</label>
                         </div>
-                    </div>
-                    
-                    <div id="customDateRange" class="date-picker-container mb-4">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="start_date" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="start_date" name="start_date">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="end_date" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="end_date" name="end_date">
+                        
+                        <div id="customDateRange" class="date-picker-container">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="start_date" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="end_date" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date">
+                                </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-file-earmark-bar-graph"></i> Generate Report
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-export"></i> Generate Report
                         </button>
                     </div>
                 </form>
@@ -111,6 +312,12 @@
             if (reportType) {
                 document.getElementById('report_type').value = reportType;
             }
+            
+            // Add animations
+            setTimeout(() => {
+                document.querySelector('.dashboard-header').style.opacity = 1;
+                document.querySelector('.form-card').style.opacity = 1;
+            }, 100);
         });
     </script>
 </body>

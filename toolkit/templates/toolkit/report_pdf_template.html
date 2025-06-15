@@ -1,4 +1,3 @@
-<!-- toolkit/templates/toolkit/report_pdf_template.html -->
 {% load percentage_filters %}
 <!DOCTYPE html>
 <html lang="en">
@@ -7,122 +6,270 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ report.title }}</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        color: #333;
-        line-height: 1.6;
+      :root {
+        --primary: #4f46e5;
+        --primary-light: #6366f1;
+        --primary-dark: #4338ca;
+        --secondary: #10b981;
+        --accent: #ec4899;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+
+        --bg-color: #f9fafb;
+        --surface: #ffffff;
+        --surface-hover: #f3f4f6;
+        --border: #e5e7eb;
+        --border-light: #f3f4f6;
+
+        --text-primary: #111827;
+        --text-secondary: #6b7280;
+        --text-tertiary: #9ca3af;
+
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+        --radius-sm: 6px;
+        --radius: 8px;
+        --radius-lg: 12px;
+        --radius-full: 9999px;
       }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        line-height: 1.6;
+        background-color: var(--surface);
+        padding: 20px;
+      }
+
       .header {
         text-align: center;
         margin-bottom: 30px;
-        border-bottom: 2px solid #eee;
         padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
       }
+
       .header h1 {
-        color: #2c3e50;
-        margin-bottom: 10px;
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+        font-size: 24px;
+        font-weight: 600;
       }
+
       .header .subtitle {
-        color: #7f8c8d;
-        font-size: 18px;
+        color: var(--text-secondary);
+        font-size: 16px;
+        font-weight: 500;
       }
+
       .report-info {
         display: flex;
         justify-content: space-between;
         margin-bottom: 30px;
+        background: var(--bg-color);
+        padding: 16px;
+        border-radius: var(--radius);
       }
+
       .report-info div {
         flex: 1;
+        font-size: 13px;
       }
+
+      .report-info strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
       .stat-card {
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 20px;
-        color: white;
-        text-align: center;
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+        border-left: 3px solid var(--primary);
+        transition: var(--transition);
       }
+
+      .stat-card:nth-child(1) { border-left-color: var(--danger); }
+      .stat-card:nth-child(2) { border-left-color: var(--secondary); }
+      .stat-card:nth-child(3) { border-left-color: var(--info); }
+
       .stat-card h3 {
         margin-top: 0;
-        font-size: 16px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
       }
+
       .stat-card .value {
-        font-size: 28px;
-        font-weight: bold;
-        margin: 10px 0;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 8px 0;
       }
+
+      .stat-card:nth-child(1) .value { color: var(--danger); }
+      .stat-card:nth-child(2) .value { color: var(--secondary); }
+      .stat-card:nth-child(3) .value { color: var(--info); }
+
       .section {
         margin-bottom: 30px;
         page-break-inside: avoid;
       }
+
       .section-title {
-        border-bottom: 1px solid #eee;
-        padding-bottom: 10px;
-        margin-bottom: 15px;
-        color: #2c3e50;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
       }
-      .chart-container {
-        height: 300px;
-        margin-bottom: 20px;
+
+      .subsection-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 20px 0 12px 0;
       }
+
       .table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
+        font-size: 13px;
+        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius);
+        overflow: hidden;
       }
-      .table th,
-      .table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-      }
+
       .table th {
-        background-color: #f2f2f2;
+        background-color: var(--primary);
+        color: white;
+        font-weight: 600;
+        text-align: left;
+        padding: 10px 12px;
       }
+
+      .table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .table tr:nth-child(even) {
+        background-color: var(--bg-color);
+      }
+
+      .table tr:hover {
+        background-color: var(--surface-hover);
+      }
+
       .badge {
         display: inline-block;
-        padding: 3px 7px;
+        padding: 4px 10px;
         font-size: 12px;
-        font-weight: bold;
+        font-weight: 600;
         line-height: 1;
         color: white;
         text-align: center;
         white-space: nowrap;
         vertical-align: middle;
-        border-radius: 10px;
+        border-radius: var(--radius-full);
       }
+
       .severity-critical {
-        background-color: #dc3545;
+        background-color: var(--danger);
       }
+
       .severity-high {
-        background-color: #fd7e14;
+        background-color: var(--warning);
+        color: var(--text-primary);
       }
+
       .severity-medium {
-        background-color: #ffc107;
-        color: #212529;
+        background-color: var(--info);
       }
+
       .severity-low {
-        background-color: #6c757d;
+        background-color: var(--secondary);
       }
+
       .recommendation {
-        margin-bottom: 15px;
-        padding: 10px;
-        border-left: 4px solid #eee;
+        margin-bottom: 16px;
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        background-color: var(--bg-color);
+        box-shadow: var(--shadow-sm);
       }
+
       .recommendation.critical {
-        border-left-color: #dc3545;
-        background-color: rgba(220, 53, 69, 0.05);
+        border-left: 4px solid var(--danger);
       }
+
       .recommendation.high {
-        border-left-color: #fd7e14;
-        background-color: rgba(253, 126, 20, 0.05);
+        border-left: 4px solid var(--warning);
       }
+
+      .recommendation.medium {
+        border-left: 4px solid var(--info);
+      }
+
+      .recommendation.low {
+        border-left: 4px solid var(--secondary);
+      }
+
+      .recommendation h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: 15px;
+        color: var(--text-primary);
+      }
+
       .footer {
         text-align: center;
         margin-top: 50px;
         padding-top: 20px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--border);
         font-size: 12px;
-        color: #7f8c8d;
+        color: var(--text-secondary);
+      }
+
+      .text-muted {
+        color: var(--text-secondary);
+      }
+
+      .chart-placeholder {
+        height: 250px;
+        background-color: var(--bg-color);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .stat-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .report-info {
+          flex-direction: column;
+          gap: 12px;
+        }
       }
     </style>
   </head>
@@ -135,8 +282,7 @@
     <div class="report-info">
       <div>
         <strong>Generated By:</strong> {{ report.generated_by.username }}<br />
-        <strong>Generated On:</strong> {{ report.generated_at|date:"M d, Y H:i"
-        }}
+        <strong>Generated On:</strong> {{ report.generated_at|date:"M d, Y H:i" }}
       </div>
       <div>
         <strong>Date Range:</strong> {{ report.start_date|date:"M d, Y" }} - {{
@@ -149,17 +295,8 @@
     <!-- Threat Summary PDF Content -->
     <div class="section">
       <h2 class="section-title">Key Statistics</h2>
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 20px;
-        "
-      >
-        <div
-          class="stat-card"
-          style="background-color: #2c3e50; flex: 1; margin-right: 10px"
-        >
+      <div class="stat-grid">
+        <div class="stat-card">
           <h3>Total Threats Detected</h3>
           <div class="value">
             {{
@@ -167,14 +304,11 @@
             }}
           </div>
         </div>
-        <div
-          class="stat-card"
-          style="background-color: #27ae60; flex: 1; margin-right: 10px"
-        >
+        <div class="stat-card">
           <h3>Malware Detected</h3>
           <div class="value">{{ report.data.malware.malicious_count }}</div>
         </div>
-        <div class="stat-card" style="background-color: #e74c3c; flex: 1">
+        <div class="stat-card">
           <h3>Network Alerts</h3>
           <div class="value">{{ report.data.network.total_alerts }}</div>
         </div>
@@ -186,12 +320,13 @@
       <p>Total scans performed: {{ report.data.malware.total_scans }}</p>
       <p>Malicious files detected: {{ report.data.malware.malicious_count }}</p>
 
-      <h3>Malware by Type</h3>
+      <h3 class="subsection-title">Malware by Type</h3>
       <table class="table">
         <thead>
           <tr>
             <th>Malware Type</th>
             <th>Count</th>
+            <th>Percentage</th>
           </tr>
         </thead>
         <tbody>
@@ -199,6 +334,7 @@
           <tr>
             <td>{{ item.malware_type|default:"Unknown" }}</td>
             <td>{{ item.count }}</td>
+            <td>{{ item.count|percentage:report.data.malware.malicious_count }}%</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -209,30 +345,37 @@
       <h2 class="section-title">Network Alerts</h2>
       <p>Total alerts triggered: {{ report.data.network.total_alerts }}</p>
 
-      <h3>Alerts by Severity</h3>
+      <h3 class="subsection-title">Alerts by Severity</h3>
       <table class="table">
         <thead>
           <tr>
             <th>Severity</th>
             <th>Count</th>
+            <th>Percentage</th>
           </tr>
         </thead>
         <tbody>
           {% for item in report.data.network.by_severity %}
           <tr>
-            <td>{{ item.severity|title }}</td>
+            <td>
+              <span class="badge severity-{{ item.severity|lower }}">
+                {{ item.severity|title }}
+              </span>
+            </td>
             <td>{{ item.count }}</td>
+            <td>{{ item.count|percentage:report.data.network.total_alerts }}%</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <h3>Top Source IPs</h3>
+      <h3 class="subsection-title">Top Source IPs</h3>
       <table class="table">
         <thead>
           <tr>
             <th>IP Address</th>
             <th>Alert Count</th>
+            <th>Percentage</th>
           </tr>
         </thead>
         <tbody>
@@ -240,6 +383,7 @@
           <tr>
             <td>{{ item.src_ip }}</td>
             <td>{{ item.count }}</td>
+            <td>{{ item.count|percentage:report.data.network.total_alerts }}%</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -252,15 +396,16 @@
       <p>
         Resolved alerts: {{ report.data.logs.resolved_rate.resolved }} ({{
         report.data.logs.resolved_rate.resolved|percentage:report.data.logs.total_alerts
-        }})
+        }}%)
       </p>
 
-      <h3>Alerts by Level</h3>
+      <h3 class="subsection-title">Alerts by Level</h3>
       <table class="table">
         <thead>
           <tr>
             <th>Level</th>
             <th>Count</th>
+            <th>Percentage</th>
           </tr>
         </thead>
         <tbody>
@@ -268,6 +413,7 @@
           <tr>
             <td>{{ item.level }}</td>
             <td>{{ item.count }}</td>
+            <td>{{ item.count|percentage:report.data.logs.total_alerts }}%</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -300,32 +446,20 @@
     <!-- Threat Intelligence PDF Content -->
     <div class="section">
       <h2 class="section-title">Threat Intelligence Overview</h2>
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 20px;
-        "
-      >
-        <div
-          class="stat-card"
-          style="background-color: #e74c3c; flex: 1; margin-right: 10px"
-        >
+      <div class="stat-grid">
+        <div class="stat-card">
           <h3>Malware Variants</h3>
           <div class="value">
             {{ report.data.malware_intel.emerging_threats|length }}
           </div>
         </div>
-        <div
-          class="stat-card"
-          style="background-color: #f39c12; flex: 1; margin-right: 10px"
-        >
+        <div class="stat-card">
           <h3>Critical Alerts</h3>
           <div class="value">
             {{ report.data.network_intel.critical_alerts|length }}
           </div>
         </div>
-        <div class="stat-card" style="background-color: #3498db; flex: 1">
+        <div class="stat-card">
           <h3>Threat Correlations</h3>
           <div class="value">{{ report.data.threat_correlation|length }}</div>
         </div>
@@ -335,12 +469,13 @@
     <div class="section">
       <h2 class="section-title">Malware Intelligence</h2>
 
-      <h3>Emerging Threat Types</h3>
+      <h3 class="subsection-title">Emerging Threat Types</h3>
       <table class="table">
         <thead>
           <tr>
             <th>Malware Type</th>
             <th>Count</th>
+            <th>First Seen</th>
           </tr>
         </thead>
         <tbody>
@@ -348,12 +483,13 @@
           <tr>
             <td>{{ item.malware_type|default:"Unknown" }}</td>
             <td>{{ item.count }}</td>
+            <td>{{ item.first_seen|date:"M d, Y" }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <h3>Recent Malware Detections</h3>
+      <h3 class="subsection-title">Recent Malware Detections</h3>
       <table class="table">
         <thead>
           <tr>
@@ -383,12 +519,13 @@
     <div class="section">
       <h2 class="section-title">Network Intelligence</h2>
 
-      <h3>Common Attack Patterns</h3>
+      <h3 class="subsection-title">Common Attack Patterns</h3>
       <table class="table">
         <thead>
           <tr>
             <th>Rule Name</th>
             <th>Count</th>
+            <th>Last Triggered</th>
           </tr>
         </thead>
         <tbody>
@@ -396,12 +533,13 @@
           <tr>
             <td>{{ item.rule_name }}</td>
             <td>{{ item.count }}</td>
+            <td>{{ item.last_triggered|date:"M d, H:i" }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <h3>Critical Network Alerts</h3>
+      <h3 class="subsection-title">Critical Network Alerts</h3>
       <table class="table">
         <thead>
           <tr>
@@ -427,8 +565,7 @@
     <div class="section">
       <h2 class="section-title">Threat Correlation</h2>
       <p>
-        Number of correlated threats: {{ report.data.threat_correlation|length
-        }}
+        Number of correlated threats: {{ report.data.threat_correlation|length }}
       </p>
 
       <table class="table">
@@ -437,6 +574,7 @@
             <th>Timestamp</th>
             <th>Alert ID</th>
             <th>Malware File</th>
+            <th>Correlation Score</th>
           </tr>
         </thead>
         <tbody>
@@ -445,6 +583,7 @@
             <td>{{ item.timestamp|date:"M d, H:i" }}</td>
             <td>{{ item.alert_id }}</td>
             <td>{{ item.malware_file|truncatechars:40 }}</td>
+            <td>{{ item.score|floatformat:2 }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -455,17 +594,8 @@
     <!-- System Safety PDF Content -->
     <div class="section">
       <h2 class="section-title">System Health Overview</h2>
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 20px;
-        "
-      >
-        <div
-          class="stat-card"
-          style="background-color: #3498db; flex: 1; margin-right: 10px"
-        >
+      <div class="stat-grid">
+        <div class="stat-card">
           <h3>System Health Score</h3>
           <div class="value">
             {% widthratio 100 report.data.system_health.error_rate
@@ -473,16 +603,13 @@
             health_score|floatformat:0 }}%
           </div>
         </div>
-        <div
-          class="stat-card"
-          style="background-color: #27ae60; flex: 1; margin-right: 10px"
-        >
+        <div class="stat-card">
           <h3>Protected Assets</h3>
           <div class="value">
             {{ report.data.protection_status.malware_detection_rate }}
           </div>
         </div>
-        <div class="stat-card" style="background-color: #2c3e50; flex: 1">
+        <div class="stat-card">
           <h3>Network Sessions</h3>
           <div class="value">
             {{ report.data.network_health.capture_sessions }}
@@ -494,20 +621,20 @@
     <div class="section">
       <h2 class="section-title">System Metrics</h2>
 
-      <h3>Log Statistics</h3>
+      <h3 class="subsection-title">Log Statistics</h3>
       <p>Total log entries: {{ report.data.system_health.log_volume }}</p>
       <p>
         Error logs: {{ report.data.system_health.error_rate }} ({{
         report.data.system_health.error_rate|percentage:report.data.system_health.log_volume
-        }})
+        }}%)
       </p>
       <p>
         Compressed logs: {{ report.data.system_health.compression_rate }} ({{
         report.data.system_health.compression_rate|percentage:report.data.system_health.log_volume
-        }})
+        }}%)
       </p>
 
-      <h3>Log Levels Distribution</h3>
+      <h3 class="subsection-title">Log Levels Distribution</h3>
       <table class="table">
         <thead>
           <tr>
@@ -521,13 +648,13 @@
           <tr>
             <td>{{ item.level }}</td>
             <td>{{ item.count }}</td>
-            <td>{{ item.count|percentage:report.data.system_health.log_volume }}</td>
+            <td>{{ item.count|percentage:report.data.system_health.log_volume }}%</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <h3>Network Statistics</h3>
+      <h3 class="subsection-title">Network Statistics</h3>
       <p>Capture sessions: {{ report.data.network_health.capture_sessions }}</p>
       <p>
         Average packets per session: {{
@@ -542,26 +669,30 @@
     <div class="section">
       <h2 class="section-title">Protection Status</h2>
 
-      <h3>Threat Protection</h3>
+      <h3 class="subsection-title">Threat Protection</h3>
       <table class="table">
         <thead>
           <tr>
             <th>Metric</th>
             <th>Count</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Malware Detected</td>
             <td>{{ report.data.protection_status.malware_detection_rate }}</td>
+            <td><span class="badge severity-critical">Protected</span></td>
           </tr>
           <tr>
             <td>IPs Blocked</td>
             <td>{{ report.data.protection_status.blocked_threats }}</td>
+            <td><span class="badge severity-high">Protected</span></td>
           </tr>
           <tr>
             <td>Files Quarantined</td>
             <td>{{ report.data.protection_status.quarantine_success }}</td>
+            <td><span class="badge severity-medium">Protected</span></td>
           </tr>
         </tbody>
       </table>
@@ -590,7 +721,7 @@
       <p>
         Generated by IRAT Toolkit on {{ report.generated_at|date:"M d, Y H:i" }}
       </p>
-      <p>Confidential - For authorized personnel only</p>
+      <p class="text-muted">Confidential - For authorized personnel only</p>
     </div>
   </body>
 </html>
