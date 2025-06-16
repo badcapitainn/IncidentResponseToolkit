@@ -29,7 +29,7 @@ urlpatterns = [
     path('blocked-ips/', views.blocked_ips, name='blocked_ips'),
     path('alerts/<int:alert_id>/resolve/', views.resolve_alert, name='resolve_alert'),
 
-     path('reports/', views.reports_dashboard, name='reports_dashboard'),
+    path('reports/', views.reports_dashboard, name='reports_dashboard'),
     path('reports/generate/', views.generate_report, name='generate_report'),
     path('reports/view/<int:report_id>/', views.view_report, name='view_report'),
     path('reports/download/<int:report_id>/', views.download_report, name='download_report'),
