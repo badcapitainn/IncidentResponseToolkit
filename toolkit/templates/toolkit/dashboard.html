@@ -804,15 +804,9 @@
             <h1 class="header-title">
                 <i class="fas fa-shield-alt"></i>
                 Sentry
-                <span class="status-indicator">
-                    All systems normal
-                </span>
             </h1>
             <div class="header-actions">
                 <div class="time-filter">
-                    <button class="time-filter-btn active">24h</button>
-                    <button class="time-filter-btn">7d</button>
-                    <button class="time-filter-btn">30d</button>
                 </div>
                 <a href="{% url 'registration' %}" class="action-btn">
                     <i class="fas fa-user-plus"></i>
@@ -834,8 +828,6 @@
                 </div>
                 <div class="stat-value" id="logAlertCount">{{ log_alert_count }}</div>
                 <div class="stat-change negative">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>12% from yesterday</span>
                 </div>
             </div>
 
@@ -848,8 +840,6 @@
                 </div>
                 <div class="stat-value" id="networkAlertCount">{{ network_alert_count }}</div>
                 <div class="stat-change positive">
-                    <i class="fas fa-arrow-down"></i>
-                    <span>5% from yesterday</span>
                 </div>
             </div>
 
@@ -862,7 +852,6 @@
                 </div>
                 <div class="stat-value" id="malwareAlertCount">{{ malware_alert_count }}</div>
                 <div class="stat-change">
-                    <span>No change</span>
                 </div>
             </div>
 
@@ -875,8 +864,6 @@
                 </div>
                 <div class="stat-value" id="allAlertCount">{{ all_alert_count }}</div>
                 <div class="stat-change positive">
-                    <i class="fas fa-arrow-down"></i>
-                    <span>8% from yesterday</span>
                 </div>
             </div>
         </div>
@@ -893,9 +880,9 @@
                             <span>System Resources</span>
                         </div>
                         <div class="chart-actions">
-                            <button class="chart-action-btn active">1h</button>
-                            <button class="chart-action-btn">6h</button>
-                            <button class="chart-action-btn">24h</button>
+                            <button class="chart-action-btn active"></button>
+                            <button class="chart-action-btn"></button>
+                            <button class="chart-action-btn"></button>
                         </div>
                     </div>
                     <div class="small-charts-grid">
@@ -1035,6 +1022,18 @@
                         <div class="activity-item">
                             <div class="activity-icon info">
                                 <i class="fas fa-search"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">{{activity.activity}}</div>
+                                <div class="activity-time">{{activity.timestamp}}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if activity.module == "Report" %}
+                        <div class="activity-item">
+                            <div class="activity-icon info">
+                                <i class="fas fa-clipboard-list"></i>
                             </div>
                             <div class="activity-content">
                                 <div class="activity-title">{{activity.activity}}</div>

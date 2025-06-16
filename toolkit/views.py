@@ -835,6 +835,7 @@ def add_network_rule(request):
             condition=condition,
             severity=severity
         )
+        add_recent_activity(request, activity = "Added New Network Rule", module = "Network")
 
         return redirect('network_module')
 
@@ -1000,6 +1001,9 @@ def generate_report(request):
         
         generator = ReportGenerator(report_type, request.user, start_date, end_date)
         report = generator.generate_report()
+        add_recent_activity(request, activity = f"Created New {report_type} Report", module = "Report")
+
+
         
         return redirect('view_report', report_id=report.id)
     
@@ -1056,6 +1060,7 @@ def download_report(request, report_id):
         with open(report.pdf_file.path, 'rb') as pdf:
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="{os.path.basename(report.pdf_file.name)}"'
+            add_recent_activity(request, activity = "Report Downloaded", module = "Report")
             return response
             
     except Exception as e:
