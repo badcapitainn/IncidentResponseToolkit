@@ -1,16 +1,18 @@
-# config/toolkit/modules/network_analysis/capture.py
-import pydivert
 from scapy.all import sniff, Raw
 from scapy.layers.inet import IP, TCP, UDP
+from scapy.sendrecv import sendp
+# from scapy.supersocket import L3PacketSocket
 import dpkt
 import threading
 import time
+# import nfqueue
 from datetime import datetime
 from collections import defaultdict
 from .utils import packet_to_dict
 from django.conf import settings
 import os
-
+import socket
+import struct
 
 class NetworkCapture:
     def __init__(self):
@@ -30,6 +32,8 @@ class NetworkCapture:
         self.alerts = []
         self.capture_file = os.path.join(settings.BASE_DIR, 'network_capture.pcap')
         self.blocked_ips = set()
+        # self.nfqueue_socket = None
+        # self.queue_num = 1  # NFQUEUE number
 
     def start_capture(self, interface=None, filter_rule=None, timeout=60):
         """Start packet capture"""
@@ -41,12 +45,12 @@ class NetworkCapture:
 
         def capture_loop():
             try:
-                # Using pydivert for Windows packet capture
-                with pydivert.WinDivert(filter_rule or "true") as w:
-                    while self.capture_active:
-                        packet = w.recv()
-                        self.process_packet(packet)
-                        w.send(packet)
+                # Use scapy's sniff function for packet capture
+                sniff(iface=interface, 
+                      prn=self.process_packet, 
+                      store=False,
+                      filter=filter_rule,
+                      stop_filter=lambda x: not self.capture_active)
             except Exception as e:
                 print(f"Capture error: {e}")
             finally:
@@ -57,23 +61,41 @@ class NetworkCapture:
         self.capture_thread.start()
         return True
 
-    def stop_capture(self):
-        """Stop packet capture"""
-        self.capture_active = False
-        if self.capture_thread:
-            self.capture_thread.join()
-        self.save_to_pcap()
+    def setup_nfqueue(self):
+        """Setup NFQUEUE for packet filtering"""
+        def callback(i, payload):
+            data = payload.get_data()
+            packet = IP(data)
+            
+            # Process packet before deciding to drop/accept
+            self.process_packet(packet)
+            
+            # Implement your filtering logic here
+            if packet[IP].src in self.blocked_ips:
+                payload.set_verdict(nfqueue.NF_DROP)
+            else:
+                payload.set_verdict(nfqueue.NF_ACCEPT)
+        
+        q = nfqueue.queue()
+        q.set_callback(callback)
+        q.fast_open(self.queue_num, socket.AF_INET)
+        q.set_queue_maxlen(5000)
+        
+        try:
+            while self.capture_active:
+                q.process_pending()
+        finally:
+            q.unbind(socket.AF_INET)
+            q.close()
 
     def process_packet(self, packet):
         """Process captured packet"""
         try:
-            # Convert to Scapy packet for analysis
-            scapy_pkt = IP(packet.raw)
-            pkt_dict = packet_to_dict(scapy_pkt)
+            pkt_dict = packet_to_dict(packet)
 
             # Add raw payload if it exists
-            if Raw in scapy_pkt:
-                pkt_dict['payload'] = str(scapy_pkt[Raw].load)
+            if packet.haslayer(Raw):
+                pkt_dict['payload'] = str(packet[Raw].load)
 
             self.packets.append(pkt_dict)
             self.update_stats(pkt_dict)
@@ -132,3 +154,10 @@ class NetworkCapture:
             'start_time': None,
             'end_time': None
         }
+
+    def stop_capture(self):
+        """Stop packet capture"""
+        self.capture_active = False
+        if self.capture_thread:
+            self.capture_thread.join()
+        self.save_to_pcap()
