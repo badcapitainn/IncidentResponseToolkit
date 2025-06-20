@@ -8,16 +8,6 @@ from asgiref.sync import async_to_sync
 
 
 @shared_task
-def parse_logs_task():
-    call_command('parse_logs')
-
-
-@shared_task
-def monitor_network_packets():
-    call_command('parse_network_packets')
-
-
-@shared_task
 def collect_resource_metrics():
     try:
         current_process = psutil.Process(os.getpid())

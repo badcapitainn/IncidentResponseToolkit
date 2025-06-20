@@ -2,6 +2,10 @@ from pathlib import Path
 from celery.schedules import crontab
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,7 +53,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            "hosts": [('redis', 6379)],
         },
     },
 }
@@ -87,21 +91,21 @@ TEMPLATES = [
 ]
 
 # Celery settings
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Use Redis as the message broker
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'  # Use Redis as the message broker
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 CELERY_TIMEZONE = 'UTC'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
-    'parse-logs-every-30seconds': {
-        'task': 'toolkit.tasks.parse_logs_task',
-        'schedule': timedelta(seconds=30),
-    },
-    'parse-packets-every-30seconds': {
-        'task': 'toolkit.tasks.monitor_network_packets',
-        'schedule': timedelta(seconds=30),
-    },
+    # 'parse-logs-every-30seconds': {
+    #     'task': 'toolkit.tasks.parse_logs_task',
+    #     'schedule': timedelta(seconds=30),
+    # },
+    # 'parse-packets-every-30seconds': {
+    #     'task': 'toolkit.tasks.monitor_network_packets',
+    #     'schedule': timedelta(seconds=30),
+    # },
     'collect-resource-metrics': {
         'task': 'toolkit.tasks.collect_resource_metrics',
         'schedule': timedelta(seconds=3),  # Collect every 3 seconds
@@ -118,13 +122,14 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'IncidentResponceToolkit',
-        'USER': 'postgres',
-        'PASSWORD': 'S@dz@101',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ.get('DB_HOST', 'postgres'),
+        'PORT': os.environ['DB_PORT'],
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

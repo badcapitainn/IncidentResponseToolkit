@@ -49,7 +49,7 @@ from django.core.files.base import ContentFile
 @csrf_exempt
 @login_required(login_url='login')
 def dashboard(request):
-    alert_logs = AlertLogs.objects.all()
+    alert_logs = LogAlert.objects.all()
     network_alerts = NetworkAlert.objects.all()
     malware_alerts = MalwareDetectionResult.objects.all().filter(is_malicious=True)
     recent_activity = RecentActivity.objects.all().order_by('-timestamp')[:5]
@@ -60,10 +60,10 @@ def dashboard(request):
     malware_alert_count: int = len([a for a in malware_alerts])
 
     all_alert_count: int = log_alert_count + network_alert_count + malware_alert_count
-
-    log_percentage: float = round(log_alert_count / all_alert_count * 100, 1)
-    network_percentage: float = round(network_alert_count / all_alert_count * 100, 1)
-    malware_percentage: float = round(malware_alert_count / all_alert_count * 100, 1)
+    
+    log_percentage: float = round(log_alert_count / all_alert_count * 100, 1) if all_alert_count else 0
+    network_percentage: float = round(network_alert_count / all_alert_count * 100, 1) if all_alert_count else 0
+    malware_percentage: float = round(malware_alert_count / all_alert_count * 100, 1) if all_alert_count else 0
 
     # Get the latest application-specific resource usage data
     resource_data = SystemMetrics.objects.filter(is_application_only=True).order_by('-timestamp')[

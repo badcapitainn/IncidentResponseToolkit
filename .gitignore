@@ -1,0 +1,42 @@
+# .gitignore for Django
+
+# Environment files
+.env
+.env.local
+.env*.local
+
+# Python cache and virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# Database files
+*.sqlite3
+*.db
+
+# Django static and media (if not committed)
+/staticfiles/
+/media/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# macOS files
+.DS_Store
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+
+# PyCharm
+.idea/
