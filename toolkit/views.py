@@ -51,6 +51,7 @@ from django.core.files.base import ContentFile
 def dashboard(request):
     alert_logs = LogAlert.objects.all()
     network_alerts = NetworkAlert.objects.all()
+    
     malware_alerts = MalwareDetectionResult.objects.all().filter(is_malicious=True)
     recent_activity = RecentActivity.objects.all().order_by('-timestamp')[:5]
 
@@ -102,33 +103,6 @@ def dashboard(request):
 
 
 # ------------------------------------------- log analysis views -------------------------------------------------------
-
-@csrf_exempt
-@login_required(login_url='login')
-def log_analysis(request):
-    alert_logs = AlertLogs.objects.all()
-    suspicious_logs = SuspiciousLogs.objects.all()
-    watchlist_logs = WatchlistLogs.objects.all()
-
-    context = {
-        "alert_logs": alert_logs,
-        "suspicious_logs": suspicious_logs,
-        "watchlist_logs": watchlist_logs,
-    }
-    template = '../templates/toolkit/log_analysis.html'
-
-    # Send WebSocket message
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        "logs",
-        {
-            'type': 'log_message',
-            'message': 'Logs updated'
-        }
-    )
-
-    return render(request, template, context)
-
 
 @csrf_exempt
 @login_required(login_url='login')
