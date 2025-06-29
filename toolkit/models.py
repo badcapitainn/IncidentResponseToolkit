@@ -43,6 +43,7 @@ class ResourceUsageLogs(models.Model):
         unique_together = ('timeStamp', 'message')
 
 
+
 class SuspiciousPackets(models.Model):
     log_Id = models.AutoField(primary_key=True)
     timeStamp = models.DateTimeField()
@@ -95,7 +96,7 @@ class SystemMetrics(models.Model):
     class Meta:
         ordering = ['-timestamp']
 
-
+#-----------------------------------------------malware models------------------------------------------------------------------
 class MalwareDetectionResult(models.Model):
     SCAN_TYPES = (
         ('FILE', 'File Scan'),
